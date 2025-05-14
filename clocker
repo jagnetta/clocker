@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# clear the screen and hide the cursor
+clear
+tput civis # Cursor to invisible
+
+# function to restore the cursor
+cleanup() {
+    tput cnorm # Cursor to normal (i.e., "Normal)
+    tput cvvis # Cursor to blinking (i.e., "Very Visible")
+    echo
+    echo "Quit at $timestr on $daystr, $datestr."
+}
+
+# Trap the EXIT (Ctrl+C) and call the cleanup function to restore the curosr
+trap cleanup EXIT
+
+# function to draw the date and time
+redraw() {
+    local daystr daylen datestr datelen timestr timestr2 timelen timelen2 width height heightPlusTwo heightLessTwo
+    while sleep 1 
+        do
+        width=$(tput cols)
+        height=$(tput lines)
+        heightPlusTwo=$((height + 4)) # Reeeallly 4 now.
+        heightLessTwo=$((height - 4)) # Reeeallly 4 now.
+        daystr=$(date +'%A')
+        daylen=${#daystr}
+        datestr=$(date +'%b %eXX, %Y' | sed -e 's/11XX/11th/' -e 's/12XX/12th/' -e 's/13XX/13th/' -e 's/1XX/1st/' -e 's/2XX/2nd/' -e 's/3XX/3rd/' -e 's/XX/th/')
+        datelen=${#datestr}
+        # timestr=$(date +'%l:%M:%S.%2N %p %Z')
+        # timelen=${#timestr}
+        timestr=$(date +'%l:%M:%S %p %Z')
+        timelen=${#timestr}
+        timestr2=$(date +'%s')
+        timelen2=${#timestr2}
+        tput cup $((heightLessTwo / 2)) $(((width / 2) - (daylen / 2)))
+        echo "$daystr"
+        tput cup $((height / 2)) $(((width / 2) - (datelen /2)))
+        echo "$datestr"
+        tput cup $((heightPlusTwo / 2)) $(((width / 2) - (timelen / 2)))
+        echo "$timestr"
+    done
+}
+
+# trap to reset the position if the screen is resized
+trap clear WINCH
+
+redraw
