@@ -20,28 +20,27 @@ redraw() {
     local daystr daylen datestr datelen timestr timestr2 timelen timelen2 width height heightPlusTwo heightLessTwo
     while sleep 1 
         do
-        width=$(tput cols)
-        height=$(tput lines)
-        heightPlusTwo=$((height + 4)) # Reeeallly 4 now.
-        heightLessTwo=$((height - 4)) # Reeeallly 4 now.
-        daystr=$(date +'%A')
-        daylen=${#daystr}
+        width=$(tput cols) # the number of columns wide in the terminal
+        height=$(tput lines) # the number of lines high in the terminal
+        heightPlusFour=$((height + 4)) # a value to use to place the cursor that's 2 lines after the center line.
+        heightLessFour=$((height - 4)) # places the cursor 2 lines before the center line.
+        daystr=$(date +'%A') # Full name of the day, locally
+        daylen=${#daystr} # Number of columns used by the name of the day (e.g., "Monday" = "6")
+        # MM DD, YYYY formated date (e.g., May 14, 2025), the sed adds the "ordinal suffix" to the value of DD (e.g., "May 14, 2025" becomes "May 14th, 2025")
         datestr=$(date +'%b %eXX, %Y' | sed -e 's/11XX/11th/' -e 's/12XX/12th/' -e 's/13XX/13th/' -e 's/1XX/1st/' -e 's/2XX/2nd/' -e 's/3XX/3rd/' -e 's/XX/th/')
-        datelen=${#datestr}
-        timestr=$(date +'%l:%M:%S %p %Z')
-        timelen=${#timestr}
-        timestr2=$(date +'%s')
-        timelen2=${#timestr2}
-        tput cup $((heightLessTwo / 2)) $(((width / 2) - (daylen / 2)))
+        datelen=${#datestr} # Number of columns used by the formatted date.
+        timestr=$(date +'%l:%M:%S %p %Z') # Time of day in 12 hr format with AM/PM and the local timezone displayed (e.g., 6:22:33 AM EDT)
+        timelen=${#timestr} # Number of columns used by the formatted time.
+        tput cup $((heightLessTwo / 2)) $(((width / 2) - (daylen / 2))) # set the cursor location to be 2 lines above the middle line on the column which will center the "Day"
         echo "$daystr"
-        tput cup $((height / 2)) $(((width / 2) - (datelen /2)))
+        tput cup $((height / 2)) $(((width / 2) - (datelen /2))) # set the cursor location to the middle line and the column to center the date string
         echo "$datestr"
-        tput cup $((heightPlusTwo / 2)) $(((width / 2) - (timelen / 2)))
+        tput cup $((heightPlusTwo / 2)) $(((width / 2) - (timelen / 2))) # set the cursor location two lines below the middle line and the column to center the time string
         echo "$timestr"
     done
 }
 
 # trap to reset the position if the screen is resized
-trap clear WINCH
+trap clear WINCH 
 
-redraw
+redraw # call the redraw subroutine which will re-calculate the rows and columns of the term window and recenter the output
