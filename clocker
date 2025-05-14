@@ -31,11 +31,11 @@ redraw() {
         datelen=${#datestr} # Number of columns used by the formatted date.
         timestr=$(date +'%l:%M:%S %p %Z') # Time of day in 12 hr format with AM/PM and the local timezone displayed (e.g., 6:22:33 AM EDT)
         timelen=${#timestr} # Number of columns used by the formatted time.
-        tput cup $((heightLessTwo / 2)) $(((width / 2) - (daylen / 2))) # set the cursor location to be 2 lines above the middle line on the column which will center the "Day"
+        tput cup $((heightLessFour / 2)) $(((width / 2) - (daylen / 2))) # set the cursor location to be 2 lines above the middle line on the column which will center the "Day"
         echo "$daystr"
         tput cup $((height / 2)) $(((width / 2) - (datelen /2))) # set the cursor location to the middle line and the column to center the date string
         echo "$datestr"
-        tput cup $((heightPlusTwo / 2)) $(((width / 2) - (timelen / 2))) # set the cursor location two lines below the middle line and the column to center the time string
+        tput cup $((heightPlusFour / 2)) $(((width / 2) - (timelen / 2))) # set the cursor location two lines below the middle line and the column to center the time string
         echo "$timestr"
     done
 }
