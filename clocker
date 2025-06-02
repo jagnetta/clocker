@@ -27,7 +27,7 @@ redraw() {
         daystr=$(date +'%A') # Full name of the day, locally
         daylen=${#daystr} # Number of columns used by the name of the day (e.g., "Monday" = "6")
         # MM DD, YYYY formated date (e.g., May 14, 2025), the sed adds the "ordinal suffix" to the value of DD (e.g., "May 14, 2025" becomes "May 14th, 2025")
-        datestr=$(date +'%b %eXX, %Y' | sed -e 's/11XX/11th/' -e 's/12XX/12th/' -e 's/13XX/13th/' -e 's/1XX/1st/' -e 's/2XX/2nd/' -e 's/3XX/3rd/' -e 's/XX/th/')
+        datestr=$(date +'%b. %eXX, %Y' | sed -e 's/May./May/' -e 's/11XX/11th/' -e 's/12XX/12th/' -e 's/13XX/13th/' -e 's/1XX/1st/' -e 's/2XX/2nd/' -e 's/3XX/3rd/' -e 's/XX/th/')
         datelen=${#datestr} # Number of columns used by the formatted date.
         timestr=$(date +'%l:%M:%S %p %Z') # Time of day in 12 hr format with AM/PM and the local timezone displayed (e.g., 6:22:33 AM EDT)
         timelen=${#timestr} # Number of columns used by the formatted time.
@@ -44,3 +44,4 @@ redraw() {
 trap clear WINCH 
 
 redraw # call the redraw subroutine which will re-calculate the rows and columns of the term window and recenter the output
+
