@@ -111,9 +111,9 @@ function initParticles() {
     const particlesContainer = document.getElementById('particles');
     const matrixChars = ['0', '1', 'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト', 'ナ', 'ニ', 'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ', 'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン', '日', '月', '火', '水', '木', '金', '土', '人', '大', '小', '中', '国', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '円', '時', '分', '年', '間', '今', '後', '前', '新', '古', '高', '低', '上', '下', '左', '右', '東', '西', '南', '北'];
     
-    // Create columns across the screen width
+    // Create columns across the screen width (reduced by ~35% for better performance)
     const columnWidth = 30; // pixels
-    const numColumns = Math.floor(window.innerWidth / columnWidth);
+    const numColumns = Math.floor((window.innerWidth / columnWidth) * 0.65);
     
     for (let col = 0; col < numColumns; col++) {
         createMatrixColumn(col, columnWidth, matrixChars, particlesContainer);
