@@ -1070,8 +1070,8 @@ function initThorEffects() {
     runesContainer.innerHTML = '';
     
     // Create Asgardian runes
-    const runes = ['ᚦ', 'ᚢ', 'ᚱ', 'ᚬ', 'ᛅ', 'ᛋ', 'ᚴ', 'ᚱ', 'ᛁ', 'ᛋ'];
-    for (let i = 0; i < 12; i++) {
+    const runes = ['ᚦ', 'ᚢ', 'ᚱ', 'ᚬ', 'ᛅ', 'ᛋ', 'ᚴ', 'ᚱ', 'ᛁ', 'ᛋ', 'ᚨ', 'ᛒ', 'ᚲ', 'ᛞ', 'ᛖ', 'ᚠ', 'ᚷ', 'ᚺ', 'ᛁ', 'ᛃ', 'ᚲ', 'ᛚ', 'ᛗ', 'ᚾ', 'ᛟ', 'ᛈ', 'ᚱ', 'ᛊ', 'ᛏ', 'ᚢ', 'ᚹ', 'ᛉ'];
+    for (let i = 0; i < 25; i++) {
         createAsgardRune(runesContainer, runes);
     }
     
@@ -1087,11 +1087,18 @@ function initThorEffects() {
             createThorSpark(thorContainer);
         }
         
+        // Add more runes periodically
+        if (Math.random() < 0.4) {
+            createAsgardRune(runesContainer, runes);
+        }
+        
         // Clean up old effects
         const bolts = lightningContainer.querySelectorAll('.lightning-bolt');
         const sparks = thorContainer.querySelectorAll('.thor-spark');
+        const currentRunes = runesContainer.querySelectorAll('.rune');
         if (bolts.length > 10) bolts[0].remove();
         if (sparks.length > 50) sparks[0].remove();
+        if (currentRunes.length > 40) currentRunes[0].remove();
     }, 200);
 }
 
@@ -1142,12 +1149,15 @@ function createAsgardRune(container, runeArray) {
     const randomRune = runeArray[Math.floor(Math.random() * runeArray.length)];
     const xPos = Math.random() * window.innerWidth;
     const yPos = Math.random() * window.innerHeight;
-    const delay = Math.random() * 6; // 0-6 second delay
+    const delay = Math.random() * 4; // 0-4 second delay (faster)
+    const rotation = Math.random() * 360; // Random rotation
+    const scale = 0.7 + Math.random() * 0.6; // Random scale between 0.7-1.3
     
     rune.textContent = randomRune;
     rune.style.left = xPos + 'px';
     rune.style.top = yPos + 'px';
     rune.style.animationDelay = delay + 's';
+    rune.style.transform = `rotate(${rotation}deg) scale(${scale})`;
     
     container.appendChild(rune);
 }
@@ -1239,31 +1249,57 @@ function createLightningFlash(clickX, clickY) {
 }
 
 function createKlingonFlyby(clickX, clickY) {
+    // Create photon torpedo triangle formation
     const formation = document.createElement('div');
-    formation.className = 'klingon-formation';
+    formation.className = 'photon-torpedo-formation';
     
-    // Determine direction based on click position
-    const fromLeft = clickX < window.innerWidth / 2;
-    
-    // Position formation to start from click area
+    // Position formation at click location
+    formation.style.left = clickX + 'px';
     formation.style.top = clickY + 'px';
     
-    if (fromLeft) {
-        formation.style.left = (clickX - 100) + 'px';
-        formation.style.animation = 'klingonFormationFlyLeft 3s ease-in-out';
+    // Determine movement direction based on click quadrant
+    let direction;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    
+    if (clickX < centerX && clickY < centerY) {
+        direction = 'top-left'; // Move diagonally up-left
+    } else if (clickX >= centerX && clickY < centerY) {
+        direction = 'top-right'; // Move diagonally up-right
+    } else if (clickX < centerX && clickY >= centerY) {
+        direction = 'bottom-left'; // Move diagonally down-left
     } else {
-        formation.style.right = (window.innerWidth - clickX - 100) + 'px';
-        formation.style.transform = 'scaleX(-1)';
-        formation.style.animation = 'klingonFormationFlyRight 3s ease-in-out';
+        direction = 'bottom-right'; // Move diagonally down-right
     }
     
-    // Create 3 ships in formation
-    for (let i = 0; i < 3; i++) {
-        const ship = document.createElement('div');
-        ship.className = 'klingon-ship';
-        ship.textContent = '🚀';
-        formation.appendChild(ship);
-    }
+    // Also add some pure directional movement
+    const movements = ['horizontal', 'vertical', 'diagonal'];
+    const randomMovement = movements[Math.floor(Math.random() * movements.length)];
+    
+    formation.setAttribute('data-direction', direction);
+    formation.setAttribute('data-movement', randomMovement);
+    
+    // Create triangle formation with photon torpedo starburst icons
+    const torpedoPositions = [
+        { x: 0, y: -40 }, // Top torpedo (triangle point)
+        { x: -35, y: 25 }, // Bottom left torpedo
+        { x: 35, y: 25 }   // Bottom right torpedo
+    ];
+    
+    torpedoPositions.forEach((pos, i) => {
+        const torpedo = document.createElement('div');
+        torpedo.className = 'photon-torpedo';
+        torpedo.innerHTML = '✦'; // Starburst/photon torpedo icon
+        torpedo.style.left = pos.x + 'px';
+        torpedo.style.top = pos.y + 'px';
+        torpedo.style.animationDelay = (i * 0.1) + 's';
+        torpedo.setAttribute('data-torpedo-index', i);
+        formation.appendChild(torpedo);
+    });
+    
+    // Set animation based on direction and movement type
+    let animationName = `photonTorpedo${direction.replace('-', '')}${randomMovement}`;
+    formation.style.animation = `${animationName} 2.5s ease-out`;
     
     document.body.appendChild(formation);
     
@@ -1271,73 +1307,62 @@ function createKlingonFlyby(clickX, clickY) {
         if (formation.parentNode) {
             formation.remove();
         }
-    }, 3000);
+    }, 2500);
 }
 
 function createPillFlyby(clickX, clickY) {
-    // Create pills with directions based on click position
-    const pills = ['red-pill', 'blue-pill'];
+    console.log('Creating Matrix pills at:', clickX, clickY);
     
-    pills.forEach((pillType, index) => {
+    // Create simple, visible Matrix pills
+    const pillData = [
+        { color: '#ff0000', text: 'RED', delay: 0 },
+        { color: '#0066ff', text: 'BLUE', delay: 0.3 }
+    ];
+    
+    pillData.forEach((data, index) => {
         const pill = document.createElement('div');
-        pill.className = `pill-effect ${pillType}`;
+        pill.className = 'simple-matrix-pill';
         
-        // Determine direction based on click position and add some randomness
-        let direction;
-        if (clickX < window.innerWidth * 0.25) {
-            direction = 0; // Left side - fly left to right
-        } else if (clickX > window.innerWidth * 0.75) {
-            direction = 1; // Right side - fly right to left
-        } else if (clickY < window.innerHeight * 0.25) {
-            direction = 2; // Top - fly top to bottom
-        } else if (clickY > window.innerHeight * 0.75) {
-            direction = 3; // Bottom - fly bottom to top
-        } else {
-            // Center area - random direction
-            direction = Math.floor(Math.random() * 4);
-        }
+        // Basic pill styling
+        pill.style.position = 'fixed';
+        pill.style.left = (clickX - 30 + index * 60) + 'px';
+        pill.style.top = (clickY - 15) + 'px';
+        pill.style.width = '60px';
+        pill.style.height = '30px';
+        pill.style.borderRadius = '15px';
+        pill.style.backgroundColor = data.color;
+        pill.style.zIndex = '10000';
+        pill.style.boxShadow = `0 0 20px ${data.color}`;
+        pill.style.transition = 'all 3s ease-out';
         
-        // Start pills near the click location
-        const offsetX = (Math.random() - 0.5) * 100; // Random offset within 100px
-        const offsetY = (Math.random() - 0.5) * 100;
-        
-        switch(direction) {
-            case 0: // Left to right
-                pill.style.left = (clickX + offsetX) + 'px';
-                pill.style.top = (clickY + offsetY) + 'px';
-                pill.style.animation = `pillFlybyHorizontal 2s ease-out ${index * 0.3}s`;
-                break;
-            case 1: // Right to left
-                pill.style.left = (clickX + offsetX) + 'px';
-                pill.style.top = (clickY + offsetY) + 'px';
-                pill.style.animation = `pillFlybyHorizontalReverse 2s ease-out ${index * 0.3}s`;
-                break;
-            case 2: // Top to bottom
-                pill.style.left = (clickX + offsetX) + 'px';
-                pill.style.top = (clickY + offsetY) + 'px';
-                pill.style.animation = `pillFlybyVertical 2s ease-out ${index * 0.3}s`;
-                break;
-            case 3: // Bottom to top
-                pill.style.left = (clickX + offsetX) + 'px';
-                pill.style.top = (clickY + offsetY) + 'px';
-                pill.style.animation = `pillFlybyVerticalReverse 2s ease-out ${index * 0.3}s`;
-                break;
-        }
-        
+        console.log('Created simple pill:', data.color, 'at', pill.style.left, pill.style.top);
         document.body.appendChild(pill);
+        
+        // Start animation after a delay using CSS transitions
+        setTimeout(() => {
+            console.log('Starting animation for', data.color, 'pill');
+            // Apply dramatic transformation
+            pill.style.transform = `scale(10) rotate(${index === 0 ? '720deg' : '-720deg'})`;
+            pill.style.opacity = '0';
+            pill.style.filter = 'blur(5px)';
+        }, data.delay * 1000 + 100);
     });
     
+    // Clean up
     setTimeout(() => {
-        document.querySelectorAll('.pill-effect').forEach(pill => {
+        document.querySelectorAll('.simple-matrix-pill').forEach(pill => {
             if (pill.parentNode) pill.remove();
         });
-    }, 2500);
+    }, 4000);
 }
 
 // Global click handler
 function handleGlobalClick(event) {
+    console.log('Global click detected! Current theme:', currentTheme);
+    
     // Don't trigger on theme selector clicks
     if (event.target.closest('.theme-selector')) {
+        console.log('Theme selector clicked, ignoring');
         return;
     }
     
@@ -1345,11 +1370,19 @@ function handleGlobalClick(event) {
     const clickX = event.clientX;
     const clickY = event.clientY;
     
+    console.log('Processing click at:', clickX, clickY, 'Theme:', currentTheme);
+    
     if (currentTheme === 'thor') {
+        console.log('Triggering Thor lightning');
         createLightningFlash(clickX, clickY);
     } else if (currentTheme === 'lcars') {
+        console.log('Triggering LCARS photon torpedoes');
         createKlingonFlyby(clickX, clickY);
     } else if (currentTheme === 'matrix') {
+        console.log('Triggering Matrix pills');
+        createPillFlyby(clickX, clickY);
+    } else {
+        console.log('Unknown theme, defaulting to Matrix pills');
         createPillFlyby(clickX, clickY);
     }
 }
