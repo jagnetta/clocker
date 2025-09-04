@@ -10,92 +10,224 @@ let activeUfos = 0;
 let lokiTrickActive = false;
 let isMobileDevice = false;
 
-// Comprehensive timezone data with DST rules
+// Accurate timezone data based on IANA timezone standards
 const timezones = {
-    '-12': { name: 'BIT', label: 'Baker Island Time', dst: false },
+    // UTC-12: Baker Island, Howland Island
+    '-12': { name: 'AoE', label: 'Anywhere on Earth', dst: false },
+    
+    // UTC-11: American Samoa, Niue
     '-11': { name: 'NUT', label: 'Niue Time', dst: false },
+    
+    // UTC-10: Hawaii, Cook Islands
     '-10': { name: 'HST', label: 'Hawaii Standard Time', dst: false },
-    '-9.5': { name: 'MART', label: 'Marquesas Time', dst: false },
+    
+    // UTC-9.5: Marquesas Islands (France)
+    '-9.5': { name: 'MART', label: 'Marquesas Islands Time', dst: false },
+    
+    // UTC-9: Alaska (DST to UTC-8)
     '-9': { name: 'AKST', label: 'Alaska Standard Time', dst: true, dstName: 'AKDT', dstOffset: -8 },
+    
+    // UTC-8: Pacific Time (DST to UTC-7)
     '-8': { name: 'PST', label: 'Pacific Standard Time', dst: true, dstName: 'PDT', dstOffset: -7 },
+    
+    // UTC-7: Mountain Time (DST to UTC-6), Arizona stays on MST
     '-7': { name: 'MST', label: 'Mountain Standard Time', dst: true, dstName: 'MDT', dstOffset: -6 },
+    
+    // UTC-6: Central Time (DST to UTC-5)
     '-6': { name: 'CST', label: 'Central Standard Time', dst: true, dstName: 'CDT', dstOffset: -5 },
+    
+    // UTC-5: Eastern Time (DST to UTC-4)
     '-5': { name: 'EST', label: 'Eastern Standard Time', dst: true, dstName: 'EDT', dstOffset: -4 },
+    
+    // UTC-4: Atlantic Time (DST to UTC-3)
     '-4': { name: 'AST', label: 'Atlantic Standard Time', dst: true, dstName: 'ADT', dstOffset: -3 },
+    
+    // UTC-3.5: Newfoundland Time (DST to UTC-2.5)
     '-3.5': { name: 'NST', label: 'Newfoundland Standard Time', dst: true, dstName: 'NDT', dstOffset: -2.5 },
-    '-3': { name: 'BRT', label: 'Brazil Time', dst: false },
+    
+    // UTC-3: Argentina, Brazil (some regions), Uruguay
+    '-3': { name: 'ART', label: 'Argentina Time', dst: false },
+    
+    // UTC-2: South Georgia, South Sandwich Islands
     '-2': { name: 'GST', label: 'South Georgia Time', dst: false },
+    
+    // UTC-1: Cape Verde, Azores (DST to UTC+0)
     '-1': { name: 'CVT', label: 'Cape Verde Time', dst: false },
+    
+    // UTC+0: Greenwich Mean Time, Western European Time (DST to UTC+1)
     '0': { name: 'GMT', label: 'Greenwich Mean Time', dst: true, dstName: 'BST', dstOffset: 1 },
+    
+    // UTC+1: Central European Time (DST to UTC+2)
     '1': { name: 'CET', label: 'Central European Time', dst: true, dstName: 'CEST', dstOffset: 2 },
+    
+    // UTC+2: Eastern European Time (DST to UTC+3)
     '2': { name: 'EET', label: 'Eastern European Time', dst: true, dstName: 'EEST', dstOffset: 3 },
+    
+    // UTC+3: Moscow, East Africa
     '3': { name: 'MSK', label: 'Moscow Standard Time', dst: false },
+    
+    // UTC+3.5: Iran Time (DST to UTC+4.5)
     '3.5': { name: 'IRST', label: 'Iran Standard Time', dst: true, dstName: 'IRDT', dstOffset: 4.5 },
+    
+    // UTC+4: Gulf Standard Time, Azerbaijan
     '4': { name: 'GST', label: 'Gulf Standard Time', dst: false },
+    
+    // UTC+4.5: Afghanistan Time
     '4.5': { name: 'AFT', label: 'Afghanistan Time', dst: false },
+    
+    // UTC+5: Pakistan, Kazakhstan west
     '5': { name: 'PKT', label: 'Pakistan Standard Time', dst: false },
+    
+    // UTC+5.5: India Standard Time, Sri Lanka
     '5.5': { name: 'IST', label: 'India Standard Time', dst: false },
+    
+    // UTC+5.75: Nepal Time
     '5.75': { name: 'NPT', label: 'Nepal Time', dst: false },
+    
+    // UTC+6: Bangladesh, Kazakhstan east
     '6': { name: 'BST', label: 'Bangladesh Standard Time', dst: false },
+    
+    // UTC+6.5: Myanmar Time
     '6.5': { name: 'MMT', label: 'Myanmar Time', dst: false },
+    
+    // UTC+7: Indochina Time, Thailand, Vietnam
     '7': { name: 'ICT', label: 'Indochina Time', dst: false },
+    
+    // UTC+8: China Standard Time, Singapore, Philippines
     '8': { name: 'CST', label: 'China Standard Time', dst: false },
-    '8.75': { name: 'CWST', label: 'Central Western Standard Time', dst: false },
+    
+    // UTC+8.75: Australian Central Western Standard Time
+    '8.75': { name: 'ACWST', label: 'Australian Central Western Standard Time', dst: false },
+    
+    // UTC+9: Japan Standard Time, Korea
     '9': { name: 'JST', label: 'Japan Standard Time', dst: false },
+    
+    // UTC+9.5: Australian Central Standard Time (DST to UTC+10.5)
     '9.5': { name: 'ACST', label: 'Australian Central Standard Time', dst: true, dstName: 'ACDT', dstOffset: 10.5 },
+    
+    // UTC+10: Australian Eastern Standard Time (DST to UTC+11)
     '10': { name: 'AEST', label: 'Australian Eastern Standard Time', dst: true, dstName: 'AEDT', dstOffset: 11 },
+    
+    // UTC+10.5: Lord Howe Standard Time (DST to UTC+11 - unique 30min DST)
     '10.5': { name: 'LHST', label: 'Lord Howe Standard Time', dst: true, dstName: 'LHDT', dstOffset: 11 },
+    
+    // UTC+11: Solomon Islands, Vanuatu
     '11': { name: 'SBT', label: 'Solomon Islands Time', dst: false },
+    
+    // UTC+12: New Zealand Standard Time (DST to UTC+13)
     '12': { name: 'NZST', label: 'New Zealand Standard Time', dst: true, dstName: 'NZDT', dstOffset: 13 },
+    
+    // UTC+12.75: Chatham Standard Time (DST to UTC+13.75)
     '12.75': { name: 'CHAST', label: 'Chatham Standard Time', dst: true, dstName: 'CHADT', dstOffset: 13.75 },
+    
+    // UTC+13: Tonga, Samoa
     '13': { name: 'TOT', label: 'Tonga Time', dst: false },
+    
+    // UTC+14: Line Islands (Kiribati)
     '14': { name: 'LINT', label: 'Line Islands Time', dst: false }
 };
 
-// DST calculation functions
+// Enhanced DST calculation functions with accurate regional rules
 function isDSTActive(date, offset) {
     const year = date.getFullYear();
-    const month = date.getMonth();
+    const month = date.getMonth(); // 0-11
     const day = date.getDate();
     
-    // Northern Hemisphere DST (March-November)
-    if (offset >= -9 && offset <= 3) {
-        // Second Sunday in March to First Sunday in November (US/Canada/Europe style)
-        const marchSecondSunday = getNthSundayOfMonth(year, 2, 2); // March = 2
-        const novemberFirstSunday = getNthSundayOfMonth(year, 10, 1); // November = 10
-        
-        if (offset >= -9 && offset <= -4) {
-            // US/Canada DST rules
-            return date >= marchSecondSunday && date < novemberFirstSunday;
-        } else if (offset >= 0 && offset <= 3) {
-            // European DST rules (last Sunday in March to last Sunday in October)
-            const marchLastSunday = getLastSundayOfMonth(year, 2);
-            const octoberLastSunday = getLastSundayOfMonth(year, 9);
-            return date >= marchLastSunday && date < octoberLastSunday;
-        }
+    // Handle specific timezone DST rules
+    switch (offset) {
+        // US/Canada Timezones: Second Sunday in March to First Sunday in November
+        case -9: // Alaska
+        case -8: // Pacific
+        case -7: // Mountain (most regions)
+        case -6: // Central
+        case -5: // Eastern
+        case -4: // Atlantic
+            return isUSCanadaDST(date, year);
+            
+        // Newfoundland: Same dates as US/Canada
+        case -3.5:
+            return isUSCanadaDST(date, year);
+            
+        // European Timezones: Last Sunday in March to Last Sunday in October
+        case 0: // GMT/BST
+        case 1: // CET/CEST
+        case 2: // EET/EEST
+            return isEuropeanDST(date, year);
+            
+        // Iran: March 22 to September 22 (Nowruz-based)
+        case 3.5:
+            return isIranDST(date, year);
+            
+        // Australia: First Sunday in October to First Sunday in April
+        case 9.5: // ACST/ACDT
+        case 10: // AEST/AEDT
+            return isAustraliaDST(date, year);
+            
+        // Lord Howe Island: First Sunday in October to First Sunday in April (30min shift)
+        case 10.5:
+            return isAustraliaDST(date, year);
+            
+        // New Zealand: Last Sunday in September to First Sunday in April
+        case 12: // NZST/NZDT
+            return isNewZealandDST(date, year);
+            
+        // Chatham Islands: Same as New Zealand
+        case 12.75:
+            return isNewZealandDST(date, year);
+            
+        default:
+            return false;
     }
+}
+
+// US/Canada DST: Second Sunday in March to First Sunday in November
+function isUSCanadaDST(date, year) {
+    const marchSecondSunday = getNthSundayOfMonth(year, 2, 2);
+    const novemberFirstSunday = getNthSundayOfMonth(year, 10, 1);
+    return date >= marchSecondSunday && date < novemberFirstSunday;
+}
+
+// European DST: Last Sunday in March to Last Sunday in October
+function isEuropeanDST(date, year) {
+    const marchLastSunday = getLastSundayOfMonth(year, 2);
+    const octoberLastSunday = getLastSundayOfMonth(year, 9);
+    return date >= marchLastSunday && date < octoberLastSunday;
+}
+
+// Iran DST: Approximately March 22 to September 22 (varies by year)
+function isIranDST(date, year) {
+    // Nowruz typically starts around March 20-21
+    const startDate = new Date(year, 2, 22); // March 22
+    const endDate = new Date(year, 8, 22);   // September 22
+    return date >= startDate && date < endDate;
+}
+
+// Australia DST: First Sunday in October to First Sunday in April (next year)
+function isAustraliaDST(date, year) {
+    const month = date.getMonth();
     
-    // Southern Hemisphere DST (October-March)
-    if (offset >= 9.5 && offset <= 13) {
-        // First Sunday in October to First Sunday in April (Australia/NZ style)
-        const octoberFirstSunday = getNthSundayOfMonth(year, 9, 1); // October = 9
-        const aprilFirstSunday = getNthSundayOfMonth(year, 3, 1); // April = 3
-        
-        // Handle year transition
-        if (month >= 9) { // Oct, Nov, Dec
-            return date >= octoberFirstSunday;
-        } else if (month <= 3) { // Jan, Feb, Mar, Apr
-            return date < aprilFirstSunday;
-        }
-        return false;
+    if (month >= 9) { // October, November, December
+        const octoberFirstSunday = getNthSundayOfMonth(year, 9, 1);
+        return date >= octoberFirstSunday;
+    } else if (month <= 3) { // January, February, March, April
+        const aprilFirstSunday = getNthSundayOfMonth(year, 3, 1);
+        return date < aprilFirstSunday;
     }
+    return false; // May through September
+}
+
+// New Zealand DST: Last Sunday in September to First Sunday in April (next year)
+function isNewZealandDST(date, year) {
+    const month = date.getMonth();
     
-    // Iran DST (March 22 to September 22 approximately)
-    if (offset === 3.5) {
-        return month >= 2 && month <= 8; // Simplified: March to September
+    if (month >= 8) { // September, October, November, December
+        const septemberLastSunday = getLastSundayOfMonth(year, 8);
+        return date >= septemberLastSunday;
+    } else if (month <= 3) { // January, February, March, April
+        const aprilFirstSunday = getNthSundayOfMonth(year, 3, 1);
+        return date < aprilFirstSunday;
     }
-    
-    return false;
+    return false; // May through August
 }
 
 function getNthSundayOfMonth(year, month, n) {
@@ -242,21 +374,23 @@ function getTimezoneInfo(date, offset) {
         return timezones[closest.toString()];
     }
     
+    console.log(`🕐 Checking timezone ${offset}: ${timezoneInfo.name} (${timezoneInfo.label})`);
+    
     if (timezoneInfo.dst && isDSTActive(date, offset)) {
+        console.log(`☀️ DST is active for ${timezoneInfo.name} -> ${timezoneInfo.dstName}`);
         return {
             name: timezoneInfo.dstName,
             label: timezoneInfo.label.replace('Standard', 'Daylight'),
             isDST: true,
-            offset: timezoneInfo.dstOffset
+            dstOffset: timezoneInfo.dstOffset
         };
-    }
-    
-    return {
-        name: timezoneInfo.name,
-        label: timezoneInfo.label,
-        isDST: false,
-        offset: offset
-    };
+    } else {
+        console.log(`❄️ Standard time for ${timezoneInfo.name}`);
+        return {
+            name: timezoneInfo.name,
+            label: timezoneInfo.label,
+            isDST: false
+        };
 }
 
 // Get date with timezone offset including DST
