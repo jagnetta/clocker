@@ -710,7 +710,16 @@ function generateLocationData(cityName) {
         'toronto': { state: 'ON', country: 'CA', zip: 'M5H 2N2' },
         'vancouver': { state: 'BC', country: 'CA', zip: 'V6B 1A1' },
         'sydney': { state: 'NSW', country: 'AU', zip: '2000' },
-        'melbourne': { state: 'VIC', country: 'AU', zip: '3000' }
+        'melbourne': { state: 'VIC', country: 'AU', zip: '3000' },
+        'calcutta': { state: 'WB', country: 'IN', zip: '700001' },
+        'kolkata': { state: 'WB', country: 'IN', zip: '700001' },
+        'mumbai': { state: 'MH', country: 'IN', zip: '400001' },
+        'delhi': { state: 'DL', country: 'IN', zip: '110001' },
+        'bangkok': { state: 'BKK', country: 'TH', zip: '10100' },
+        'singapore': { state: 'SG', country: 'SG', zip: '018956' },
+        'moscow': { state: 'MOW', country: 'RU', zip: '101000' },
+        'beijing': { state: 'BJ', country: 'CN', zip: '100000' },
+        'seoul': { state: 'SEL', country: 'KR', zip: '04524' }
     };
     
     const cityKey = cityName.toLowerCase();
@@ -729,17 +738,244 @@ function generateLocationData(cityName) {
     };
 }
 
-// Generate demo weather data (for demonstration)
+// City-specific weather patterns
+function getCityWeatherPattern(cityName) {
+    const cityKey = cityName.toLowerCase();
+    const currentMonth = new Date().getMonth(); // 0-11
+    const isWinter = currentMonth >= 11 || currentMonth <= 2;
+    const isSummer = currentMonth >= 5 && currentMonth <= 8;
+    
+    const cityPatterns = {
+        'london': {
+            winter: [
+                { desc: 'Cloudy', temp: 42, chance: 0.4 },
+                { desc: 'Light Rain', temp: 39, chance: 0.3 },
+                { desc: 'Overcast', temp: 45, chance: 0.2 },
+                { desc: 'Drizzle', temp: 41, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Partly Cloudy', temp: 68, chance: 0.3 },
+                { desc: 'Cloudy', temp: 65, chance: 0.25 },
+                { desc: 'Light Rain', temp: 63, chance: 0.25 },
+                { desc: 'Sunny', temp: 72, chance: 0.2 }
+            ],
+            spring: [
+                { desc: 'Light Rain', temp: 55, chance: 0.35 },
+                { desc: 'Partly Cloudy', temp: 58, chance: 0.3 },
+                { desc: 'Cloudy', temp: 52, chance: 0.2 },
+                { desc: 'Sunny', temp: 62, chance: 0.15 }
+            ]
+        },
+        'new york': {
+            winter: [
+                { desc: 'Snow', temp: 32, chance: 0.25 },
+                { desc: 'Cloudy', temp: 38, chance: 0.3 },
+                { desc: 'Clear Skies', temp: 35, chance: 0.25 },
+                { desc: 'Overcast', temp: 40, chance: 0.2 }
+            ],
+            summer: [
+                { desc: 'Sunny', temp: 82, chance: 0.4 },
+                { desc: 'Partly Cloudy', temp: 78, chance: 0.3 },
+                { desc: 'Thunderstorm', temp: 75, chance: 0.15 },
+                { desc: 'Hot', temp: 88, chance: 0.15 }
+            ],
+            spring: [
+                { desc: 'Partly Cloudy', temp: 68, chance: 0.3 },
+                { desc: 'Light Rain', temp: 62, chance: 0.25 },
+                { desc: 'Sunny', temp: 72, chance: 0.25 },
+                { desc: 'Cloudy', temp: 65, chance: 0.2 }
+            ]
+        },
+        'calcutta': {
+            winter: [
+                { desc: 'Sunny', temp: 78, chance: 0.4 },
+                { desc: 'Clear Skies', temp: 82, chance: 0.3 },
+                { desc: 'Partly Cloudy', temp: 75, chance: 0.2 },
+                { desc: 'Haze', temp: 80, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Hot', temp: 95, chance: 0.35 },
+                { desc: 'Thunderstorm', temp: 88, chance: 0.25 },
+                { desc: 'Sunny', temp: 92, chance: 0.2 },
+                { desc: 'Partly Cloudy', temp: 89, chance: 0.2 }
+            ],
+            spring: [
+                { desc: 'Sunny', temp: 86, chance: 0.35 },
+                { desc: 'Hot', temp: 90, chance: 0.25 },
+                { desc: 'Partly Cloudy', temp: 83, chance: 0.2 },
+                { desc: 'Clear Skies', temp: 88, chance: 0.2 }
+            ]
+        },
+        'kolkata': {
+            winter: [
+                { desc: 'Sunny', temp: 78, chance: 0.4 },
+                { desc: 'Clear Skies', temp: 82, chance: 0.3 },
+                { desc: 'Partly Cloudy', temp: 75, chance: 0.2 },
+                { desc: 'Haze', temp: 80, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Hot', temp: 95, chance: 0.35 },
+                { desc: 'Thunderstorm', temp: 88, chance: 0.25 },
+                { desc: 'Sunny', temp: 92, chance: 0.2 },
+                { desc: 'Partly Cloudy', temp: 89, chance: 0.2 }
+            ],
+            spring: [
+                { desc: 'Sunny', temp: 86, chance: 0.35 },
+                { desc: 'Hot', temp: 90, chance: 0.25 },
+                { desc: 'Partly Cloudy', temp: 83, chance: 0.2 },
+                { desc: 'Clear Skies', temp: 88, chance: 0.2 }
+            ]
+        },
+        'mumbai': {
+            winter: [
+                { desc: 'Sunny', temp: 85, chance: 0.4 },
+                { desc: 'Partly Cloudy', temp: 82, chance: 0.3 },
+                { desc: 'Clear Skies', temp: 88, chance: 0.2 },
+                { desc: 'Haze', temp: 84, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Rain', temp: 82, chance: 0.4 },
+                { desc: 'Thunderstorm', temp: 80, chance: 0.3 },
+                { desc: 'Hot', temp: 92, chance: 0.2 },
+                { desc: 'Cloudy', temp: 85, chance: 0.1 }
+            ],
+            spring: [
+                { desc: 'Hot', temp: 90, chance: 0.4 },
+                { desc: 'Sunny', temp: 88, chance: 0.3 },
+                { desc: 'Partly Cloudy', temp: 86, chance: 0.2 },
+                { desc: 'Haze', temp: 92, chance: 0.1 }
+            ]
+        },
+        'delhi': {
+            winter: [
+                { desc: 'Fog', temp: 62, chance: 0.35 },
+                { desc: 'Clear Skies', temp: 68, chance: 0.3 },
+                { desc: 'Sunny', temp: 65, chance: 0.2 },
+                { desc: 'Cold', temp: 58, chance: 0.15 }
+            ],
+            summer: [
+                { desc: 'Hot', temp: 105, chance: 0.4 },
+                { desc: 'Sunny', temp: 102, chance: 0.3 },
+                { desc: 'Haze', temp: 98, chance: 0.2 },
+                { desc: 'Thunderstorm', temp: 95, chance: 0.1 }
+            ],
+            spring: [
+                { desc: 'Sunny', temp: 85, chance: 0.35 },
+                { desc: 'Clear Skies', temp: 88, chance: 0.3 },
+                { desc: 'Hot', temp: 92, chance: 0.2 },
+                { desc: 'Partly Cloudy', temp: 82, chance: 0.15 }
+            ]
+        },
+        'tokyo': {
+            winter: [
+                { desc: 'Clear Skies', temp: 45, chance: 0.4 },
+                { desc: 'Sunny', temp: 48, chance: 0.3 },
+                { desc: 'Cloudy', temp: 42, chance: 0.2 },
+                { desc: 'Cold', temp: 38, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Hot', temp: 85, chance: 0.3 },
+                { desc: 'Partly Cloudy', temp: 82, chance: 0.25 },
+                { desc: 'Rain', temp: 78, chance: 0.25 },
+                { desc: 'Thunderstorm', temp: 80, chance: 0.2 }
+            ],
+            spring: [
+                { desc: 'Sunny', temp: 68, chance: 0.35 },
+                { desc: 'Partly Cloudy', temp: 65, chance: 0.3 },
+                { desc: 'Light Rain', temp: 62, chance: 0.2 },
+                { desc: 'Clear Skies', temp: 70, chance: 0.15 }
+            ]
+        },
+        'paris': {
+            winter: [
+                { desc: 'Cloudy', temp: 43, chance: 0.35 },
+                { desc: 'Light Rain', temp: 40, chance: 0.25 },
+                { desc: 'Overcast', temp: 46, chance: 0.25 },
+                { desc: 'Cold', temp: 37, chance: 0.15 }
+            ],
+            summer: [
+                { desc: 'Sunny', temp: 75, chance: 0.35 },
+                { desc: 'Partly Cloudy', temp: 72, chance: 0.3 },
+                { desc: 'Clear Skies', temp: 78, chance: 0.2 },
+                { desc: 'Light Rain', temp: 68, chance: 0.15 }
+            ],
+            spring: [
+                { desc: 'Partly Cloudy', temp: 62, chance: 0.3 },
+                { desc: 'Light Rain', temp: 58, chance: 0.25 },
+                { desc: 'Sunny', temp: 66, chance: 0.25 },
+                { desc: 'Cloudy', temp: 60, chance: 0.2 }
+            ]
+        },
+        'sydney': {
+            winter: [
+                { desc: 'Sunny', temp: 65, chance: 0.4 },
+                { desc: 'Partly Cloudy', temp: 62, chance: 0.3 },
+                { desc: 'Clear Skies', temp: 68, chance: 0.2 },
+                { desc: 'Light Rain', temp: 58, chance: 0.1 }
+            ],
+            summer: [
+                { desc: 'Hot', temp: 85, chance: 0.35 },
+                { desc: 'Sunny', temp: 82, chance: 0.3 },
+                { desc: 'Partly Cloudy', temp: 78, chance: 0.2 },
+                { desc: 'Clear Skies', temp: 88, chance: 0.15 }
+            ],
+            spring: [
+                { desc: 'Sunny', temp: 72, chance: 0.35 },
+                { desc: 'Partly Cloudy', temp: 68, chance: 0.3 },
+                { desc: 'Light Rain', temp: 65, chance: 0.2 },
+                { desc: 'Clear Skies', temp: 75, chance: 0.15 }
+            ]
+        }
+    };
+    
+    // Default pattern for unknown cities
+    const defaultPattern = {
+        winter: [
+            { desc: 'Cloudy', temp: 45, chance: 0.3 },
+            { desc: 'Sunny', temp: 50, chance: 0.25 },
+            { desc: 'Light Rain', temp: 42, chance: 0.25 },
+            { desc: 'Overcast', temp: 48, chance: 0.2 }
+        ],
+        summer: [
+            { desc: 'Sunny', temp: 78, chance: 0.4 },
+            { desc: 'Partly Cloudy', temp: 75, chance: 0.3 },
+            { desc: 'Hot', temp: 85, chance: 0.2 },
+            { desc: 'Clear Skies', temp: 80, chance: 0.1 }
+        ],
+        spring: [
+            { desc: 'Partly Cloudy', temp: 68, chance: 0.3 },
+            { desc: 'Sunny', temp: 72, chance: 0.25 },
+            { desc: 'Light Rain', temp: 62, chance: 0.25 },
+            { desc: 'Clear Skies', temp: 75, chance: 0.2 }
+        ]
+    };
+    
+    const cityPattern = cityPatterns[cityKey] || defaultPattern;
+    
+    // Determine season
+    let season = 'spring';
+    if (isWinter) season = 'winter';
+    else if (isSummer) season = 'summer';
+    
+    // For Southern Hemisphere cities, flip seasons
+    const southernCities = ['sydney', 'melbourne'];
+    if (southernCities.includes(cityKey)) {
+        if (season === 'winter') season = 'summer';
+        else if (season === 'summer') season = 'winter';
+    }
+    
+    return cityPattern[season] || cityPattern.spring;
+}
+
+// Generate city-specific weather data
 function generateDemoWeatherData(cityName) {
     const now = new Date();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const conditions = [
-        { desc: 'Sunny', temp: 78 },
-        { desc: 'Partly Cloudy', temp: 75 },
-        { desc: 'Light Rain', temp: 68 },
-        { desc: 'Cloudy', temp: 72 },
-        { desc: 'Clear Skies', temp: 80 }
-    ];
+    
+    // Get city-specific weather pattern
+    const weatherPattern = getCityWeatherPattern(cityName);
+    
+    console.log(`🌤️ Generating weather for ${cityName}:`, weatherPattern);
     
     const days = [];
     for (let i = 0; i < 5; i++) {
@@ -754,11 +990,32 @@ function generateDemoWeatherData(cityName) {
             dayLabel = dayNames[futureDate.getDay()];
         }
         
+        // Select weather condition based on weighted probability
+        let selectedCondition;
+        const random = Math.random();
+        let cumulativeProbability = 0;
+        
+        for (const condition of weatherPattern) {
+            cumulativeProbability += condition.chance;
+            if (random <= cumulativeProbability) {
+                selectedCondition = condition;
+                break;
+            }
+        }
+        
+        // Fallback to first condition if none selected
+        if (!selectedCondition) {
+            selectedCondition = weatherPattern[0];
+        }
+        
+        // Add some daily variation
+        const tempVariation = Math.round(Math.random() * 8 - 4); // ±4°F variation
+        
         days.push({
             day: dayLabel,
-            temperature: conditions[i].temp + Math.round(Math.random() * 10 - 5), // Add some randomness
-            description: conditions[i].desc,
-            icon: getWeatherIcon(conditions[i].desc)
+            temperature: selectedCondition.temp + tempVariation,
+            description: selectedCondition.desc,
+            icon: getWeatherIcon(selectedCondition.desc)
         });
     }
     
@@ -1883,6 +2140,25 @@ function handleGlobalClick(event) {
     // Don't trigger on theme selector clicks
     if (event.target.closest('.theme-selector')) {
         console.log('Theme selector clicked, ignoring');
+        return;
+    }
+    
+    // Don't trigger on timezone container clicks
+    if (event.target.closest('.timezone-container')) {
+        console.log('Timezone panel clicked, ignoring');
+        return;
+    }
+    
+    // Don't trigger on weather tracker clicks
+    if (event.target.closest('.weather-ticker')) {
+        console.log('Weather tracker clicked, ignoring');
+        return;
+    }
+    
+    // Don't trigger on interactive elements (inputs, buttons, sliders)
+    if (event.target.matches('input, button, select, textarea, [contenteditable]') || 
+        event.target.closest('input, button, select, textarea, [contenteditable]')) {
+        console.log('Interactive element clicked, ignoring');
         return;
     }
     
