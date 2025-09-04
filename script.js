@@ -665,6 +665,41 @@ async function fetchWeatherData(cityName) {
     }
 }
 
+// Generate location data based on city name
+function generateLocationData(cityName) {
+    const cityMap = {
+        'taunton': { state: 'MA', country: 'US', zip: '02780' },
+        'boston': { state: 'MA', country: 'US', zip: '02101' },
+        'new york': { state: 'NY', country: 'US', zip: '10001' },
+        'los angeles': { state: 'CA', country: 'US', zip: '90210' },
+        'chicago': { state: 'IL', country: 'US', zip: '60601' },
+        'miami': { state: 'FL', country: 'US', zip: '33101' },
+        'london': { state: 'ENG', country: 'GB', zip: 'SW1A 1AA' },
+        'paris': { state: 'IDF', country: 'FR', zip: '75001' },
+        'berlin': { state: 'BE', country: 'DE', zip: '10115' },
+        'tokyo': { state: 'TK', country: 'JP', zip: '100-0001' },
+        'toronto': { state: 'ON', country: 'CA', zip: 'M5H 2N2' },
+        'vancouver': { state: 'BC', country: 'CA', zip: 'V6B 1A1' },
+        'sydney': { state: 'NSW', country: 'AU', zip: '2000' },
+        'melbourne': { state: 'VIC', country: 'AU', zip: '3000' }
+    };
+    
+    const cityKey = cityName.toLowerCase();
+    if (cityMap[cityKey]) {
+        return cityMap[cityKey];
+    }
+    
+    // Generate generic location data for unknown cities
+    const genericStates = ['CA', 'NY', 'TX', 'FL', 'WA', 'CO', 'OR'];
+    const genericZips = ['12345', '54321', '98765', '11111', '22222'];
+    
+    return {
+        state: genericStates[Math.floor(Math.random() * genericStates.length)],
+        country: 'US',
+        zip: genericZips[Math.floor(Math.random() * genericZips.length)]
+    };
+}
+
 // Generate demo weather data (for demonstration)
 function generateDemoWeatherData(cityName) {
     const now = new Date();
@@ -708,35 +743,23 @@ function createWeatherTicker(weatherData, cityName) {
     // Clear existing content
     weatherScroll.innerHTML = '';
     
-    // Add city name at the start
-    const startSeparator = document.createElement('div');
-    startSeparator.className = 'weather-separator';
-    startSeparator.innerHTML = `<span class="city-separator">-- ${cityName} --</span>`;
-    weatherScroll.appendChild(startSeparator);
+    // Get location data for this city
+    const locationData = generateLocationData(cityName);
+    const formattedLocation = `${cityName}, ${locationData.state} ${locationData.country} ${locationData.zip}`;
     
-    // Create weather items
-    weatherData.forEach((day, index) => {
-        const weatherDay = document.createElement('div');
-        weatherDay.className = 'weather-day';
+    // Helper function to create weather content block
+    function createWeatherContent() {
+        const contentBlock = document.createElement('div');
+        contentBlock.style.display = 'inline-flex';
+        contentBlock.style.alignItems = 'center';
         
-        weatherDay.innerHTML = `
-            <span class="weather-icon">${day.icon}</span>
-            <strong>${day.day}</strong>
-            <span class="weather-temp">${day.temperature}°F</span>
-            <span class="weather-desc">${day.description}</span>
-        `;
+        // Add formatted location at the start
+        const startSeparator = document.createElement('div');
+        startSeparator.className = 'weather-separator';
+        startSeparator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
+        contentBlock.appendChild(startSeparator);
         
-        weatherScroll.appendChild(weatherDay);
-        
-        // Add city name separator after each weather item
-        const separator = document.createElement('div');
-        separator.className = 'weather-separator';
-        separator.innerHTML = `<span class="city-separator">-- ${cityName} --</span>`;
-        weatherScroll.appendChild(separator);
-    });
-    
-    // Duplicate the weather data multiple times for seamless scrolling
-    for (let repeat = 0; repeat < 3; repeat++) {
+        // Create weather items
         weatherData.forEach((day, index) => {
             const weatherDay = document.createElement('div');
             weatherDay.className = 'weather-day';
@@ -748,21 +771,22 @@ function createWeatherTicker(weatherData, cityName) {
                 <span class="weather-desc">${day.description}</span>
             `;
             
-            weatherScroll.appendChild(weatherDay);
+            contentBlock.appendChild(weatherDay);
             
-            // Add city name separator after each weather item
+            // Add formatted location separator after each weather item
             const separator = document.createElement('div');
             separator.className = 'weather-separator';
-            separator.innerHTML = `<span class="city-separator">-- ${cityName} --</span>`;
-            weatherScroll.appendChild(separator);
+            separator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
+            contentBlock.appendChild(separator);
         });
+        
+        return contentBlock;
     }
     
-    // Add city name at the end
-    const endSeparator = document.createElement('div');
-    endSeparator.className = 'weather-separator';
-    endSeparator.innerHTML = `<span class="city-separator">-- ${cityName} --</span>`;
-    weatherScroll.appendChild(endSeparator);
+    // Create chain of 20 weather text strings for long continuous scroll
+    for (let i = 0; i < 20; i++) {
+        weatherScroll.appendChild(createWeatherContent());
+    }
 }
 
 // Handle weather form submission
