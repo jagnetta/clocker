@@ -321,32 +321,47 @@ function adjustFontSizes() {
     
     if (!dayEl || !dateEl || !timeEl || !clockDisplay) return;
     
-    // Get the available width inside the panel (minus padding)
-    const panelWidth = clockDisplay.offsetWidth - 120; // Account for padding
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Get text content
+    // Get text content - for time, account for HTML spans
     const dayText = dayEl.textContent;
     const dateText = dateEl.textContent;
-    const timeText = timeEl.textContent;
+    const timeText = timeEl.textContent; // This includes AM/PM and timezone
     
-    // Calculate font sizes based on panel width and text length
-    const daySize = Math.min(panelWidth / (dayText.length * 0.6), viewportHeight * 0.10);
-    const dateSize = Math.min(panelWidth / (dateText.length * 0.7), viewportHeight * 0.06);
-    const timeSize = Math.min(panelWidth / (timeText.length * 0.5), viewportHeight * 0.12);
+    // Enhanced font sizing - scale to fit viewport while ensuring readability
+    // Use viewport-based scaling with text length consideration
+    const baseScale = Math.min(viewportWidth, viewportHeight) / 800; // Base scale factor
     
-    // Apply with minimum and maximum constraints to ensure text fits in panel
-    dayEl.style.fontSize = Math.max(Math.min(daySize, panelWidth * 0.08), 16) + 'px';
-    dateEl.style.fontSize = Math.max(Math.min(dateSize, panelWidth * 0.05), 14) + 'px';
-    timeEl.style.fontSize = Math.max(Math.min(timeSize, panelWidth * 0.10), 16) + 'px';
+    const daySize = Math.min(
+        viewportWidth * 0.12 / (dayText.length * 0.1), 
+        viewportHeight * 0.12,
+        baseScale * 80
+    );
+    const dateSize = Math.min(
+        viewportWidth * 0.08 / (dateText.length * 0.08), 
+        viewportHeight * 0.08,
+        baseScale * 50
+    );
+    // For time, scale more conservatively to fit in 75vw panel
+    const availablePanelWidth = viewportWidth * 0.75 - 120; // Account for padding
+    const timeSize = Math.min(
+        availablePanelWidth / (timeText.length * 0.45), // Scale based on available panel width
+        viewportHeight * 0.1,
+        baseScale * 60
+    );
     
-    // Ensure text doesn't exceed 90% of panel width
-    [dayEl, dateEl, timeEl].forEach(el => {
-        if (el.scrollWidth > panelWidth * 0.9) {
-            const currentSize = parseFloat(window.getComputedStyle(el).fontSize);
-            const newSize = currentSize * (panelWidth * 0.9) / el.scrollWidth;
-            el.style.fontSize = Math.max(newSize, 12) + 'px';
-        }
+    // Apply font sizes with proper minimums
+    dayEl.style.fontSize = Math.max(daySize, 20) + 'px';
+    dateEl.style.fontSize = Math.max(dateSize, 16) + 'px';
+    timeEl.style.fontSize = Math.max(timeSize, 18) + 'px';
+    
+    // Set time-suffix font size to match date line
+    const timeSuffixSize = Math.max(dateSize, 16);
+    const timeSuffixElements = document.querySelectorAll('.time-suffix');
+    timeSuffixElements.forEach(el => {
+        el.style.fontSize = timeSuffixSize + 'px';
     });
 }
 
