@@ -525,6 +525,39 @@ function initTimezoneSlider() {
     slider.addEventListener('mouseleave', function() {
         this.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
     });
+    
+    // Add mouse wheel support for timezone adjustment
+    const timezoneContainer = document.querySelector('.timezone-container');
+    if (timezoneContainer) {
+        timezoneContainer.addEventListener('wheel', function(event) {
+            event.preventDefault(); // Prevent page scrolling
+            
+            const step = 0.5; // Match the slider step
+            const currentValue = parseFloat(slider.value);
+            const minValue = parseFloat(slider.min);
+            const maxValue = parseFloat(slider.max);
+            
+            // Determine direction (negative deltaY = scroll up = increase timezone)
+            const direction = event.deltaY < 0 ? 1 : -1;
+            const newValue = currentValue + (direction * step);
+            
+            // Clamp to slider bounds
+            const clampedValue = Math.max(minValue, Math.min(maxValue, newValue));
+            
+            if (clampedValue !== currentValue) {
+                slider.value = clampedValue;
+                currentTimezoneOffset = clampedValue;
+                updateTimezoneDisplay();
+                updateClock();
+                
+                // Add visual feedback
+                timezoneContainer.style.boxShadow = '0 0 40px rgba(0, 255, 0, 0.8)';
+                setTimeout(() => {
+                    timezoneContainer.style.boxShadow = '';
+                }, 150);
+            }
+        });
+    }
 }
 
 // Enhanced keyboard shortcuts
