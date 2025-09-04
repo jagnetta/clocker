@@ -1893,6 +1893,7 @@ function handleGlobalClick(event) {
     }
 }
 
+
 // Start the show!
 document.addEventListener('DOMContentLoaded', function() {
     init();

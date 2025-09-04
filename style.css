@@ -80,6 +80,19 @@ body {
     overflow: hidden;
     position: relative;
     min-height: 100vh;
+    /* Prevent text selection when clicking for special actions */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection for interactive elements */
+input, button, textarea, select {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
 }
 
 @keyframes matrixBackground {
@@ -1513,67 +1526,6 @@ body::before {
     backdrop-filter: blur(3px);
 }
 
-/* LCARS corner accent pieces */
-.lcars-theme .clock-display::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #ff9900, #ffcc66);
-    border-radius: 50px 10px 50px 10px;
-    box-shadow: 
-        0 0 20px rgba(255, 153, 0, 0.8),
-        inset 0 2px 0 rgba(255, 204, 102, 0.6);
-}
-
-/* LCARS side bars */
-.lcars-theme .clock-display::after {
-    content: '';
-    position: absolute;
-    top: 20%;
-    right: -25px;
-    width: 15px;
-    height: 60%;
-    background: linear-gradient(180deg, #ff9900, #ffcc66, #ff9900);
-    border-radius: 8px;
-    box-shadow: 
-        0 0 15px rgba(255, 153, 0, 0.7),
-        inset 2px 0 0 rgba(255, 204, 102, 0.5);
-}
-
-/* Additional LCARS elements on container */
-.lcars-theme .clock-container::before {
-    content: '';
-    position: absolute;
-    bottom: 15%;
-    right: 12%;
-    width: 120px;
-    height: 25px;
-    background: linear-gradient(90deg, #ff9900, #ffcc66);
-    border-radius: 15px 5px 15px 5px;
-    box-shadow: 
-        0 0 20px rgba(255, 153, 0, 0.8),
-        inset 0 2px 0 rgba(255, 204, 102, 0.6);
-    z-index: 5;
-}
-
-.lcars-theme .clock-container::after {
-    content: '';
-    position: absolute;
-    top: 15%;
-    left: 8%;
-    width: 25px;
-    height: 80px;
-    background: linear-gradient(180deg, #ff9900, #ffcc66);
-    border-radius: 15px 5px 15px 5px;
-    box-shadow: 
-        0 0 20px rgba(255, 153, 0, 0.8),
-        inset 2px 0 0 rgba(255, 204, 102, 0.6);
-    z-index: 5;
-}
-
 
 .lcars-theme .day {
     font-family: 'Antonio', sans-serif;
@@ -1633,7 +1585,7 @@ body::before {
     font-size: 3.5vw;
 }
 
-/* LCARS Clock Display Icon */
+/* LCARS Clock Display Icon - Now in upper right corner */
 .lcars-theme .clock-display::before {
     content: '🖖';
     position: absolute;
