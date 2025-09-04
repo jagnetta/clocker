@@ -95,6 +95,182 @@ input, button, textarea, select {
     user-select: auto;
 }
 
+/* ========================================
+   MOBILE DEVICE SIMPLIFIED STYLES
+   ======================================== */
+
+/* Mobile-specific simplifications */
+.mobile-device body {
+    /* Disable complex background animations */
+    animation: none;
+    background: linear-gradient(0deg, #000000, #001100, #000000);
+    background-size: 100% 100%;
+}
+
+/* Remove complex pseudo-elements on mobile */
+.mobile-device body::before {
+    display: none;
+}
+
+/* Simplify floating particles container on mobile */
+.mobile-device .floating-particles {
+    display: none;
+}
+
+/* Disable matrix effects on mobile */
+.mobile-device .matrix-column-char {
+    display: none;
+}
+
+/* Simplify clock display for mobile */
+.mobile-device .clock-display {
+    width: 95vw;
+    padding: 20px 30px;
+    border: 2px solid #00ff00;
+    border-radius: 15px;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 0, 0.05);
+    /* Remove 3D transforms that can be performance heavy */
+    transform: none;
+    backdrop-filter: none;
+    background: rgba(0, 20, 0, 0.8);
+}
+
+/* Simplify kanji rotation on mobile */
+.mobile-device .clock-display::before {
+    animation: none;
+    opacity: 0.6;
+    transform: none;
+}
+
+/* Optimize theme selector for mobile */
+.mobile-device .theme-selector {
+    top: 10px;
+    right: 10px;
+}
+
+.mobile-device .theme-switch {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: none;
+}
+
+.mobile-device .theme-option {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+}
+
+/* Simplify weather ticker on mobile */
+.mobile-device .weather-ticker {
+    background: rgba(0, 20, 0, 0.8);
+    backdrop-filter: none;
+}
+
+/* Mobile typography adjustments */
+.mobile-device .day {
+    font-size: 8vw;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.mobile-device .date {
+    font-size: 4vw;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.mobile-device .time {
+    font-size: 6vw;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+/* Simplify controls section on mobile */
+.mobile-device .controls {
+    padding: 15px;
+    margin: 15px 10px;
+    background: rgba(0, 20, 0, 0.8);
+    backdrop-filter: none;
+}
+
+.mobile-device .timezone-slider {
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+/* Disable complex click effects on mobile */
+.mobile-device .lightning-flash,
+.mobile-device .photon-torpedo-formation,
+.mobile-device .star-trek-flyby,
+.mobile-device .loki-trickster,
+.mobile-device .mjolnir-strike,
+.mobile-device .simple-matrix-pill,
+.mobile-device .white-rabbit {
+    display: none !important;
+}
+
+/* Theme-specific mobile optimizations */
+
+/* LCARS Theme Mobile */
+.mobile-device.lcars-theme {
+    background: linear-gradient(135deg, #000000, #001a33, #000000);
+}
+
+.mobile-device.lcars-theme .clock-display {
+    border-color: #ff9900;
+    box-shadow: 
+        0 0 20px rgba(255, 153, 0, 0.3),
+        inset 0 0 15px rgba(255, 153, 0, 0.05);
+    background: rgba(33, 20, 0, 0.8);
+}
+
+.mobile-device.lcars-theme .day,
+.mobile-device.lcars-theme .date,
+.mobile-device.lcars-theme .time {
+    text-shadow: 0 0 10px #ff9900;
+}
+
+/* Thor Theme Mobile */
+.mobile-device.thor-theme {
+    background: linear-gradient(135deg, #000000, #1a0f00, #000000);
+}
+
+.mobile-device.thor-theme .clock-display {
+    border-color: #ffd700;
+    box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.3),
+        inset 0 0 15px rgba(255, 215, 0, 0.05);
+    background: rgba(26, 20, 0, 0.8);
+}
+
+.mobile-device.thor-theme .day,
+.mobile-device.thor-theme .date,
+.mobile-device.thor-theme .time {
+    text-shadow: 0 0 10px #ffd700;
+}
+
+/* Hide background effect containers on mobile */
+.mobile-device #warpStars,
+.mobile-device #lightningEffects,
+.mobile-device #thorParticles,
+.mobile-device #asgardRunes {
+    display: none !important;
+}
+
+/* Simplify input styles on mobile */
+.mobile-device input[type="text"] {
+    background: rgba(0, 20, 0, 0.8);
+    backdrop-filter: none;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.mobile-device button {
+    background: rgba(0, 40, 0, 0.8);
+    backdrop-filter: none;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+/* Optimize weather scroll for mobile */
+.mobile-device .weather-scroll {
+    animation-duration: 40s; /* Slower on mobile to save battery */
+}
+
 @keyframes matrixBackground {
     0%, 100% { background-position: 0% 0%; }
     50% { background-position: 0% 100%; }

@@ -8,6 +8,7 @@ let matrixKanjiInterval;
 let whiteRabbitActive = false;
 let activeUfos = 0;
 let lokiTrickActive = false;
+let isMobileDevice = false;
 
 // Comprehensive timezone data with DST rules
 const timezones = {
@@ -538,9 +539,37 @@ function addScreenShake() {
     // Shake effect disabled
 }
 
+// Mobile detection function
+function detectMobileDevice() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const mobileKeywords = ['android', 'webos', 'iphone', 'ipad', 'ipod', 'blackberry', 'iemobile', 'opera mini'];
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const hasSmallScreen = window.innerWidth <= 768 || window.innerHeight <= 768;
+    
+    // Check user agent for mobile keywords
+    const isMobileUserAgent = mobileKeywords.some(keyword => userAgent.includes(keyword));
+    
+    // Combined mobile detection
+    isMobileDevice = isMobileUserAgent || (isTouchDevice && hasSmallScreen);
+    
+    if (isMobileDevice) {
+        document.body.classList.add('mobile-device');
+        console.log('📱 Mobile device detected - applying simplified styles');
+    }
+    
+    return isMobileDevice;
+}
+
 // Initialize everything
 function init() {
-    initParticles();
+    // Detect mobile device first
+    detectMobileDevice();
+    
+    // Only initialize complex effects on non-mobile devices
+    if (!isMobileDevice) {
+        initParticles();
+    }
+    
     initTimezoneSlider();
     initKeyboardShortcuts();
     addScreenShake();
@@ -927,8 +956,10 @@ function switchToMatrixTheme() {
         clearInterval(thorEffectsInterval);
     }
     
-    // Start matrix effects
-    initParticles();
+    // Start matrix effects (only if not mobile)
+    if (!isMobileDevice) {
+        initParticles();
+    }
     initMatrixKanjiRotation();
     
     // Update labels
@@ -956,8 +987,10 @@ function switchToLcarsTheme() {
         clearInterval(matrixKanjiInterval);
     }
     
-    // Start warp effects
-    initWarpSpeed();
+    // Start warp effects (only if not mobile)
+    if (!isMobileDevice) {
+        initWarpSpeed();
+    }
     
     // Update labels
     updateThemeLabels();
@@ -984,8 +1017,10 @@ function switchToThorTheme() {
         clearInterval(matrixKanjiInterval);
     }
     
-    // Start Thor effects
-    initThorEffects();
+    // Start Thor effects (only if not mobile)
+    if (!isMobileDevice) {
+        initThorEffects();
+    }
     
     // Update labels
     updateThemeLabels();
