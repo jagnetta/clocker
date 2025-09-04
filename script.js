@@ -2155,6 +2155,12 @@ function handleGlobalClick(event) {
         return;
     }
     
+    // Don't trigger on weather search panel clicks
+    if (event.target.closest('.city-input-container')) {
+        console.log('Weather search panel clicked, ignoring');
+        return;
+    }
+    
     // Don't trigger on interactive elements (inputs, buttons, sliders)
     if (event.target.matches('input, button, select, textarea, [contenteditable]') || 
         event.target.closest('input, button, select, textarea, [contenteditable]')) {
