@@ -147,7 +147,9 @@ input, button, textarea, select {
 /* Optimize theme selector for mobile */
 .mobile-device .theme-selector {
     top: 10px;
-    right: 10px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
 }
 
 .mobile-device .theme-switch {
@@ -190,6 +192,15 @@ input, button, textarea, select {
     backdrop-filter: none;
 }
 
+.mobile-device .timezone-container {
+    top: 70px; /* Move down to avoid theme selector overlap */
+    min-width: 300px;
+    max-width: 90vw;
+    padding: 12px 20px;
+    background: rgba(0, 20, 0, 0.8);
+    backdrop-filter: none;
+}
+
 .mobile-device .timezone-slider {
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
 }
@@ -202,6 +213,11 @@ input, button, textarea, select {
 .mobile-device .mjolnir-strike,
 .mobile-device .simple-matrix-pill,
 .mobile-device .white-rabbit {
+    display: none !important;
+}
+
+/* Specifically disable Thor's flying hammer on mobile */
+.mobile-device.thor-theme .mjolnir-strike {
     display: none !important;
 }
 
@@ -226,6 +242,12 @@ input, button, textarea, select {
     text-shadow: 0 0 10px #ff9900;
 }
 
+.mobile-device.lcars-theme .timezone-container {
+    border-color: #ff9900;
+    box-shadow: 0 0 15px rgba(255, 153, 0, 0.3);
+    background: rgba(33, 20, 0, 0.8);
+}
+
 /* Thor Theme Mobile */
 .mobile-device.thor-theme {
     background: linear-gradient(135deg, #000000, #1a0f00, #000000);
@@ -243,6 +265,12 @@ input, button, textarea, select {
 .mobile-device.thor-theme .date,
 .mobile-device.thor-theme .time {
     text-shadow: 0 0 10px #ffd700;
+}
+
+.mobile-device.thor-theme .timezone-container {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    background: rgba(26, 20, 0, 0.8);
 }
 
 /* Hide background effect containers on mobile */
