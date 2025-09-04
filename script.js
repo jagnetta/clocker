@@ -5,6 +5,9 @@ let currentTheme = 'matrix';
 let warpStarsInterval;
 let thorEffectsInterval;
 let matrixKanjiInterval;
+let whiteRabbitActive = false;
+let activeUfos = 0;
+let lokiTrickActive = false;
 
 // Comprehensive timezone data with DST rules
 const timezones = {
@@ -124,11 +127,11 @@ function createMatrixColumn(columnIndex, columnWidth, matrixChars, container) {
     const columnLength = 5 + Math.floor(Math.random() * 45); // Random length 5-50 characters
     const columnX = columnIndex * columnWidth;
     const animationDelay = Math.random() * 5; // Stagger start times
-    const fallSpeed = 4 + Math.random() * 6; // Random speed 4-10 seconds
+    const fallSpeed = 8 + Math.random() * 12; // Random speed 8-20 seconds for quicker movement
     
-    // Assign random blur and size for this entire column
-    const blurLevels = [0.5, 1.2, 2.0, 2.8, 3.5]; // Different blur intensities
-    const fontSizes = [20, 18, 16, 14, 12]; // Corresponding font sizes (larger = less blur)
+    // Assign random blur and size for distant viewing perspective
+    const blurLevels = [2.0, 3.5, 5.5, 7.5, 10.0]; // All pushed further back with more blur
+    const fontSizes = [22, 18, 15, 12, 9]; // All smaller as if viewed from distance
     const blurIndex = Math.floor(Math.random() * blurLevels.length);
     const columnBlur = blurLevels[blurIndex];
     const columnFontSize = fontSizes[blurIndex];
@@ -994,82 +997,34 @@ function createWarpStar() {
     const warpContainer = document.getElementById('warpStars');
     if (!warpContainer) return;
     
-    // 10% chance to create a Borg cube instead of a star
-    const isBorgCube = Math.random() < 0.1;
+    // Create only stars, no Borg cubes
+    const star = document.createElement('div');
+    star.className = 'warp-star';
     
-    if (isBorgCube) {
-        createBorgCube(warpContainer);
-    } else {
-        const star = document.createElement('div');
-        star.className = 'warp-star';
-        
-        // 3D movement toward user
-        const size = Math.random() * 3 + 2; // Made slightly larger
-        const xPos = Math.random() * window.innerWidth;
-        const yPos = Math.random() * window.innerHeight;
-        const duration = Math.random() * 3 + 2; // 2-5 seconds
-        const delay = Math.random() * 1; // 0-1 second delay
-        
-        star.style.width = size + 'px';
-        star.style.height = size + 'px';
-        star.style.left = xPos + 'px';
-        star.style.top = yPos + 'px';
-        star.style.animationDuration = duration + 's';
-        star.style.animationDelay = delay + 's';
-        
-        warpContainer.appendChild(star);
-        
-        // Remove star after animation
-        setTimeout(() => {
-            if (star.parentNode) {
-                star.remove();
-            }
-        }, (duration + delay) * 1000 + 100);
-    }
-}
-
-function createBorgCube(warpContainer) {
-    const borgCube = document.createElement('div');
-    borgCube.className = 'space-invader'; // Keep same CSS class for styling
-    
-    // Borg cube shapes using geometric/mechanical Unicode characters
-    const borgCubeShapes = [
-        '⬛', // Black large square (classic cube)
-        '⬜', // White large square (damaged cube)
-        '🔳', // White square button
-        '🔲', // Black square button
-        '◼️', // Black medium square
-        '◻️', // White medium square
-        '▪️', // Black small square
-        '▫️', // White small square
-        '■', // Black square
-        '□', // White square
-    ];
-    
-    const shape = borgCubeShapes[Math.floor(Math.random() * borgCubeShapes.length)];
+    // 3D movement toward user
+    const size = Math.random() * 3 + 2; // Made slightly larger
     const xPos = Math.random() * window.innerWidth;
     const yPos = Math.random() * window.innerHeight;
-    const duration = Math.random() * 4 + 3; // 3-7 seconds (mechanical, steady movement)
-    const delay = Math.random() * 1.5; // 0-1.5 second delay
+    const duration = Math.random() * 3 + 2; // 2-5 seconds
+    const delay = Math.random() * 1; // 0-1 second delay
     
-    borgCube.textContent = shape;
-    borgCube.style.left = xPos + 'px';
-    borgCube.style.top = yPos + 'px';
-    borgCube.style.animationDuration = duration + 's';
-    borgCube.style.animationDelay = delay + 's';
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = xPos + 'px';
+    star.style.top = yPos + 'px';
+    star.style.animationDuration = duration + 's';
+    star.style.animationDelay = delay + 's';
     
-    // Borg cubes maintain perfect geometric orientation (no random rotation)
-    borgCube.style.transform = 'rotate(0deg)';
+    warpContainer.appendChild(star);
     
-    warpContainer.appendChild(borgCube);
-    
-    // Remove Borg cube after animation
+    // Remove star after animation
     setTimeout(() => {
-        if (borgCube.parentNode) {
-            borgCube.remove();
+        if (star.parentNode) {
+            star.remove();
         }
     }, (duration + delay) * 1000 + 100);
 }
+
 
 // Initialize Thor effects
 function initThorEffects() {
@@ -1372,6 +1327,335 @@ function createKlingonFlyby(clickX, clickY) {
     }, 2500);
 }
 
+function createStarTrekFlyby(clickX, clickY) {
+    // Prevent more than 2 UFOs
+    if (activeUfos >= 2) {
+        console.log('Maximum UFOs active, skipping...');
+        return;
+    }
+    
+    console.log('Engage! UFO flyby...', clickX, clickY);
+    activeUfos++;
+    
+    // UFO only
+    const symbol = '🛸';
+    
+    const starTrekObject = document.createElement('div');
+    starTrekObject.className = 'star-trek-flyby';
+    starTrekObject.innerHTML = symbol;
+    
+    // Starting position at click location
+    starTrekObject.style.position = 'fixed';
+    starTrekObject.style.left = clickX + 'px';
+    starTrekObject.style.top = clickY + 'px';
+    starTrekObject.style.fontSize = '80px';
+    starTrekObject.style.zIndex = '10000';
+    starTrekObject.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #ff9900) drop-shadow(0 0 30px #ff9900)';
+    starTrekObject.style.textShadow = '0 0 20px #ff9900, 0 0 40px #ffcc66';
+    starTrekObject.style.transition = 'none';
+    
+    document.body.appendChild(starTrekObject);
+    
+    // Get viewport dimensions
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Starting velocity for faster UFO movement
+    let vx = (Math.random() - 0.5) * 25;
+    let vy = (Math.random() - 0.5) * 25;
+    
+    // Ensure significant movement - faster than before
+    if (Math.abs(vx) < 10) vx = vx > 0 ? 10 : -10;
+    if (Math.abs(vy) < 10) vy = vy > 0 ? 10 : -10;
+    
+    let currentX = clickX;
+    let currentY = clickY;
+    let bounces = 0;
+    const maxBounces = 3; // Fewer bounces than rabbit
+    
+    function animateStarTrekObject() {
+        currentX += vx;
+        currentY += vy;
+        
+        // Warp core breach - bounce off edges
+        if (currentX <= 0 || currentX >= vw - 80) {
+            vx = -vx;
+            currentX = Math.max(0, Math.min(currentX, vw - 80));
+            bounces++;
+        }
+        
+        if (currentY <= 0 || currentY >= vh - 80) {
+            vy = -vy;
+            currentY = Math.max(0, Math.min(currentY, vh - 80));
+            bounces++;
+        }
+        
+        starTrekObject.style.left = currentX + 'px';
+        starTrekObject.style.top = currentY + 'px';
+        
+        if (bounces < maxBounces) {
+            requestAnimationFrame(animateStarTrekObject);
+        } else {
+            // Engage warp drive - exit to nearest edge
+            const exitDirection = getWarpExitDirection(currentX, currentY, vw, vh);
+            
+            starTrekObject.style.transition = 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            
+            setTimeout(() => {
+                starTrekObject.style.transform = `translate(${exitDirection.x}px, ${exitDirection.y}px) scale(0.2)`;
+                starTrekObject.style.opacity = '0';
+                starTrekObject.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #ff9900) drop-shadow(0 0 30px #ff9900) blur(3px)';
+            }, 50);
+            
+            setTimeout(() => {
+                if (starTrekObject.parentNode) {
+                    starTrekObject.remove();
+                }
+                activeUfos--; // Allow new UFOs
+            }, 2000);
+        }
+    }
+    
+    function getWarpExitDirection(x, y, vw, vh) {
+        const distToLeft = x;
+        const distToRight = vw - x;
+        const distToTop = y;
+        const distToBottom = vh - y;
+        
+        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+        
+        if (minDist === distToLeft) {
+            return { x: -400, y: 0 };
+        } else if (minDist === distToRight) {
+            return { x: 400, y: 0 };
+        } else if (minDist === distToTop) {
+            return { x: 0, y: -400 };
+        } else {
+            return { x: 0, y: 400 };
+        }
+    }
+    
+    animateStarTrekObject();
+}
+
+function createLokiTrick(clickX, clickY) {
+    // Prevent multiple Loki tricks
+    if (lokiTrickActive) {
+        console.log('Loki is already causing mischief, skipping...');
+        return;
+    }
+    
+    console.log('Loki\'s trickery begins...', clickX, clickY);
+    lokiTrickActive = true;
+    
+    // Loki's shapeshifting symbols with different characteristics
+    const lokiShapes = [
+        { symbol: '🐴', name: 'Mare', speed: 12 },      // Medium speed - Sleipnir's mother
+        { symbol: '🐟', name: 'Salmon', speed: 18 },    // Fast - slippery like Loki
+        { symbol: '🪰', name: 'Fly', speed: 25 },       // Fastest - small and quick
+        { symbol: '👵', name: 'Crone', speed: 8 },      // Slowest - wise but careful
+        { symbol: '🦊', name: 'Fox', speed: 15 }        // Medium-fast - cunning and quick
+    ];
+    
+    const shape = lokiShapes[Math.floor(Math.random() * lokiShapes.length)];
+    
+    const lokiTrickster = document.createElement('div');
+    lokiTrickster.className = 'loki-trickster';
+    lokiTrickster.innerHTML = shape.symbol;
+    
+    // Starting position at click location
+    lokiTrickster.style.position = 'fixed';
+    lokiTrickster.style.left = clickX + 'px';
+    lokiTrickster.style.top = clickY + 'px';
+    lokiTrickster.style.fontSize = '100px';
+    lokiTrickster.style.zIndex = '10000';
+    lokiTrickster.style.filter = 'brightness(1.4) drop-shadow(0 0 20px #ffd700) drop-shadow(0 0 40px #ffff00)';
+    lokiTrickster.style.textShadow = '0 0 25px #ffd700, 0 0 50px #ffff00';
+    lokiTrickster.style.transition = 'none';
+    
+    document.body.appendChild(lokiTrickster);
+    
+    // Get viewport dimensions
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Starting velocity - match UFO speed (ignore shape-specific speeds)
+    let vx = (Math.random() - 0.5) * 25;
+    let vy = (Math.random() - 0.5) * 25;
+    
+    // Ensure significant movement - match UFO speed
+    if (Math.abs(vx) < 10) vx = vx > 0 ? 10 : -10;
+    if (Math.abs(vy) < 10) vy = vy > 0 ? 10 : -10;
+    
+    let currentX = clickX;
+    let currentY = clickY;
+    let bounces = 0;
+    const maxBounces = 4; // Loki is trickier - more bounces
+    
+    function animateLokiTrick() {
+        currentX += vx;
+        currentY += vy;
+        
+        // Loki bounces off the walls of Asgard
+        if (currentX <= 0 || currentX >= vw - 100) {
+            vx = -vx;
+            currentX = Math.max(0, Math.min(currentX, vw - 100));
+            bounces++;
+        }
+        
+        if (currentY <= 0 || currentY >= vh - 100) {
+            vy = -vy;
+            currentY = Math.max(0, Math.min(currentY, vh - 100));
+            bounces++;
+        }
+        
+        lokiTrickster.style.left = currentX + 'px';
+        lokiTrickster.style.top = currentY + 'px';
+        
+        if (bounces < maxBounces) {
+            requestAnimationFrame(animateLokiTrick);
+        } else {
+            // Loki vanishes into the void
+            const exitDirection = getLokiExitDirection(currentX, currentY, vw, vh);
+            
+            lokiTrickster.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            
+            setTimeout(() => {
+                lokiTrickster.style.transform = `translate(${exitDirection.x}px, ${exitDirection.y}px) scale(0.1)`;
+                lokiTrickster.style.opacity = '0';
+                lokiTrickster.style.filter = 'brightness(1.4) drop-shadow(0 0 20px #ffd700) drop-shadow(0 0 40px #ffff00) blur(5px)';
+            }, 50);
+            
+            setTimeout(() => {
+                if (lokiTrickster.parentNode) {
+                    lokiTrickster.remove();
+                }
+                lokiTrickActive = false; // Allow new Loki tricks
+            }, 2500);
+        }
+    }
+    
+    function getLokiExitDirection(x, y, vw, vh) {
+        const distToLeft = x;
+        const distToRight = vw - x;
+        const distToTop = y;
+        const distToBottom = vh - y;
+        
+        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+        
+        if (minDist === distToLeft) {
+            return { x: -600, y: 0 }; // Vanish left
+        } else if (minDist === distToRight) {
+            return { x: 600, y: 0 }; // Vanish right
+        } else if (minDist === distToTop) {
+            return { x: 0, y: -600 }; // Vanish up
+        } else {
+            return { x: 0, y: 600 }; // Vanish down
+        }
+    }
+    
+    animateLokiTrick();
+}
+
+function createMjolnirStrike(clickX, clickY) {
+    console.log('Mjolnir answers the call...', clickX, clickY);
+    
+    const mjolnir = document.createElement('div');
+    mjolnir.className = 'mjolnir-strike';
+    mjolnir.innerHTML = '🔨';
+    
+    // Starting position at click location
+    mjolnir.style.position = 'fixed';
+    mjolnir.style.left = clickX + 'px';
+    mjolnir.style.top = clickY + 'px';
+    mjolnir.style.fontSize = '120px';
+    mjolnir.style.zIndex = '10000';
+    mjolnir.style.filter = 'brightness(1.5) drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 50px #ffff00)';
+    mjolnir.style.textShadow = '0 0 30px #ffd700, 0 0 60px #ffff00';
+    mjolnir.style.transition = 'none';
+    
+    document.body.appendChild(mjolnir);
+    
+    // Get viewport dimensions
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Mjolnir moves at UFO speed
+    let vx = (Math.random() - 0.5) * 25;
+    let vy = (Math.random() - 0.5) * 25;
+    
+    if (Math.abs(vx) < 10) vx = vx > 0 ? 10 : -10;
+    if (Math.abs(vy) < 10) vy = vy > 0 ? 10 : -10;
+    
+    let currentX = clickX;
+    let currentY = clickY;
+    let bounces = 0;
+    const maxBounces = 3; // Mjolnir returns to Thor quickly
+    
+    function animateMjolnir() {
+        currentX += vx;
+        currentY += vy;
+        
+        // Mjolnir bounces with thunderous force
+        if (currentX <= 0 || currentX >= vw - 120) {
+            vx = -vx;
+            currentX = Math.max(0, Math.min(currentX, vw - 120));
+            bounces++;
+        }
+        
+        if (currentY <= 0 || currentY >= vh - 120) {
+            vy = -vy;
+            currentY = Math.max(0, Math.min(currentY, vh - 120));
+            bounces++;
+        }
+        
+        mjolnir.style.left = currentX + 'px';
+        mjolnir.style.top = currentY + 'px';
+        
+        if (bounces < maxBounces) {
+            requestAnimationFrame(animateMjolnir);
+        } else {
+            // Mjolnir returns to Thor's hand
+            const exitDirection = getMjolnirReturnDirection(currentX, currentY, vw, vh);
+            
+            mjolnir.style.transition = 'all 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            
+            setTimeout(() => {
+                mjolnir.style.transform = `translate(${exitDirection.x}px, ${exitDirection.y}px) scale(0.3) rotate(720deg)`;
+                mjolnir.style.opacity = '0';
+                mjolnir.style.filter = 'brightness(1.5) drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 50px #ffff00) blur(4px)';
+            }, 50);
+            
+            setTimeout(() => {
+                if (mjolnir.parentNode) {
+                    mjolnir.remove();
+                }
+            }, 2300);
+        }
+    }
+    
+    function getMjolnirReturnDirection(x, y, vw, vh) {
+        const distToLeft = x;
+        const distToRight = vw - x;
+        const distToTop = y;
+        const distToBottom = vh - y;
+        
+        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+        
+        if (minDist === distToLeft) {
+            return { x: -500, y: 0 }; // Return left
+        } else if (minDist === distToRight) {
+            return { x: 500, y: 0 }; // Return right
+        } else if (minDist === distToTop) {
+            return { x: 0, y: -500 }; // Return up
+        } else {
+            return { x: 0, y: 500 }; // Return down
+        }
+    }
+    
+    animateMjolnir();
+}
+
 function createPillFlyby(clickX, clickY) {
     console.log('Creating Matrix pills at:', clickX, clickY);
     
@@ -1410,12 +1694,127 @@ function createPillFlyby(clickX, clickY) {
         }, data.delay * 1000 + 100);
     });
     
-    // Clean up
+    // Clean up - allow enough time for full animation completion
     setTimeout(() => {
         document.querySelectorAll('.simple-matrix-pill').forEach(pill => {
             if (pill.parentNode) pill.remove();
         });
-    }, 4000);
+    }, 5000); // Extended to 5 seconds to ensure both pills complete their animations
+}
+
+function createWhiteRabbit(clickX, clickY) {
+    // Prevent multiple rabbits
+    if (whiteRabbitActive) {
+        console.log('White rabbit already active, skipping...');
+        return;
+    }
+    
+    console.log('Follow the white rabbit...', clickX, clickY);
+    whiteRabbitActive = true;
+    
+    const rabbit = document.createElement('div');
+    rabbit.className = 'white-rabbit';
+    rabbit.innerHTML = '🐰';
+    
+    // Starting position at click location
+    rabbit.style.position = 'fixed';
+    rabbit.style.left = clickX + 'px';
+    rabbit.style.top = clickY + 'px';
+    rabbit.style.fontSize = '120px';
+    rabbit.style.zIndex = '10000';
+    rabbit.style.filter = 'brightness(2) drop-shadow(0 0 20px white) drop-shadow(0 0 40px white)';
+    rabbit.style.textShadow = '0 0 30px white, 0 0 60px white';
+    rabbit.style.transition = 'none'; // Remove transition for manual control
+    
+    document.body.appendChild(rabbit);
+    
+    // Get viewport dimensions
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Starting velocity (pixels per frame) - match UFO speed
+    let vx = (Math.random() - 0.5) * 25; // Random horizontal velocity
+    let vy = (Math.random() - 0.5) * 25; // Random vertical velocity
+    
+    // Make sure velocity is significant - match UFO speed
+    if (Math.abs(vx) < 10) vx = vx > 0 ? 10 : -10;
+    if (Math.abs(vy) < 10) vy = vy > 0 ? 10 : -10;
+    
+    let currentX = clickX;
+    let currentY = clickY;
+    let bounces = 0;
+    const maxBounces = 4; // Two complete bounces (4 wall hits)
+    
+    function animateRabbit() {
+        // Update position
+        currentX += vx;
+        currentY += vy;
+        
+        // Check for wall collisions and bounce
+        if (currentX <= 0 || currentX >= vw - 120) {
+            vx = -vx;
+            currentX = Math.max(0, Math.min(currentX, vw - 120));
+            bounces++;
+        }
+        
+        if (currentY <= 0 || currentY >= vh - 120) {
+            vy = -vy;
+            currentY = Math.max(0, Math.min(currentY, vh - 120));
+            bounces++;
+        }
+        
+        // Update rabbit position
+        rabbit.style.left = currentX + 'px';
+        rabbit.style.top = currentY + 'px';
+        
+        // Continue bouncing until we hit max bounces
+        if (bounces < maxBounces) {
+            requestAnimationFrame(animateRabbit);
+        } else {
+            // After bouncing, exit toward nearest edge
+            const exitDirection = getExitDirection(currentX, currentY, vw, vh);
+            
+            // Transition to exit animation
+            rabbit.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            
+            setTimeout(() => {
+                rabbit.style.transform = `translate(${exitDirection.x}px, ${exitDirection.y}px) scale(0.3)`;
+                rabbit.style.opacity = '0';
+                rabbit.style.filter = 'brightness(2) drop-shadow(0 0 20px white) drop-shadow(0 0 40px white) blur(4px)';
+            }, 50);
+            
+            // Clean up
+            setTimeout(() => {
+                if (rabbit.parentNode) {
+                    rabbit.remove();
+                }
+                whiteRabbitActive = false; // Allow new rabbits
+            }, 2500);
+        }
+    }
+    
+    // Helper function to determine exit direction
+    function getExitDirection(x, y, vw, vh) {
+        const distToLeft = x;
+        const distToRight = vw - x;
+        const distToTop = y;
+        const distToBottom = vh - y;
+        
+        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+        
+        if (minDist === distToLeft) {
+            return { x: -500, y: 0 }; // Exit left
+        } else if (minDist === distToRight) {
+            return { x: 500, y: 0 }; // Exit right
+        } else if (minDist === distToTop) {
+            return { x: 0, y: -500 }; // Exit top
+        } else {
+            return { x: 0, y: 500 }; // Exit bottom
+        }
+    }
+    
+    // Start the bouncing animation
+    animateRabbit();
 }
 
 // Global click handler
@@ -1435,14 +1834,35 @@ function handleGlobalClick(event) {
     console.log('Processing click at:', clickX, clickY, 'Theme:', currentTheme);
     
     if (currentTheme === 'thor') {
-        console.log('Triggering Thor lightning');
-        createLightningFlash(clickX, clickY);
+        const randomValue = Math.random();
+        if (randomValue < 0.25) {
+            console.log('Loki causes mischief...');
+            createLokiTrick(clickX, clickY);
+        } else if (randomValue < 0.30) {
+            console.log('Mjolnir strikes...');
+            createMjolnirStrike(clickX, clickY);
+        } else {
+            console.log('Triggering Thor lightning');
+            createLightningFlash(clickX, clickY);
+        }
     } else if (currentTheme === 'lcars') {
-        console.log('Triggering LCARS photon torpedoes');
-        createKlingonFlyby(clickX, clickY);
+        // 25% chance to show UFO/Galaxy, 75% chance for photon torpedoes
+        if (Math.random() < 0.25) {
+            console.log('Engage! Star Trek flyby...');
+            createStarTrekFlyby(clickX, clickY);
+        } else {
+            console.log('Triggering LCARS photon torpedoes');
+            createKlingonFlyby(clickX, clickY);
+        }
     } else if (currentTheme === 'matrix') {
-        console.log('Triggering Matrix pills');
-        createPillFlyby(clickX, clickY);
+        // 20% chance to show white rabbit, 80% chance for pills
+        if (Math.random() < 0.2) {
+            console.log('Follow the white rabbit...');
+            createWhiteRabbit(clickX, clickY);
+        } else {
+            console.log('Triggering Matrix pills');
+            createPillFlyby(clickX, clickY);
+        }
     } else {
         console.log('Unknown theme, defaulting to Matrix pills');
         createPillFlyby(clickX, clickY);
