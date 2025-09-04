@@ -234,7 +234,7 @@ function formatTime(date) {
 function getTimezoneInfo(date, offset) {
     const timezoneInfo = timezones[offset.toString()];
     if (!timezoneInfo) {
-        return { name: 'UTC', label: 'Coordinated Universal Time', isDST: false };
+        return { name: 'UTC', label: 'Unknown Time Zone', isDST: false };
     }
     
     if (timezoneInfo.dst && isDSTActive(date, offset)) {
