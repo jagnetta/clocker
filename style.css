@@ -185,7 +185,7 @@ input, button, textarea, select {
 }
 
 .mobile-device .timezone-desc {
-    font-size: 3.2vw;
+    font-size: 1.6vw;
     text-shadow: 0 0 8px #00ff00;
 }
 
@@ -592,7 +592,7 @@ body::before {
 
 .timezone-desc {
     font-family: 'Antonio', sans-serif;
-    font-size: 2.8vw;
+    font-size: 1.4vw;
     color: #00ff00;
     margin-top: 1.5vh;
     text-align: center;
@@ -1101,7 +1101,7 @@ body::before {
     }
     
     .timezone-desc {
-        font-size: 3.5vw;
+        font-size: 1.75vw;
         margin-top: 2vh;
     }
     

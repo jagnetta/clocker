@@ -383,7 +383,7 @@ function adjustFontSizes() {
     
     // Set timezone description font size (smaller than date)
     if (timezoneDescEl) {
-        const timezoneDescSize = Math.max(dateSize * 0.7, 12);
+        const timezoneDescSize = Math.max(dateSize * 0.35, 6);
         timezoneDescEl.style.fontSize = timezoneDescSize + 'px';
     }
 }
