@@ -391,6 +391,7 @@ function getTimezoneInfo(date, offset) {
             label: timezoneInfo.label,
             isDST: false
         };
+    }
 }
 
 // Get date with timezone offset including DST
