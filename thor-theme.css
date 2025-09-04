@@ -1,0 +1,715 @@
+/**
+ * Thor Theme CSS
+ * Contains all visual styles for the Thor/Asgard theme
+ * Including lightning effects, runes, Mjolnir animations, and color schemes
+ */
+
+/* ================================
+   THOR MARVEL HERO THEME
+   ================================ */
+
+.thor-theme body {
+    background: 
+        radial-gradient(circle at center, rgba(20, 20, 20, 0.9) 0%, transparent 70%),
+        linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+}
+
+/* Thor Background - Lightning and Storm Effects */
+.thor-theme .thor-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at top, rgba(40, 40, 40, 0.3) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom, rgba(20, 20, 20, 0.4) 0%, transparent 60%),
+        linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+    overflow: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    z-index: 1;
+}
+
+/* Lightning Effects */
+.lightning-effects {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    opacity: 0.7;
+}
+
+.lightning-bolt {
+    position: absolute;
+    width: 3px;
+    background: linear-gradient(180deg, 
+        #ffffff 0%, 
+        #ff0000 15%, 
+        #ff8000 25%, 
+        #ffff00 35%, 
+        #80ff00 45%, 
+        #00ff80 55%, 
+        #00ffff 65%, 
+        #0080ff 75%, 
+        #8000ff 85%, 
+        transparent 100%);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 0, 255, 0.6), 0 0 35px rgba(0, 255, 255, 0.4);
+    animation: lightningStrike linear infinite;
+}
+
+@keyframes lightningStrike {
+    0% {
+        opacity: 0;
+        height: 0;
+        transform: translateY(-100px);
+    }
+    10% {
+        opacity: 1;
+        height: 200px;
+    }
+    20% {
+        opacity: 0.8;
+        height: 400px;
+    }
+    30% {
+        opacity: 0;
+        height: 600px;
+        transform: translateY(100px);
+    }
+    100% {
+        opacity: 0;
+        height: 600px;
+        transform: translateY(100vh);
+    }
+}
+
+/* Thor Particle Effects */
+.thor-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.thor-spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #ffd700;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffd700, 0 0 12px #ffff00;
+    animation: sparkFloat 8s linear infinite;
+}
+
+@keyframes sparkFloat {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Asgardian Runes */
+.asgard-runes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    opacity: 0.3;
+}
+
+.rune {
+    position: absolute;
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    text-shadow: 0 0 12px #ffd700, 0 0 20px #ffff00;
+    animation: runeGlow 4s ease-in-out infinite;
+}
+
+@keyframes runeGlow {
+    0%, 100% { 
+        opacity: 0.2; 
+        text-shadow: 0 0 6px #ffd700;
+    }
+    50% { 
+        opacity: 0.7; 
+        text-shadow: 0 0 15px #ffd700, 0 0 20px #ffff00;
+    }
+}
+
+/* Depth-specific rune styling */
+.rune-far {
+    animation: runeGlowFar 6s ease-in-out infinite;
+    font-size: 64px !important;
+}
+
+.rune-mid {
+    animation: runeGlowMid 5s ease-in-out infinite;
+    font-size: 52px !important;
+}
+
+.rune-normal {
+    animation: runeGlow 4s ease-in-out infinite;
+    font-size: 48px !important;
+}
+
+.rune-close {
+    animation: runeGlowClose 3s ease-in-out infinite;
+    font-size: 40px !important;
+}
+
+@keyframes runeGlowFar {
+    0%, 100% { 
+        text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
+    }
+    50% { 
+        text-shadow: 0 0 40px #ffd700, 0 0 60px #ffff00;
+    }
+}
+
+@keyframes runeGlowMid {
+    0%, 100% { 
+        text-shadow: 0 0 8px #ffd700, 0 0 12px #ffff00;
+    }
+    50% { 
+        text-shadow: 0 0 20px #ffd700, 0 0 30px #ffff00;
+    }
+}
+
+@keyframes runeGlowClose {
+    0%, 100% { 
+        text-shadow: 0 0 15px #ffd700, 0 0 25px #ffff00, 0 0 35px #ffffff;
+    }
+    50% { 
+        text-shadow: 0 0 30px #ffd700, 0 0 50px #ffff00, 0 0 70px #ffffff;
+    }
+}
+
+/* Mjolnir Hammer Animation */
+.mjolnir-hammer {
+    position: absolute;
+    top: 12%;
+    left: 8%;
+    font-size: 80px;
+    animation: mjolnirFlight 25s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    z-index: 2;
+    filter: drop-shadow(0 0 12px #ffd700) drop-shadow(0 0 20px #ffff00) blur(0.5px);
+    text-shadow: 0 0 15px #ffd700, 0 0 25px #ffff00;
+    transition: filter 0.1s ease-out;
+    transform-style: preserve-3d;
+    perspective-origin: center center;
+}
+
+@keyframes mjolnirFlight {
+    0% {
+        left: 15%;
+        top: 20%;
+        transform: rotate(0deg) scale(0.8) translateZ(0px);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 8px #ffd700) drop-shadow(0 0 15px #ffff00) blur(0.3px);
+    }
+    8% {
+        left: 85%;
+        top: 5%;
+        transform: rotate(180deg) scale(1.3) translateZ(300px);
+        opacity: 1;
+        filter: drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 40px #ffff00) blur(2px);
+    }
+    15% {
+        left: 30%;
+        top: 45%;
+        transform: rotate(-90deg) scale(1.1) translateZ(-50px);
+        opacity: 0.8;
+        filter: drop-shadow(0 0 15px #ffd700) drop-shadow(0 0 25px #ffff00) blur(1px);
+    }
+    23% {
+        left: 95%;
+        top: 70%;
+        transform: rotate(270deg) scale(1.4) translateZ(450px);
+        opacity: 1;
+        filter: drop-shadow(0 0 30px #ffd700) drop-shadow(0 0 50px #ffff00) blur(2.5px);
+    }
+    31% {
+        left: 5%;
+        top: 90%;
+        transform: rotate(450deg) scale(0.9) translateZ(-80px);
+        opacity: 0.6;
+        filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 18px #ffff00) blur(0.8px);
+    }
+    39% {
+        left: 75%;
+        top: 25%;
+        transform: rotate(-180deg) scale(1.2) translateZ(380px);
+        opacity: 0.95;
+        filter: drop-shadow(0 0 20px #ffd700) drop-shadow(0 0 35px #ffff00) blur(1.8px);
+    }
+    46% {
+        left: 10%;
+        top: 60%;
+        transform: rotate(630deg) scale(1.0) translateZ(-30px);
+        opacity: 0.85;
+        filter: drop-shadow(0 0 12px #ffd700) drop-shadow(0 0 22px #ffff00) blur(1.2px);
+    }
+    54% {
+        left: 90%;
+        top: 15%;
+        transform: rotate(-360deg) scale(1.5) translateZ(500px);
+        opacity: 1;
+        filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 0 60px #ffff00) blur(3px);
+    }
+    62% {
+        left: 45%;
+        top: 85%;
+        transform: rotate(90deg) scale(0.7) translateZ(-100px);
+        opacity: 0.5;
+        filter: drop-shadow(0 0 6px #ffd700) drop-shadow(0 0 12px #ffff00) blur(0.5px);
+    }
+    69% {
+        left: 20%;
+        top: 30%;
+        transform: rotate(810deg) scale(1.3) translateZ(350px);
+        opacity: 0.9;
+        filter: drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 45px #ffff00) blur(2.2px);
+    }
+    77% {
+        left: 80%;
+        top: 55%;
+        transform: rotate(-270deg) scale(1.1) translateZ(-60px);
+        opacity: 0.75;
+        filter: drop-shadow(0 0 16px #ffd700) drop-shadow(0 0 28px #ffff00) blur(1.5px);
+    }
+    85% {
+        left: 35%;
+        top: 10%;
+        transform: rotate(1080deg) scale(1.4) translateZ(420px);
+        opacity: 1;
+        filter: drop-shadow(0 0 32px #ffd700) drop-shadow(0 0 55px #ffff00) blur(2.8px);
+    }
+    92% {
+        left: 60%;
+        top: 75%;
+        transform: rotate(-450deg) scale(0.85) translateZ(-40px);
+        opacity: 0.65;
+        filter: drop-shadow(0 0 9px #ffd700) drop-shadow(0 0 16px #ffff00) blur(0.7px);
+    }
+    100% {
+        left: 15%;
+        top: 20%;
+        transform: rotate(1440deg) scale(0.8) translateZ(0px);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 8px #ffd700) drop-shadow(0 0 15px #ffff00) blur(0.3px);
+    }
+}
+
+/* Thor Clock Display */
+.thor-theme .clock-display {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(40, 40, 40, 0.8)),
+        radial-gradient(ellipse at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    border: 3px solid #ffd700;
+    border-radius: 25px;
+    box-shadow: 
+        0 0 40px rgba(255, 215, 0, 0.4),
+        inset 0 0 30px rgba(255, 215, 0, 0.1),
+        0 20px 40px rgba(0, 0, 0, 0.7);
+    position: relative;
+}
+
+.thor-theme .clock-display::before {
+    content: '⚡';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    font-size: 30px;
+    color: #ffd700;
+    text-shadow: 0 0 12px #ffd700;
+    animation: thorLightning 3s ease-in-out infinite;
+}
+
+@keyframes thorLightning {
+    0%, 100% { 
+        opacity: 0.6;
+        text-shadow: 0 0 8px #ffd700;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1;
+        text-shadow: 0 0 18px #ffd700, 0 0 25px #ffff00;
+        transform: scale(1.2);
+    }
+}
+
+/* Thor Typography */
+.thor-theme .day {
+    font-family: 'Antonio', sans-serif;
+    color: #ffd700;
+    text-shadow: 
+        0 0 0 #b8860b,
+        0 3px 0 #daa520,
+        0 6px 0 #b8860b,
+        0 9px 0 #8b6914,
+        0 12px 0 #696969,
+        0 20px 30px rgba(0, 0, 0, 0.8),
+        0 0 18px #ffd700,
+        0 0 30px #ffd700,
+        0 0 45px rgba(255, 215, 0, 0.6);
+    filter: brightness(1.4) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.8));
+}
+
+.thor-theme .date {
+    font-family: 'Antonio', sans-serif;
+    color: #ffd700;
+    text-shadow: 
+        0 0 0 #b8860b,
+        0 2px 0 #daa520,
+        0 4px 0 #b8860b,
+        0 6px 0 #8b6914,
+        0 8px 0 #696969,
+        0 15px 25px rgba(0, 0, 0, 0.8),
+        0 0 18px #ffd700,
+        0 0 30px #ffd700,
+        0 0 45px rgba(255, 215, 0, 0.6);
+    filter: brightness(1.3) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.8));
+}
+
+.thor-theme .time {
+    font-family: 'JetBrains Mono', monospace;
+    color: #ffd700;
+    text-shadow: 
+        0 0 0 #b8860b,
+        0 3px 0 #daa520,
+        0 6px 0 #b8860b,
+        0 9px 0 #8b6914,
+        0 12px 0 #696969,
+        0 18px 25px rgba(0, 0, 0, 0.8),
+        0 0 18px #ffd700,
+        0 0 30px #ffd700,
+        0 0 45px rgba(255, 215, 0, 0.6);
+    filter: brightness(1.5) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.thor-theme .time-suffix {
+    font-family: 'Antonio', sans-serif;
+    font-size: 3.5vw;
+}
+
+
+/* Thor Theme Controls */
+.thor-theme .timezone-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.3), rgba(40, 40, 40, 0.2)),
+        radial-gradient(circle at center, rgba(255, 215, 0, 0.05), transparent);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 20px rgba(255, 215, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.thor-theme .timezone-label {
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+.thor-theme .timezone-slider {
+    background: linear-gradient(90deg, #8b6914, #ffd700, #8b6914);
+    border: 1px solid #ffd700;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.thor-theme .timezone-slider::-webkit-slider-thumb {
+    background: radial-gradient(circle, #ffd700, #b8860b);
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.thor-theme .timezone-display {
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+}
+
+/* Thor Weather System */
+.thor-theme .city-input-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(40, 40, 40, 0.8)),
+        radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 20px rgba(255, 215, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.thor-theme .city-label {
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+.thor-theme .city-input {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(40, 40, 40, 0.6));
+    border: 2px solid #ffd700;
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.thor-theme .city-input::placeholder {
+    color: #b8860b;
+}
+
+.thor-theme .weather-button {
+    background: 
+        linear-gradient(145deg, #ffd700, #b8860b),
+        radial-gradient(circle at center, rgba(255, 215, 0, 0.3), transparent);
+    border: 2px solid #ffd700;
+    color: #1a1a2e;
+    font-family: 'Antonio', sans-serif;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.thor-theme .weather-ticker {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.98), rgba(40, 40, 40, 0.9)),
+        radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 25px rgba(255, 215, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.thor-theme .weather-day {
+    font-family: 'Antonio', sans-serif;
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+}
+
+.thor-theme .weather-temp {
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+}
+
+.thor-theme .weather-desc {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+}
+
+.thor-theme .city-separator {
+    color: #ffd700;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.thor-theme .weather-reset-button {
+    background: 
+        radial-gradient(circle at center, #ffd700, #b8860b);
+    border: 2px solid #ffd700;
+    color: #1a1a2e;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Thor Theme Button */
+.thor-theme .theme-button {
+    background: 
+        linear-gradient(145deg, #009900, #006600),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.2), transparent);
+    border: 2px solid #00ff00;
+    color: #1a1a2e;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.thor-theme .theme-option.active {
+    background: #ffd700;
+    color: #000000;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+/* Thor Click Effects */
+.lightning-flash {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    width: 4px;
+    height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.9) 5%,
+        rgba(255, 255, 0, 0.8) 15%,
+        rgba(255, 215, 0, 0.7) 25%,
+        rgba(255, 255, 255, 0.9) 35%,
+        transparent 40%,
+        rgba(255, 255, 255, 0.9) 50%,
+        rgba(255, 255, 0, 0.8) 60%,
+        transparent 65%,
+        rgba(255, 215, 0, 0.7) 75%,
+        rgba(255, 255, 255, 0.9) 85%,
+        transparent 100%
+    );
+    filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 15px #ffff00);
+    animation: lightningFlash 0.4s ease-out;
+}
+
+.lightning-flash::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2px;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.6) 10%,
+        transparent 20%,
+        rgba(255, 255, 255, 0.6) 30%,
+        transparent 45%,
+        rgba(255, 255, 255, 0.8) 55%,
+        transparent 70%,
+        rgba(255, 255, 255, 0.6) 80%,
+        transparent 100%
+    );
+    transform: scaleX(0.5);
+}
+
+.lightning-flash::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 2px;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 15%,
+        transparent 25%,
+        rgba(255, 255, 255, 0.6) 40%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.4) 65%,
+        transparent 85%,
+        rgba(255, 255, 255, 0.6) 95%,
+        transparent 100%
+    );
+    transform: scaleX(0.3);
+}
+
+@keyframes lightningFlash {
+    0% { 
+        opacity: 0; 
+        transform: scaleY(0) skewX(0deg);
+    }
+    5% { 
+        opacity: 1; 
+        transform: scaleY(0.3) skewX(-5deg);
+    }
+    15% { 
+        opacity: 0.8; 
+        transform: scaleY(0.8) skewX(3deg);
+    }
+    25% { 
+        opacity: 1; 
+        transform: scaleY(1) skewX(-2deg);
+    }
+    35% { 
+        opacity: 0.9; 
+        transform: scaleY(0.9) skewX(4deg);
+    }
+    45% { 
+        opacity: 1; 
+        transform: scaleY(1) skewX(-1deg);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scaleY(0.7) skewX(0deg);
+    }
+}
+
+/* Mjolnir Strike Effect */
+.mjolnir-strike {
+    position: fixed;
+    font-size: 120px;
+    z-index: 10000;
+    pointer-events: none;
+    filter: brightness(1.5) drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 50px #ffff00);
+    text-shadow: 0 0 30px #ffd700, 0 0 60px #ffff00;
+}
+
+/* Mobile Device Optimizations */
+.mobile-device .lightning-flash,
+.mobile-device .mjolnir-strike {
+    display: none !important;
+}
+
+/* Specifically disable Thor's flying hammer on mobile */
+.mobile-device.thor-theme .mjolnir-strike {
+    display: none !important;
+}
+
+/* Thor Theme Mobile */
+.mobile-device.thor-theme {
+    background: linear-gradient(135deg, #000000, #1a1a1a, #000000);
+}
+
+.mobile-device.thor-theme .clock-display {
+    border-color: #ffd700;
+    box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.3),
+        inset 0 0 15px rgba(255, 215, 0, 0.05);
+    background: rgba(40, 30, 0, 0.8);
+}
+
+.mobile-device.thor-theme .day,
+.mobile-device.thor-theme .date,
+.mobile-device.thor-theme .time,
+
+.mobile-device.thor-theme .timezone-container {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Mobile effect containers should be hidden */
+.mobile-device #lightningEffects,
+.mobile-device #thorParticles,
+.mobile-device #asgardRunes {
+    display: none !important;
+}

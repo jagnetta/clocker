@@ -66,7 +66,7 @@
     <!-- Matrix Timezone Control Panel -->
     <div class="timezone-container">
         <div class="timezone-label">⚡ TEMPORAL ZONE CONTROL ⚡</div>
-        <input type="range" id="timezoneSlider" class="timezone-slider" min="-12" max="14" value="0" step="0.5">
+        <input type="range" id="timezoneSlider" class="timezone-slider" min="0" max="38" value="0" step="1">
         <div class="timezone-display" id="timezoneDisplay">UTC+0 (Local Time)</div>
     </div>
     
@@ -76,7 +76,6 @@
             <div id="day" class="day" data-text=""></div>
             <div id="date" class="date"></div>
             <div id="time" class="time"></div>
-            <div id="timezoneDesc" class="timezone-desc"></div>
         </div>
     </div>
     
@@ -97,6 +96,7 @@
         <button id="resetButton" class="weather-reset-button hidden"></button>
     </div>
     
+    <script src="timezones.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

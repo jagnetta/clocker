@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ MATRIX TEMPORAL INTERFACE ⚡</title>
+    <link rel="stylesheet" href="base-style.css">
+</head>
+<body>
+    <!-- Theme Selection Switch -->
+    <div class="theme-selector">
+        <div class="theme-switch">
+            <button id="matrixTheme" class="theme-option active" data-theme="matrix">⚡ MATRIX</button>
+            <button id="lcarsTheme" class="theme-option" data-theme="lcars">🖖 LCARS</button>
+            <button id="thorTheme" class="theme-option" data-theme="thor">🔨 THOR</button>
+        </div>
+    </div>
+    
+    <!-- Background Effects -->
+    <div class="bg-decoration matrix-bg" id="matrixBg">
+        <div class="floating-particles" id="particles"></div>
+    </div>
+    
+    <div class="bg-decoration lcars-bg hidden" id="lcarsBg">
+        <div class="warp-stars" id="warpStars"></div>
+        <div class="warp-streaks" id="warpStreaks"></div>
+        
+        <!-- LCARS Interface Elements -->
+        <div class="lcars-interface">
+            <div class="lcars-bar lcars-bar-top"></div>
+            <div class="lcars-bar lcars-bar-bottom"></div>
+            <div class="lcars-corner lcars-corner-tl"></div>
+            <div class="lcars-corner lcars-corner-tr"></div>
+            <div class="lcars-corner lcars-corner-bl"></div>
+            <div class="lcars-corner lcars-corner-br"></div>
+            <div class="lcars-panel lcars-panel-left">
+                <div class="lcars-button">SYS</div>
+                <div class="lcars-button">NAV</div>
+                <div class="lcars-button">ENG</div>
+                <div class="lcars-button">SCI</div>
+                <div class="lcars-button">MED</div>
+            </div>
+            <div class="lcars-panel lcars-panel-right">
+                <div class="lcars-data-stream">
+                    <div class="lcars-data-line"></div>
+                    <div class="lcars-data-line"></div>
+                    <div class="lcars-data-line"></div>
+                    <div class="lcars-data-line"></div>
+                </div>
+            </div>
+            <div class="lcars-status-bar">
+                <span class="lcars-status-text">TEMPORAL INTERFACE ACTIVE</span>
+                <span class="lcars-status-indicator"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-decoration thor-bg hidden" id="thorBg">
+        <div class="lightning-effects" id="lightningEffects"></div>
+        <div class="thor-particles" id="thorParticles"></div>
+        <div class="asgard-runes" id="asgardRunes"></div>
+        <div class="mjolnir-hammer" id="mjolnirHammer">🔨</div>
+    </div>
+    
+    
+    <!-- Matrix Timezone Control Panel -->
+    <div class="timezone-container">
+        <div class="timezone-label">⚡ TEMPORAL ZONE CONTROL ⚡</div>
+        <input type="range" id="timezoneSlider" class="timezone-slider" min="0" max="38" value="0" step="1">
+        <div class="timezone-display" id="timezoneDisplay">UTC+0 (Local Time)</div>
+    </div>
+    
+    <!-- Main clock display -->
+    <div class="clock-container">
+        <div class="clock-display">
+            <div id="day" class="day" data-text=""></div>
+            <div id="date" class="date"></div>
+            <div id="time" class="time"></div>
+        </div>
+    </div>
+    
+    <!-- Matrix Weather System -->
+    <div class="weather-container">
+        <div id="cityInputContainer" class="city-input-container">
+            <div class="city-label">🌐 WEATHER DATA INTERFACE</div>
+            <input type="text" id="cityInput" class="city-input" placeholder="Taunton" maxlength="50">
+            <button id="weatherButton" class="weather-button">ACCESS DATA</button>
+        </div>
+        
+        <div id="weatherTicker" class="weather-ticker hidden">
+            <div class="weather-scroll" id="weatherScroll">
+                <!-- Weather data stream will be displayed here -->
+            </div>
+        </div>
+        
+        <button id="resetButton" class="weather-reset-button hidden"></button>
+    </div>
+    
+    <!-- Core Script with Matrix Theme -->
+    <script src="timezones.js"></script>
+    <script src="core-script.js"></script>
+    
+    <!-- Theme Module Loader -->
+    <script>
+        // Theme loading system
+        let loadedThemes = new Set(['matrix']); // Matrix is loaded by default
+        let currentlyLoadedCss = null;
+        
+        // Dynamic theme loading function
+        async function loadTheme(themeName) {
+            if (loadedThemes.has(themeName) && themeName === 'matrix') {
+                return; // Matrix is always loaded
+            }
+            
+            try {
+                // Load CSS first
+                if (currentlyLoadedCss && currentlyLoadedCss !== themeName) {
+                    // Remove previous theme CSS
+                    const oldLink = document.querySelector(`link[href="${currentlyLoadedCss}-theme.css"]`);
+                    if (oldLink) {
+                        oldLink.remove();
+                    }
+                }
+                
+                if (themeName !== 'matrix') {
+                    // Load new theme CSS
+                    const cssLink = document.createElement('link');
+                    cssLink.rel = 'stylesheet';
+                    cssLink.href = `${themeName}-theme.css`;
+                    cssLink.onerror = () => console.error(`Failed to load ${themeName}-theme.css`);
+                    document.head.appendChild(cssLink);
+                    currentlyLoadedCss = themeName;
+                }
+                
+                // Load JavaScript module
+                if (!loadedThemes.has(themeName) && themeName !== 'matrix') {
+                    const script = document.createElement('script');
+                    script.src = `${themeName}-theme.js`;
+                    script.onerror = () => console.error(`Failed to load ${themeName}-theme.js`);
+                    
+                    await new Promise((resolve, reject) => {
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    });
+                    
+                    loadedThemes.add(themeName);
+                }
+                
+                // Small delay to ensure CSS is applied
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                console.log(`🔄 Theme modules loaded for: ${themeName.toUpperCase()}`);
+                
+            } catch (error) {
+                console.error(`❌ Failed to load ${themeName} theme:`, error);
+            }
+        }
+        
+        // Override theme switching to load modules dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeOptions = document.querySelectorAll('.theme-option');
+            
+            themeOptions.forEach(option => {
+                option.addEventListener('click', async function() {
+                    const selectedTheme = this.getAttribute('data-theme');
+                    
+                    // Load the theme first
+                    await loadTheme(selectedTheme);
+                    
+                    // Remove active class from all options
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Call the appropriate theme function
+                    switch(selectedTheme) {
+                        case 'matrix':
+                            if (typeof switchToMatrixTheme === 'function') {
+                                switchToMatrixTheme();
+                            }
+                            break;
+                        case 'lcars':
+                            if (typeof initLcarsTheme === 'function') {
+                                initLcarsTheme();
+                            } else if (typeof LcarsTheme !== 'undefined' && LcarsTheme.initLcarsTheme) {
+                                LcarsTheme.initLcarsTheme();
+                            }
+                            break;
+                        case 'thor':
+                            if (typeof initThorTheme === 'function') {
+                                initThorTheme();
+                            } else if (typeof ThorTheme !== 'undefined' && ThorTheme.initThorTheme) {
+                                ThorTheme.initThorTheme();
+                            }
+                            break;
+                    }
+                });
+            });
+            
+            console.log('🎨 Modular theme system initialized');
+            console.log('⚡ Matrix theme loaded by default');
+        });
+    </script>
+</body>
+</html>

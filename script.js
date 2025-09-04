@@ -10,122 +10,54 @@ let activeUfos = 0;
 let lokiTrickActive = false;
 let isMobileDevice = false;
 
-// Accurate timezone data based on IANA timezone standards
-const timezones = {
-    // UTC-12: Baker Island, Howland Island
-    '-12': { name: 'AoE', label: 'Anywhere on Earth', dst: false },
+// Use timezone data from timezones.js - create compatibility layer
+let currentTimezoneIndex = 0;
+
+// Create timezone offset map from the global timezones array for backward compatibility
+function createTimezoneOffsetMap() {
+    const offsetMap = {};
+    if (typeof timezones === 'undefined') {
+        console.error('timezones array not loaded from timezones.js');
+        return {};
+    }
     
-    // UTC-11: American Samoa, Niue
-    '-11': { name: 'NUT', label: 'Niue Time', dst: false },
-    
-    // UTC-10: Hawaii, Cook Islands
-    '-10': { name: 'HST', label: 'Hawaii Standard Time', dst: false },
-    
-    // UTC-9.5: Marquesas Islands (France)
-    '-9.5': { name: 'MART', label: 'Marquesas Islands Time', dst: false },
-    
-    // UTC-9: Alaska (DST to UTC-8)
-    '-9': { name: 'AKST', label: 'Alaska Standard Time', dst: true, dstName: 'AKDT', dstOffset: -8 },
-    
-    // UTC-8: Pacific Time (DST to UTC-7)
-    '-8': { name: 'PST', label: 'Pacific Standard Time', dst: true, dstName: 'PDT', dstOffset: -7 },
-    
-    // UTC-7: Mountain Time (DST to UTC-6), Arizona stays on MST
-    '-7': { name: 'MST', label: 'Mountain Standard Time', dst: true, dstName: 'MDT', dstOffset: -6 },
-    
-    // UTC-6: Central Time (DST to UTC-5)
-    '-6': { name: 'CST', label: 'Central Standard Time', dst: true, dstName: 'CDT', dstOffset: -5 },
-    
-    // UTC-5: Eastern Time (DST to UTC-4)
-    '-5': { name: 'EST', label: 'Eastern Standard Time', dst: true, dstName: 'EDT', dstOffset: -4 },
-    
-    // UTC-4: Atlantic Time (DST to UTC-3)
-    '-4': { name: 'AST', label: 'Atlantic Standard Time', dst: true, dstName: 'ADT', dstOffset: -3 },
-    
-    // UTC-3.5: Newfoundland Time (DST to UTC-2.5)
-    '-3.5': { name: 'NST', label: 'Newfoundland Standard Time', dst: true, dstName: 'NDT', dstOffset: -2.5 },
-    
-    // UTC-3: Argentina, Brazil (some regions), Uruguay
-    '-3': { name: 'ART', label: 'Argentina Time', dst: false },
-    
-    // UTC-2: South Georgia, South Sandwich Islands
-    '-2': { name: 'GST', label: 'South Georgia Time', dst: false },
-    
-    // UTC-1: Cape Verde, Azores (DST to UTC+0)
-    '-1': { name: 'CVT', label: 'Cape Verde Time', dst: false },
-    
-    // UTC+0: Greenwich Mean Time, Western European Time (DST to UTC+1)
-    '0': { name: 'GMT', label: 'Greenwich Mean Time', dst: true, dstName: 'BST', dstOffset: 1 },
-    
-    // UTC+1: Central European Time (DST to UTC+2)
-    '1': { name: 'CET', label: 'Central European Time', dst: true, dstName: 'CEST', dstOffset: 2 },
-    
-    // UTC+2: Eastern European Time (DST to UTC+3)
-    '2': { name: 'EET', label: 'Eastern European Time', dst: true, dstName: 'EEST', dstOffset: 3 },
-    
-    // UTC+3: Moscow, East Africa
-    '3': { name: 'MSK', label: 'Moscow Standard Time', dst: false },
-    
-    // UTC+3.5: Iran Time (DST to UTC+4.5)
-    '3.5': { name: 'IRST', label: 'Iran Standard Time', dst: true, dstName: 'IRDT', dstOffset: 4.5 },
-    
-    // UTC+4: Gulf Standard Time, Azerbaijan
-    '4': { name: 'GST', label: 'Gulf Standard Time', dst: false },
-    
-    // UTC+4.5: Afghanistan Time
-    '4.5': { name: 'AFT', label: 'Afghanistan Time', dst: false },
-    
-    // UTC+5: Pakistan, Kazakhstan west
-    '5': { name: 'PKT', label: 'Pakistan Standard Time', dst: false },
-    
-    // UTC+5.5: India Standard Time, Sri Lanka
-    '5.5': { name: 'IST', label: 'India Standard Time', dst: false },
-    
-    // UTC+5.75: Nepal Time
-    '5.75': { name: 'NPT', label: 'Nepal Time', dst: false },
-    
-    // UTC+6: Bangladesh, Kazakhstan east
-    '6': { name: 'BST', label: 'Bangladesh Standard Time', dst: false },
-    
-    // UTC+6.5: Myanmar Time
-    '6.5': { name: 'MMT', label: 'Myanmar Time', dst: false },
-    
-    // UTC+7: Indochina Time, Thailand, Vietnam
-    '7': { name: 'ICT', label: 'Indochina Time', dst: false },
-    
-    // UTC+8: China Standard Time, Singapore, Philippines
-    '8': { name: 'CST', label: 'China Standard Time', dst: false },
-    
-    // UTC+8.75: Australian Central Western Standard Time
-    '8.75': { name: 'ACWST', label: 'Australian Central Western Standard Time', dst: false },
-    
-    // UTC+9: Japan Standard Time, Korea
-    '9': { name: 'JST', label: 'Japan Standard Time', dst: false },
-    
-    // UTC+9.5: Australian Central Standard Time (DST to UTC+10.5)
-    '9.5': { name: 'ACST', label: 'Australian Central Standard Time', dst: true, dstName: 'ACDT', dstOffset: 10.5 },
-    
-    // UTC+10: Australian Eastern Standard Time (DST to UTC+11)
-    '10': { name: 'AEST', label: 'Australian Eastern Standard Time', dst: true, dstName: 'AEDT', dstOffset: 11 },
-    
-    // UTC+10.5: Lord Howe Standard Time (DST to UTC+11 - unique 30min DST)
-    '10.5': { name: 'LHST', label: 'Lord Howe Standard Time', dst: true, dstName: 'LHDT', dstOffset: 11 },
-    
-    // UTC+11: Solomon Islands, Vanuatu
-    '11': { name: 'SBT', label: 'Solomon Islands Time', dst: false },
-    
-    // UTC+12: New Zealand Standard Time (DST to UTC+13)
-    '12': { name: 'NZST', label: 'New Zealand Standard Time', dst: true, dstName: 'NZDT', dstOffset: 13 },
-    
-    // UTC+12.75: Chatham Standard Time (DST to UTC+13.75)
-    '12.75': { name: 'CHAST', label: 'Chatham Standard Time', dst: true, dstName: 'CHADT', dstOffset: 13.75 },
-    
-    // UTC+13: Tonga, Samoa
-    '13': { name: 'TOT', label: 'Tonga Time', dst: false },
-    
-    // UTC+14: Line Islands (Kiribati)
-    '14': { name: 'LINT', label: 'Line Islands Time', dst: false }
-};
+    timezones.forEach((tz, index) => {
+        // Parse offset string like "UTC-05:00" or "UTC+09:30"
+        const offsetStr = tz.offset.replace('UTC', '');
+        let offset;
+        
+        if (offsetStr.includes(':')) {
+            const [hours, minutes] = offsetStr.split(':');
+            offset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+        } else {
+            offset = parseFloat(offsetStr);
+        }
+        
+        // Store with both string and numeric keys for compatibility
+        const key = offset.toString();
+        offsetMap[key] = {
+            name: tz.abbreviation,
+            label: tz.name,
+            dst: false, // Simplified implementation
+            index: index,
+            offset: offset
+        };
+    });
+    return offsetMap;
+}
+
+// Initialize timezone data when DOM loads
+let timezoneOffsetMap = {};
+document.addEventListener('DOMContentLoaded', function() {
+    timezoneOffsetMap = createTimezoneOffsetMap();
+    if (Object.keys(timezoneOffsetMap).length === 0) {
+        console.warn('No timezone data loaded, using fallback');
+        // Fallback for testing
+        timezoneOffsetMap = {
+            '0': { name: 'GMT', label: 'Greenwich Mean Time', dst: false, index: 0, offset: 0 }
+        };
+    }
+});
 
 // Enhanced DST calculation functions with accurate regional rules
 function isDSTActive(date, offset) {
@@ -330,7 +262,7 @@ function getOrdinalSuffix(day) {
 // Enhanced date formatting
 function formatDate(date) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
+    const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
     
     const dayName = days[date.getDay()];
     const monthName = months[date.getMonth()];
@@ -362,36 +294,42 @@ function formatTime(date) {
     return `${hours}:${minutesStr}:${secondsStr} <span class="time-suffix">${ampm}</span> <span class="time-suffix">${timezoneInfo.name}</span>`;
 }
 
-// Get current timezone info with DST consideration
+// Get current timezone info with DST consideration from timezones.js data
 function getTimezoneInfo(date, offset) {
-    const timezoneInfo = timezones[offset.toString()];
+    // Use the current timezone from the slider if available
+    if (typeof timezones !== 'undefined' && timezones[currentTimezoneIndex]) {
+        const selectedTz = timezones[currentTimezoneIndex];
+        
+        // Check if DST is currently active and return correct abbreviation
+        if (selectedTz.daylightSaving.observesDST && isDSTActiveForTimezone(date, selectedTz)) {
+            return {
+                name: selectedTz.daylightSaving.dstAbbreviation,
+                label: selectedTz.name,
+                isDST: true,
+                offset: offset
+            };
+        } else {
+            return {
+                name: selectedTz.abbreviation,
+                label: selectedTz.name,
+                isDST: false,
+                offset: offset
+            };
+        }
+    }
+    
+    // Fallback to offset-based lookup if timezones.js not available
+    const timezoneInfo = timezoneOffsetMap[offset.toString()];
     if (!timezoneInfo) {
-        // Find the closest valid timezone offset
-        const validOffsets = Object.keys(timezones).map(parseFloat).sort((a, b) => a - b);
-        const closest = validOffsets.reduce((prev, curr) => {
-            return Math.abs(curr - offset) < Math.abs(prev - offset) ? curr : prev;
-        });
-        return timezones[closest.toString()];
+        return { name: 'UTC', label: 'Coordinated Universal Time', isDST: false, offset: 0 };
     }
     
-    console.log(`🕐 Checking timezone ${offset}: ${timezoneInfo.name} (${timezoneInfo.label})`);
-    
-    if (timezoneInfo.dst && isDSTActive(date, offset)) {
-        console.log(`☀️ DST is active for ${timezoneInfo.name} -> ${timezoneInfo.dstName}`);
-        return {
-            name: timezoneInfo.dstName,
-            label: timezoneInfo.label.replace('Standard', 'Daylight'),
-            isDST: true,
-            dstOffset: timezoneInfo.dstOffset
-        };
-    } else {
-        console.log(`❄️ Standard time for ${timezoneInfo.name}`);
-        return {
-            name: timezoneInfo.name,
-            label: timezoneInfo.label,
-            isDST: false
-        };
-    }
+    return {
+        name: timezoneInfo.name,
+        label: timezoneInfo.label,
+        isDST: false,
+        offset: offset
+    };
 }
 
 // Get date with timezone offset including DST
@@ -412,31 +350,45 @@ function getTimezoneDate() {
 // Update timezone display with DST consideration
 function updateTimezoneDisplay() {
     const display = document.getElementById('timezoneDisplay');
-    const now = getTimezoneDate();
-    const timezoneInfo = getTimezoneInfo(now, currentTimezoneOffset);
     
-    // Show current effective offset (including DST)
-    const effectiveOffset = timezoneInfo.isDST ? timezoneInfo.offset : currentTimezoneOffset;
-    
-    let offsetStr;
-    if (effectiveOffset === 0) {
-        offsetStr = 'UTC±0';
-    } else if (effectiveOffset > 0) {
-        offsetStr = `UTC+${effectiveOffset}`;
+    // Use timezone from the array if available
+    if (typeof timezones !== 'undefined' && timezones[currentTimezoneIndex]) {
+        const selectedTz = timezones[currentTimezoneIndex];
+        const now = new Date();
+        
+        // Determine if DST is active and get correct offset/abbreviation
+        let effectiveOffset = selectedTz.offset;
+        let effectiveAbbrev = selectedTz.abbreviation;
+        let dstIndicator = '';
+        
+        if (selectedTz.daylightSaving.observesDST && isDSTActiveForTimezone(now, selectedTz)) {
+            effectiveOffset = selectedTz.daylightSaving.dstOffset;
+            effectiveAbbrev = selectedTz.daylightSaving.dstAbbreviation;
+            dstIndicator = ' ☀️ DST';
+        }
+        
+        // Check if this is the browser's detected timezone
+        const browserOffset = detectBrowserTimezone();
+        const isLocalTime = Math.abs(currentTimezoneOffset - browserOffset) < 0.1;
+        const localIndicator = isLocalTime ? ' 🏠 LOCAL' : '';
+        
+        display.textContent = `${effectiveOffset} (${effectiveAbbrev}) - ${selectedTz.name}${dstIndicator}${localIndicator}`;
     } else {
-        offsetStr = `UTC${effectiveOffset}`;
+        // Fallback to old method
+        const now = getTimezoneDate();
+        const timezoneInfo = getTimezoneInfo(now, currentTimezoneOffset);
+        
+        let offsetStr;
+        if (currentTimezoneOffset === 0) {
+            offsetStr = 'UTC±0';
+        } else if (currentTimezoneOffset > 0) {
+            offsetStr = `UTC+${currentTimezoneOffset}`;
+        } else {
+            offsetStr = `UTC${currentTimezoneOffset}`;
+        }
+        
+        display.textContent = `${offsetStr} (${timezoneInfo.name}) - ${timezoneInfo.label}`;
     }
-    
-    // Add DST indicator
-    const dstIndicator = timezoneInfo.isDST ? ' 🌞 DST' : '';
-    
-    // Check if this is the browser's detected timezone
-    const browserTZ = getBrowserTimezoneName();
-    const browserOffset = detectBrowserTimezone();
-    const isLocalTime = Math.abs(currentTimezoneOffset - browserOffset) < 0.1;
-    const localIndicator = isLocalTime ? ' 🏠 LOCAL' : '';
-    
-    display.textContent = `${offsetStr} (${timezoneInfo.name}) - ${timezoneInfo.label}${dstIndicator}${localIndicator}`;
 }
 
 // Main clock update function
@@ -448,19 +400,12 @@ function updateClock() {
     const dayElement = document.getElementById('day');
     const dateElement = document.getElementById('date');
     const timeElement = document.getElementById('time');
-    const timezoneDescElement = document.getElementById('timezoneDesc');
     
     // Update content
     dayElement.textContent = formatted.day;
     dayElement.setAttribute('data-text', formatted.day);
     dateElement.textContent = formatted.date;
     timeElement.innerHTML = timeStr;
-    
-    // Update timezone description
-    if (timezoneDescElement) {
-        const timezoneInfo = getTimezoneInfo(now, currentTimezoneOffset);
-        timezoneDescElement.textContent = timezoneInfo.label;
-    }
 }
 
 // Enhanced font sizing with better calculations
@@ -468,7 +413,6 @@ function adjustFontSizes() {
     const dayEl = document.getElementById('day');
     const dateEl = document.getElementById('date');
     const timeEl = document.getElementById('time');
-    const timezoneDescEl = document.getElementById('timezoneDesc');
     const clockDisplay = document.querySelector('.clock-display');
     
     if (!dayEl || !dateEl || !timeEl || !clockDisplay) return;
@@ -516,11 +460,6 @@ function adjustFontSizes() {
         el.style.fontSize = timeSuffixSize + 'px';
     });
     
-    // Set timezone description font size (smaller than date)
-    if (timezoneDescEl) {
-        const timezoneDescSize = Math.max(dateSize * 0.35, 6);
-        timezoneDescEl.style.fontSize = timezoneDescSize + 'px';
-    }
 }
 
 // Detect browser's timezone automatically
@@ -625,40 +564,91 @@ function getBrowserTimezoneName() {
     }
 }
 
-// Timezone slider event handler
+// Timezone slider initialization - using discrete positions from timezones.js
 function initTimezoneSlider() {
     const slider = document.getElementById('timezoneSlider');
+    if (!slider) return;
     
-    // Auto-detect browser timezone
+    // Auto-detect browser timezone and find closest match
     const detectedOffset = detectBrowserTimezone();
     const browserTZ = getBrowserTimezoneName();
     
-    // Set slider to detected timezone
-    slider.value = detectedOffset;
-    currentTimezoneOffset = detectedOffset;
-    updateTimezoneDisplay();
+    // Find and select the closest timezone from the array
+    let closestIndex = 0;
+    let minDifference = Infinity;
+    let exactMatch = false;
     
-    // Log detection results
-    if (browserTZ) {
-        console.log(`🌐 Browser timezone info:
-        📍 Identifier: ${browserTZ.identifier}
-        🏷️ Short name: ${browserTZ.short}
-        📝 Long name: ${browserTZ.long}`);
+    if (typeof timezones !== 'undefined' && Array.isArray(timezones)) {
+        // First try to find exact timezone match by name
+        const browserTZName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const now = new Date();
+        
+        timezones.forEach((tz, index) => {
+            // Check for timezone name matches (common patterns)
+            if (browserTZName && !exactMatch) {
+                const tzNameLower = tz.name.toLowerCase();
+                const browserNameLower = browserTZName.toLowerCase();
+                
+                // Direct name matching
+                if (browserNameLower.includes('new_york') && tzNameLower.includes('eastern') ||
+                    browserNameLower.includes('chicago') && tzNameLower.includes('central') ||
+                    browserNameLower.includes('denver') && tzNameLower.includes('mountain') ||
+                    browserNameLower.includes('los_angeles') && tzNameLower.includes('pacific') ||
+                    browserNameLower.includes('london') && tzNameLower.includes('greenwich') ||
+                    browserNameLower.includes('paris') && tzNameLower.includes('central european') ||
+                    browserNameLower.includes('tokyo') && tzNameLower.includes('japan') ||
+                    browserNameLower.includes('sydney') && tzNameLower.includes('australian eastern') ||
+                    browserNameLower.includes('india') && tzNameLower.includes('indian')) {
+                    closestIndex = index;
+                    exactMatch = true;
+                    return;
+                }
+            }
+            
+            // Calculate current effective offset for this timezone (including DST)
+            let effectiveOffset = tz.offset;
+            if (tz.daylightSaving.observesDST && isDSTActiveForTimezone(now, tz)) {
+                effectiveOffset = tz.daylightSaving.dstOffset;
+            }
+            
+            const offsetStr = effectiveOffset.replace('UTC', '');
+            let offset;
+            
+            if (offsetStr.includes(':')) {
+                const [hours, minutes] = offsetStr.split(':');
+                offset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+            } else {
+                offset = parseFloat(offsetStr);
+            }
+            
+            const difference = Math.abs(offset - detectedOffset);
+            if (difference < minDifference && !exactMatch) {
+                minDifference = difference;
+                closestIndex = index;
+            }
+        });
     }
     
+    // Set slider to closest timezone index
+    currentTimezoneIndex = closestIndex;
+    slider.value = closestIndex;
+    
+    // Update offset for backward compatibility
+    updateCurrentTimezoneFromIndex();
+    
+    console.log(`🌐 Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
+    console.log(`⏰ Detected offset: UTC${detectedOffset >= 0 ? '+' : ''}${detectedOffset}`);
+    console.log(`🎯 Selected timezone: ${timezones[closestIndex]?.name} (${exactMatch ? 'exact match' : 'closest match'})`);
+    console.log(`🎚️ Slider position: ${closestIndex}`);
+    
+    updateTimezoneDisplay();
+    
+    // Add event listener for slider changes
     slider.addEventListener('input', function() {
-        currentTimezoneOffset = parseFloat(this.value);
+        currentTimezoneIndex = parseInt(this.value);
+        updateCurrentTimezoneFromIndex();
         updateTimezoneDisplay();
-        updateClock(); // Immediate update
-    });
-    
-    // Add glowing effect on hover
-    slider.addEventListener('mouseenter', function() {
-        this.style.boxShadow = '0 0 30px rgba(0, 255, 0, 1)';
-    });
-    
-    slider.addEventListener('mouseleave', function() {
-        this.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
+        updateClock();
     });
     
     // Add mouse wheel support for timezone adjustment
@@ -667,21 +657,21 @@ function initTimezoneSlider() {
         timezoneContainer.addEventListener('wheel', function(event) {
             event.preventDefault(); // Prevent page scrolling
             
-            const step = 0.5; // Match the slider step
-            const currentValue = parseFloat(slider.value);
-            const minValue = parseFloat(slider.min);
-            const maxValue = parseFloat(slider.max);
+            const currentValue = parseInt(slider.value);
+            const minValue = parseInt(slider.min);
+            const maxValue = parseInt(slider.max);
             
-            // Determine direction (negative deltaY = scroll up = increase timezone)
+            // Determine direction (negative deltaY = scroll up = increase timezone index)
             const direction = event.deltaY < 0 ? 1 : -1;
-            const newValue = currentValue + (direction * step);
+            const newValue = currentValue + direction;
             
             // Clamp to slider bounds
             const clampedValue = Math.max(minValue, Math.min(maxValue, newValue));
             
             if (clampedValue !== currentValue) {
                 slider.value = clampedValue;
-                currentTimezoneOffset = clampedValue;
+                currentTimezoneIndex = clampedValue;
+                updateCurrentTimezoneFromIndex();
                 updateTimezoneDisplay();
                 updateClock();
                 
@@ -693,6 +683,111 @@ function initTimezoneSlider() {
             }
         });
     }
+}
+
+// Helper function to update currentTimezoneOffset from currentTimezoneIndex
+function updateCurrentTimezoneFromIndex() {
+    if (typeof timezones === 'undefined' || !timezones[currentTimezoneIndex]) {
+        currentTimezoneOffset = 0;
+        return;
+    }
+    
+    const selectedTz = timezones[currentTimezoneIndex];
+    const now = new Date();
+    
+    // Check if DST is currently active for this timezone
+    let effectiveOffset = selectedTz.offset;
+    if (selectedTz.daylightSaving.observesDST && isDSTActiveForTimezone(now, selectedTz)) {
+        effectiveOffset = selectedTz.daylightSaving.dstOffset;
+    }
+    
+    // Parse the offset string
+    const offsetStr = effectiveOffset.replace('UTC', '');
+    if (offsetStr.includes(':')) {
+        const [hours, minutes] = offsetStr.split(':');
+        currentTimezoneOffset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+    } else {
+        currentTimezoneOffset = parseFloat(offsetStr);
+    }
+}
+
+// Check if DST is currently active for a specific timezone
+function isDSTActiveForTimezone(date, timezone) {
+    if (!timezone.daylightSaving.observesDST) {
+        return false;
+    }
+    
+    const year = date.getFullYear();
+    const month = date.getMonth(); // 0-11
+    
+    // Get the timezone's base offset for DST calculation
+    const baseOffsetStr = timezone.offset.replace('UTC', '');
+    let baseOffset;
+    if (baseOffsetStr.includes(':')) {
+        const [hours, minutes] = baseOffsetStr.split(':');
+        baseOffset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+    } else {
+        baseOffset = parseFloat(baseOffsetStr);
+    }
+    
+    // Create date in the timezone's local time for DST calculation
+    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+    const localDate = new Date(utc + (baseOffset * 3600000));
+    const localMonth = localDate.getMonth();
+    
+    // Determine DST rules based on timezone location
+    if (timezone.abbreviation.includes('ST') || timezone.abbreviation.includes('DT')) {
+        // North American timezones: Second Sunday in March to First Sunday in November
+        if (timezone.abbreviation === 'HST' || timezone.abbreviation === 'AKST' || 
+            timezone.abbreviation === 'PST' || timezone.abbreviation === 'MST' || 
+            timezone.abbreviation === 'CST' || timezone.abbreviation === 'EST' ||
+            timezone.abbreviation === 'AST' || timezone.abbreviation === 'NST') {
+            return (localMonth > 2 && localMonth < 10) || 
+                   (localMonth === 2 && getSecondSunday(year, 3) <= localDate.getDate()) ||
+                   (localMonth === 10 && getFirstSunday(year, 11) > localDate.getDate());
+        }
+    }
+    
+    // European timezones: Last Sunday in March to Last Sunday in October
+    if (timezone.abbreviation === 'GMT' || timezone.abbreviation === 'CET' || 
+        timezone.abbreviation === 'EET' || timezone.abbreviation === 'AZOT') {
+        return (localMonth > 2 && localMonth < 9) || 
+               (localMonth === 2 && getLastSunday(year, 3) <= localDate.getDate()) ||
+               (localMonth === 9 && getLastSunday(year, 10) > localDate.getDate());
+    }
+    
+    // Australian timezones: First Sunday in October to First Sunday in April
+    if (timezone.abbreviation === 'ACST' || timezone.abbreviation === 'AEST' || 
+        timezone.abbreviation === 'LHDT' || timezone.abbreviation === 'NZST' || 
+        timezone.abbreviation === 'CHAST') {
+        return (localMonth > 9 || localMonth < 3) ||
+               (localMonth === 9 && getFirstSunday(year, 10) <= localDate.getDate()) ||
+               (localMonth === 3 && getFirstSunday(year, 4) > localDate.getDate());
+    }
+    
+    // Iran: March 22 to September 22 (approximate)
+    if (timezone.abbreviation === 'IRST') {
+        return localMonth > 2 && localMonth < 8;
+    }
+    
+    return false;
+}
+
+// Helper functions for DST date calculations
+function getFirstSunday(year, month) {
+    const date = new Date(year, month - 1, 1);
+    const dayOfWeek = date.getDay();
+    return 1 + (7 - dayOfWeek) % 7;
+}
+
+function getSecondSunday(year, month) {
+    return getFirstSunday(year, month) + 7;
+}
+
+function getLastSunday(year, month) {
+    const date = new Date(year, month, 0); // Last day of the month
+    const dayOfWeek = date.getDay();
+    return date.getDate() - dayOfWeek;
 }
 
 // Enhanced keyboard shortcuts

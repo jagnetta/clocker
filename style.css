@@ -184,10 +184,6 @@ input, button, textarea, select {
     text-shadow: 0 0 10px #00ff00;
 }
 
-.mobile-device .timezone-desc {
-    font-size: 1.6vw;
-    text-shadow: 0 0 8px #00ff00;
-}
 
 /* Simplify controls section on mobile */
 .mobile-device .controls {
@@ -244,9 +240,6 @@ input, button, textarea, select {
 .mobile-device.lcars-theme .day,
 .mobile-device.lcars-theme .date,
 .mobile-device.lcars-theme .time,
-.mobile-device.lcars-theme .timezone-desc {
-    text-shadow: 0 0 10px #ff9900;
-}
 
 .mobile-device.lcars-theme .timezone-container {
     border-color: #ff9900;
@@ -270,9 +263,6 @@ input, button, textarea, select {
 .mobile-device.thor-theme .day,
 .mobile-device.thor-theme .date,
 .mobile-device.thor-theme .time,
-.mobile-device.thor-theme .timezone-desc {
-    text-shadow: 0 0 10px #ffd700;
-}
 
 .mobile-device.thor-theme .timezone-container {
     border-color: #ffd700;
@@ -590,20 +580,6 @@ body::before {
     font-size: 3.5vw;
 }
 
-.timezone-desc {
-    font-family: 'Antonio', sans-serif;
-    font-size: 1.4vw;
-    color: #00ff00;
-    margin-top: 1.5vh;
-    text-align: center;
-    opacity: 0.85;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    text-shadow: 
-        0 0 8px #00ff00,
-        0 0 15px #00ff00,
-        0 0 25px rgba(0, 255, 0, 0.4);
-}
 
 @keyframes dayFlow {
     0% {
@@ -1100,10 +1076,6 @@ body::before {
         font-size: 7vw;
     }
     
-    .timezone-desc {
-        font-size: 1.75vw;
-        margin-top: 2vh;
-    }
     
     .timezone-container {
         top: 20px;
@@ -1816,13 +1788,6 @@ body::before {
     font-size: 3.5vw;
 }
 
-.lcars-theme .timezone-desc {
-    color: #ff9900;
-    text-shadow: 
-        0 0 8px #ff9900,
-        0 0 15px #ff9900,
-        0 0 25px rgba(255, 153, 0, 0.4);
-}
 
 /* LCARS Clock Display Icon - Now in upper right corner */
 .lcars-theme .clock-display::before {
@@ -2458,13 +2423,6 @@ body::before {
     font-size: 3.5vw;
 }
 
-.thor-theme .timezone-desc {
-    color: #ffd700;
-    text-shadow: 
-        0 0 8px #ffd700,
-        0 0 15px #ffd700,
-        0 0 25px rgba(255, 215, 0, 0.4);
-}
 
 /* Thor Theme Controls */
 .thor-theme .timezone-container {
