@@ -363,7 +363,7 @@ body::before {
 
 .time-suffix {
     font-family: 'Antonio', sans-serif;
-    font-size: 5vw;
+    font-size: 3.5vw;
 }
 
 @keyframes dayFlow {
@@ -778,13 +778,13 @@ body::before {
     display: flex;
     align-items: center;
     height: 100%;
-    animation: scroll-left 40s linear infinite;
+    animation: scroll-left 60s linear infinite;
     white-space: nowrap;
 }
 
 @keyframes scroll-left {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-200%); }
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-95%); }
 }
 
 .weather-day {
@@ -1630,7 +1630,7 @@ body::before {
 
 .lcars-theme .time-suffix {
     font-family: 'Antonio', sans-serif;
-    font-size: 5vw;
+    font-size: 3.5vw;
 }
 
 /* LCARS Clock Display Icon */
@@ -2264,7 +2264,7 @@ body::before {
 
 .thor-theme .time-suffix {
     font-family: 'Antonio', sans-serif;
-    font-size: 5vw;
+    font-size: 3.5vw;
 }
 
 /* Thor Theme Controls */
@@ -2944,4 +2944,41 @@ body::before {
         transform: scale(10) rotate(720deg);
         opacity: 0;
     }
+}
+
+/* Special Click Animation Styles */
+.white-rabbit {
+    position: fixed;
+    font-size: 60px;
+    z-index: 10000;
+    pointer-events: none;
+    filter: brightness(1.2) drop-shadow(0 0 10px #ffffff);
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #00ff00;
+}
+
+.star-trek-flyby {
+    position: fixed;
+    font-size: 80px;
+    z-index: 10000;
+    pointer-events: none;
+    filter: brightness(1.3) drop-shadow(0 0 15px #ff9900);
+    text-shadow: 0 0 15px #ff9900, 0 0 30px #ffaa00;
+}
+
+.loki-trickster {
+    position: fixed;
+    font-size: 100px;
+    z-index: 10000;
+    pointer-events: none;
+    filter: brightness(1.4) drop-shadow(0 0 20px #ffd700) drop-shadow(0 0 40px #ffff00);
+    text-shadow: 0 0 25px #ffd700, 0 0 50px #ffff00;
+}
+
+.mjolnir-strike {
+    position: fixed;
+    font-size: 120px;
+    z-index: 10000;
+    pointer-events: none;
+    filter: brightness(1.5) drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 50px #ffff00);
+    text-shadow: 0 0 30px #ffd700, 0 0 60px #ffff00;
 }
