@@ -1123,3 +1123,34 @@ body::before {
         font-size: 16px;
     }
 }
+
+/* Weather Loading and Error States */
+.weather-loading {
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9rem;
+    padding: 20px;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.weather-error {
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9rem;
+    padding: 20px;
+    text-align: center;
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.weather-wind {
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.8rem;
+    margin: 0 5px;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}

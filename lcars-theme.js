@@ -12,15 +12,55 @@ let activeUfos = 0;
  * This is the main entry point for the LCARS theme
  */
 function initLcarsTheme() {
-    switchToLcarsTheme();
+    console.log('🖖 Initializing LCARS theme...');
+    
+    // Ensure theme is properly set (should already be done by switchToTheme)
+    currentTheme = 'lcars';
+    
+    // Start LCARS-specific effects
+    if (!isMobileDevice) {
+        initWarpSpeed();
+    }
+    
+    // Update LCARS-specific labels
+    updateLcarsLabels();
+    
+    console.log('🖖 LCARS INTERFACE ENGAGED 🖖');
+}
+
+/**
+ * Clean up LCARS theme effects and resources
+ */
+function cleanupLcarsTheme() {
+    console.log('🧹 Cleaning up LCARS theme...');
+    
+    // Clear LCARS-specific intervals
+    if (warpStarsInterval) {
+        clearInterval(warpStarsInterval);
+        warpStarsInterval = null;
+    }
+    
+    // Remove all warp stars
+    const warpContainer = document.getElementById('warpStars');
+    if (warpContainer) {
+        warpContainer.innerHTML = '';
+    }
+    
+    // Reset UFO counter
+    activeUfos = 0;
+    
+    console.log('✅ LCARS theme cleanup complete');
 }
 
 /**
  * Switch to LCARS theme and initialize all effects
+ * @deprecated - Use initLcarsTheme() instead for proper theme switching
  */
 function switchToLcarsTheme() {
     // Set theme
-    currentTheme = 'lcars';
+    if (typeof currentTheme !== 'undefined') {
+        currentTheme = 'lcars';
+    }
     document.body.classList.remove('thor-theme');
     document.body.classList.add('lcars-theme');
     
@@ -74,7 +114,7 @@ function initWarpSpeed() {
     }
     
     // Continuously create new stars
-    warpStarsInterval = setInterval(() => {
+    warpStarsInterval = registerInterval(setInterval(() => {
         createWarpStar();
         
         // Clean up old stars
@@ -82,7 +122,7 @@ function initWarpSpeed() {
         if (stars.length > 80) {
             stars[0].remove();
         }
-    }, 300);
+    }, 300));
 }
 
 /**

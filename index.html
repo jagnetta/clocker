@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ MATRIX TEMPORAL INTERFACE ⚡</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="base-style.css">
 </head>
 <body>
     <!-- Theme Selection Switch -->
     <div class="theme-selector">
         <div class="theme-switch">
-            <button id="matrixTheme" class="theme-option active" data-theme="matrix">⚡ MATRIX</button>
+            <button id="matrixTheme" class="theme-option" data-theme="matrix">⚡ MATRIX</button>
             <button id="lcarsTheme" class="theme-option" data-theme="lcars">🖖 LCARS</button>
             <button id="thorTheme" class="theme-option" data-theme="thor">🔨 THOR</button>
         </div>
@@ -96,7 +96,32 @@
         <button id="resetButton" class="weather-reset-button hidden"></button>
     </div>
     
+    <!-- Core Script with Modular Theme System -->
     <script src="timezones.js"></script>
-    <script src="script.js"></script>
+    <script src="core-script.js"></script>
+    
+    <!-- Theme Selection Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeOptions = document.querySelectorAll('.theme-option');
+            
+            themeOptions.forEach(option => {
+                option.addEventListener('click', async function() {
+                    const selectedTheme = this.getAttribute('data-theme');
+                    
+                    // Remove active class from all options
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Switch to the selected theme using core-script.js function
+                    if (typeof switchToTheme === 'function') {
+                        await switchToTheme(selectedTheme);
+                    }
+                });
+            });
+            
+            console.log('🎨 Modular theme system ready');
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,213 @@
+#!/usr/bin/env bash
+
+# Clocker - Enhanced Terminal Clock Display
+# Fixed version addressing all critical issues found in original
+
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
+
+# Global configuration
+readonly MIN_WIDTH=25
+readonly MIN_HEIGHT=7
+readonly REFRESH_RATE=1
+
+# Global display variables
+declare DISPLAY_DAY DISPLAY_DATE DISPLAY_TIME
+declare TERMINAL_WIDTH TERMINAL_HEIGHT
+
+# Check dependencies and terminal capabilities
+check_requirements() {
+    local missing_commands=()
+    
+    for cmd in tput date sleep; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            missing_commands+=("$cmd")
+        fi
+    done
+    
+    if [[ ${#missing_commands[@]} -gt 0 ]]; then
+        printf "Error: Missing required commands: %s\n" "${missing_commands[*]}" >&2
+        exit 1
+    fi
+    
+    # Validate terminal capabilities
+    if ! tput cols >/dev/null 2>&1 || ! tput lines >/dev/null 2>&1; then
+        echo "Error: Terminal does not support cursor positioning" >&2
+        exit 1
+    fi
+    
+    # Check minimum terminal size
+    update_terminal_size
+    if [[ $TERMINAL_WIDTH -lt $MIN_WIDTH || $TERMINAL_HEIGHT -lt $MIN_HEIGHT ]]; then
+        echo "Error: Terminal too small (minimum ${MIN_WIDTH}x${MIN_HEIGHT}, current ${TERMINAL_WIDTH}x${TERMINAL_HEIGHT})" >&2
+        exit 1
+    fi
+}
+
+# Update terminal dimensions
+update_terminal_size() {
+    TERMINAL_WIDTH=$(tput cols)
+    TERMINAL_HEIGHT=$(tput lines)
+}
+
+# Cleanup function with proper variable access
+cleanup() {
+    # Restore cursor visibility
+    tput cnorm 2>/dev/null || true
+    
+    # Generate fresh timestamp for exit message
+    local exit_time exit_day exit_date
+    if exit_time=$(date +'%l:%M:%S %p %Z' 2>/dev/null) && \
+       exit_day=$(date +'%A' 2>/dev/null) && \
+       exit_date=$(format_date_with_ordinal "$(date +'%b. %e, %Y' 2>/dev/null)"); then
+        
+        # Clean up extra spaces
+        exit_time=$(echo "$exit_time" | sed 's/^  *//')
+        
+        echo
+        echo "Quit at $exit_time on $exit_day, $exit_date."
+    else
+        echo
+        echo "Clocker terminated."
+    fi
+    
+    exit 0
+}
+
+# Format date with proper ordinal suffixes
+format_date_with_ordinal() {
+    local date_str="$1"
+    echo "$date_str" | sed '
+        s/May\./May/
+        s/\b11,/11th,/; s/\b12,/12th,/; s/\b13,/13th,/
+        s/\b1,/1st,/; s/\b21,/21st,/; s/\b31,/31st,/
+        s/\b2,/2nd,/; s/\b22,/22nd,/
+        s/\b3,/3rd,/; s/\b23,/23rd,/
+        s/\b\([0-9]\+\),/\1th,/g
+    '
+}
+
+# Get all time/date info with SINGLE system call
+get_datetime_info() {
+    local datetime_raw
+    if ! datetime_raw=$(date +'%A|%b. %e, %Y|%l:%M:%S %p %Z' 2>/dev/null); then
+        echo "Error: Could not get current date/time" >&2
+        return 1
+    fi
+    
+    local day_name date_raw time_str
+    IFS='|' read -r day_name date_raw time_str <<< "$datetime_raw"
+    
+    # Format date with ordinals
+    local formatted_date
+    formatted_date=$(format_date_with_ordinal "$date_raw")
+    
+    # Clean up extra spaces and set global variables
+    DISPLAY_DAY=$(echo "$day_name" | sed 's/^  *//')
+    DISPLAY_DATE=$(echo "$formatted_date" | sed 's/^  *//; s/  / /g')
+    DISPLAY_TIME=$(echo "$time_str" | sed 's/^  *//')
+}
+
+# Calculate display positions with proper bounds checking
+calculate_positions() {
+    update_terminal_size
+    
+    # Ensure terminal hasn't shrunk below minimum
+    if [[ $TERMINAL_WIDTH -lt $MIN_WIDTH || $TERMINAL_HEIGHT -lt $MIN_HEIGHT ]]; then
+        clear
+        echo "Terminal too small - resize to at least ${MIN_WIDTH}x${MIN_HEIGHT}"
+        return 1
+    fi
+    
+    local center_row=$((TERMINAL_HEIGHT / 2))
+    
+    # Calculate row positions with bounds checking
+    local day_row=$((center_row - 2))
+    local date_row=$center_row
+    local time_row=$((center_row + 2))
+    
+    # Ensure rows are within terminal bounds
+    day_row=$((day_row < 1 ? 1 : day_row))
+    time_row=$((time_row > TERMINAL_HEIGHT ? TERMINAL_HEIGHT : time_row))
+    
+    # Calculate column positions for centering
+    local day_col=$(( (TERMINAL_WIDTH - ${#DISPLAY_DAY}) / 2 ))
+    local date_col=$(( (TERMINAL_WIDTH - ${#DISPLAY_DATE}) / 2 ))
+    local time_col=$(( (TERMINAL_WIDTH - ${#DISPLAY_TIME}) / 2 ))
+    
+    # Ensure columns are non-negative
+    day_col=$((day_col < 0 ? 0 : day_col))
+    date_col=$((date_col < 0 ? 0 : date_col))
+    time_col=$((time_col < 0 ? 0 : time_col))
+    
+    # Set global position variables
+    DAY_ROW=$day_row
+    DATE_ROW=$date_row  
+    TIME_ROW=$time_row
+    DAY_COL=$day_col
+    DATE_COL=$date_col
+    TIME_COL=$time_col
+}
+
+# Display the clock with error handling (no clearing for smooth updates)
+display_clock() {
+    # Get current time info
+    get_datetime_info || return 1
+    
+    # Calculate positions
+    calculate_positions || return 1
+    
+    # Display day (position cursor and overwrite, just like original)
+    if ! tput cup "$DAY_ROW" "$DAY_COL" 2>/dev/null; then
+        echo "Error: Cannot position cursor" >&2
+        return 1
+    fi
+    printf "%s%*s" "$DISPLAY_DAY" $((30 - ${#DISPLAY_DAY})) ""  # Add padding to clear artifacts
+    
+    # Display date  
+    tput cup "$DATE_ROW" "$DATE_COL" 2>/dev/null || return 1
+    printf "%s%*s" "$DISPLAY_DATE" $((30 - ${#DISPLAY_DATE})) ""  # Add padding
+    
+    # Display time
+    tput cup "$TIME_ROW" "$TIME_COL" 2>/dev/null || return 1
+    printf "%s%*s" "$DISPLAY_TIME" $((30 - ${#DISPLAY_TIME})) ""  # Add padding
+}
+
+# Handle window resize properly (clear screen on resize only)
+handle_resize() {
+    clear
+    display_clock
+}
+
+# Main execution function
+main() {
+    # Check requirements first
+    check_requirements
+    
+    # Set up signal handlers
+    trap cleanup EXIT SIGINT SIGTERM SIGQUIT
+    trap handle_resize WINCH
+    
+    # Clear screen once at startup and hide cursor
+    clear
+    tput civis 2>/dev/null || echo "Warning: Cannot hide cursor" >&2
+    
+    # Initial display
+    if ! display_clock; then
+        echo "Error: Could not display clock" >&2
+        exit 1
+    fi
+    
+    # Main update loop
+    while sleep "$REFRESH_RATE"; do
+        display_clock || {
+            echo "Error: Display update failed" >&2
+            sleep 1  # Brief pause before retry
+        }
+    done
+}
+
+# Global position variables
+declare DAY_ROW DATE_ROW TIME_ROW DAY_COL DATE_COL TIME_COL
+
+# Execute main function
+main "$@"

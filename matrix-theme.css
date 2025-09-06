@@ -1,0 +1,358 @@
+/* ================================
+   MATRIX THEME STYLES
+   Default theme with green terminal aesthetics
+   ================================ */
+
+/* Matrix Theme Body */
+.matrix-theme body {
+    background: 
+        radial-gradient(ellipse at center, rgba(0, 40, 0, 0.6) 0%, transparent 70%),
+        linear-gradient(0deg, #000000, #001100, #000000);
+    background-size: 100% 200%;
+    animation: matrixBackground 10s ease infinite;
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+}
+
+@keyframes matrixBackground {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 0% 100%; }
+}
+
+/* Matrix Background Effects */
+.matrix-theme .matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.matrix-column-char {
+    position: absolute;
+    color: #00ff00;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-shadow: 0 0 8px #00ff00;
+    animation: matrixFall linear infinite;
+    transform: var(--char-rotation, rotate(0deg));
+    transition: transform 0.3s ease;
+}
+
+@keyframes matrixFall {
+    0% {
+        transform: translateY(-100vh) var(--char-rotation, rotate(0deg));
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) var(--char-rotation, rotate(0deg));
+        opacity: 0;
+    }
+}
+
+/* Matrix Clock Display */
+.matrix-theme .clock-display {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(0, 40, 0, 0.8)),
+        radial-gradient(ellipse at center, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+    border: 3px solid #00ff00;
+    border-radius: 25px;
+    box-shadow: 
+        0 0 40px rgba(0, 255, 0, 0.4),
+        inset 0 0 30px rgba(0, 255, 0, 0.1),
+        0 20px 40px rgba(0, 0, 0, 0.7);
+    position: relative;
+}
+
+.matrix-theme .clock-display::before {
+    content: '⚡';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    font-size: 30px;
+    color: #00ff00;
+    text-shadow: 0 0 12px #00ff00;
+    animation: matrixIconPulse 4s ease-in-out infinite;
+}
+
+@keyframes matrixIconPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        text-shadow: 0 0 8px #00ff00;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1;
+        text-shadow: 0 0 18px #00ff00, 0 0 25px #00ff00;
+        transform: scale(1.1);
+    }
+}
+
+/* Matrix Typography */
+.matrix-theme .day {
+    font-family: 'Antonio', sans-serif;
+    color: #00ff00;
+    text-shadow: 
+        0 0 0 #008800,
+        0 3px 0 #006600,
+        0 6px 0 #004400,
+        0 9px 0 #002200,
+        0 12px 0 #001100,
+        0 20px 30px rgba(0, 0, 0, 0.8),
+        0 0 18px #00ff00,
+        0 0 30px #00ff00,
+        0 0 45px rgba(0, 255, 0, 0.6);
+    filter: brightness(1.4) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.8));
+}
+
+.matrix-theme .date {
+    font-family: 'Antonio', sans-serif;
+    color: #00ff00;
+    text-shadow: 
+        0 0 0 #008800,
+        0 2px 0 #006600,
+        0 4px 0 #004400,
+        0 6px 0 #002200,
+        0 8px 0 #001100,
+        0 15px 25px rgba(0, 0, 0, 0.8),
+        0 0 18px #00ff00,
+        0 0 30px #00ff00,
+        0 0 45px rgba(0, 255, 0, 0.6);
+    filter: brightness(1.3) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.8));
+}
+
+.matrix-theme .time {
+    font-family: 'JetBrains Mono', monospace;
+    color: #00ff00;
+    text-shadow: 
+        0 0 0 #008800,
+        0 3px 0 #006600,
+        0 6px 0 #004400,
+        0 9px 0 #002200,
+        0 12px 0 #001100,
+        0 18px 25px rgba(0, 0, 0, 0.8),
+        0 0 18px #00ff00,
+        0 0 30px #00ff00,
+        0 0 45px rgba(0, 255, 0, 0.6);
+    filter: brightness(1.5) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.matrix-theme .time-suffix {
+    font-family: 'Antonio', sans-serif;
+    font-size: 3.5vw;
+}
+
+/* Matrix Theme Controls */
+.matrix-theme .timezone-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.3), rgba(0, 40, 0, 0.2)),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.05), transparent);
+    border: 2px solid #00ff00;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 255, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-theme .timezone-label {
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .timezone-slider {
+    background: linear-gradient(90deg, #004400, #00ff00, #004400);
+    border: 1px solid #00ff00;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 255, 0, 0.4);
+}
+
+.matrix-theme .timezone-slider::-webkit-slider-thumb {
+    background: radial-gradient(circle, #00ff00, #008800);
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+}
+
+.matrix-theme .timezone-display {
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+/* Matrix Weather System */
+.matrix-theme .city-input-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(0, 40, 0, 0.8)),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.1), transparent);
+    border: 2px solid #00ff00;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 255, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-theme .city-label {
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .city-input {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(0, 40, 0, 0.6));
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-theme .city-input::placeholder {
+    color: #008800;
+}
+
+/* Matrix theme focused input - maintain theme styling */
+.matrix-theme .city-input:focus {
+    border-color: #00ff00;
+    color: #00ff00;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.9);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(0, 255, 0, 0.5);
+    outline: none;
+}
+
+.matrix-theme .weather-button {
+    background: 
+        linear-gradient(145deg, #00ff00, #008800),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.3), transparent);
+    border: 2px solid #00ff00;
+    color: #000011;
+    font-family: 'Antonio', sans-serif;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+.matrix-theme .weather-ticker {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.98), rgba(0, 40, 0, 0.9)),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.1), transparent);
+    border: 2px solid #00ff00;
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 0 25px rgba(0, 255, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-theme .weather-city {
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .weather-temp {
+    color: #00ff00;
+    font-family: 'Antonio', sans-serif;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .weather-desc {
+    color: #00ff00;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .weather-humidity {
+    color: #00ff00;
+    text-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+
+.matrix-theme .weather-coords {
+    color: #008800;
+    text-shadow: 0 0 4px rgba(0, 255, 0, 0.4);
+}
+
+.matrix-theme .weather-reset-button {
+    background: 
+        radial-gradient(circle at center, #00ff00, #008800);
+    border: 2px solid #00ff00;
+    color: #000011;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+/* White Rabbit Animation */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.5) translateY(-50px); }
+}
+
+/* Matrix Theme Mobile */
+.mobile-device.matrix-theme {
+    background: linear-gradient(135deg, #000000, #001100, #000000);
+}
+
+.mobile-device.matrix-theme .clock-display {
+    border-color: #00ff00;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 0, 0.05);
+    background: rgba(0, 40, 0, 0.8);
+}
+
+.mobile-device.matrix-theme .timezone-container {
+    border-color: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+/* Mobile effect containers should be hidden for Matrix */
+.mobile-device #particles {
+    display: none !important;
+}
+
+/* Matrix Theme Weather Loading/Error States */
+.matrix-theme .weather-loading {
+    color: #00ff00;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+.matrix-theme .weather-error {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+}
+
+.matrix-theme .weather-wind {
+    color: #00ff00;
+    text-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}

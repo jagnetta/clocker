@@ -1,9 +1,12 @@
 // Global variables
 let currentTimezoneOffset = 0;
-let particles = [];
-let currentTheme = 'matrix';
-let matrixKanjiInterval;
+let currentTheme = null; // Will be set randomly on load
 let isMobileDevice = false;
+
+// Modular theme system
+let loadedThemes = new Set();
+let currentlyLoadedCss = null;
+const availableThemes = ['matrix', 'lcars', 'thor'];
 
 // Use timezone data from timezones.js - create compatibility layer
 let currentTimezoneIndex = 0;
@@ -28,12 +31,27 @@ function createTimezoneOffsetMap() {
             offset = parseFloat(offsetStr);
         }
         
+        // Parse DST information
+        const hasDST = tz.daylightSaving && tz.daylightSaving.observesDST;
+        let dstOffset = null;
+        
+        if (hasDST && tz.daylightSaving.dstOffset) {
+            const dstOffsetStr = tz.daylightSaving.dstOffset.replace('UTC', '');
+            if (dstOffsetStr.includes(':')) {
+                const [hours, minutes] = dstOffsetStr.split(':');
+                dstOffset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+            } else {
+                dstOffset = parseFloat(dstOffsetStr);
+            }
+        }
+        
         // Store with both string and numeric keys for compatibility
         const key = offset.toString();
         offsetMap[key] = {
             name: tz.abbreviation,
             label: tz.name,
-            dst: false, // Simplified implementation
+            dst: hasDST,
+            dstOffset: dstOffset,
             index: index,
             offset: offset
         };
@@ -169,75 +187,248 @@ function getLastSundayOfMonth(year, month) {
     return lastSunday;
 }
 
-// Initialize Matrix-style flowing columns
-function initParticles() {
-    const particlesContainer = document.getElementById('particles');
-    const matrixChars = ['0', '1', 'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト', 'ナ', 'ニ', 'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ', 'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン', '日', '月', '火', '水', '木', '金', '土', '人', '大', '小', '中', '国', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '円', '時', '分', '年', '間', '今', '後', '前', '新', '古', '高', '低', '上', '下', '左', '右', '東', '西', '南', '北'];
+// Modular theme loading system
+async function loadTheme(themeName) {
+    if (!availableThemes.includes(themeName)) {
+        console.error(`Unknown theme: ${themeName}`);
+        return false;
+    }
     
-    // Create columns across the full screen width
-    const columnWidth = 60; // pixels - increased for fewer streaming lines
-    const numColumns = Math.floor(window.innerWidth / columnWidth);
-    
-    for (let col = 0; col < numColumns; col++) {
-        createMatrixColumn(col, columnWidth, matrixChars, particlesContainer);
+    try {
+        // Load CSS first if not already loaded
+        if (currentlyLoadedCss && currentlyLoadedCss !== themeName) {
+            const oldLink = document.querySelector(`link[href="${currentlyLoadedCss}-theme.css"]`);
+            if (oldLink) {
+                oldLink.remove();
+            }
+        }
+        
+        if (!loadedThemes.has(themeName)) {
+            // Load theme CSS
+            const cssLink = document.createElement('link');
+            cssLink.rel = 'stylesheet';
+            cssLink.href = `${themeName}-theme.css`;
+            cssLink.onerror = () => console.error(`Failed to load ${themeName}-theme.css`);
+            document.head.appendChild(cssLink);
+            currentlyLoadedCss = themeName;
+            
+            // Load JavaScript module
+            const script = document.createElement('script');
+            script.src = `${themeName}-theme.js`;
+            script.onerror = () => console.error(`Failed to load ${themeName}-theme.js`);
+            
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+            
+            loadedThemes.add(themeName);
+        }
+        
+        // Small delay to ensure CSS is applied
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log(`🎨 Theme loaded: ${themeName.toUpperCase()}`);
+        return true;
+        
+    } catch (error) {
+        console.error(`Failed to load ${themeName} theme:`, error);
+        return false;
     }
 }
 
-function createMatrixColumn(columnIndex, columnWidth, matrixChars, container) {
-    const columnLength = 5 + Math.floor(Math.random() * 45); // Random length 5-50 characters
-    const columnX = columnIndex * columnWidth;
-    const animationDelay = Math.random() * 5; // Stagger start times
-    const fallSpeed = 8 + Math.random() * 12; // Random speed 8-20 seconds for quicker movement
-    
-    // Assign random blur and size for distant viewing perspective
-    const blurLevels = [2.0, 3.5, 5.5, 7.5, 10.0]; // All pushed further back with more blur
-    const fontSizes = [22, 18, 15, 12, 9]; // All smaller as if viewed from distance
-    const blurIndex = Math.floor(Math.random() * blurLevels.length);
-    const columnBlur = blurLevels[blurIndex];
-    const columnFontSize = fontSizes[blurIndex];
-    
-    for (let i = 0; i < columnLength; i++) {
-        const char = document.createElement('div');
-        char.className = 'matrix-column-char';
-        char.style.left = columnX + 'px';
-        char.style.top = (-30 - (i * 25)) + 'px'; // Stack characters above screen
-        char.style.animationDelay = animationDelay + 's';
-        char.style.animationDuration = fallSpeed + 's';
-        char.style.opacity = Math.max(0.1, 1 - (i * 0.05)); // Fade out towards tail
-        
-        // Apply column-specific blur and font size
-        char.style.filter = `blur(${columnBlur}px)`;
-        char.style.fontSize = columnFontSize + 'px';
-        
-        // Add random rotation
-        const rotations = [0, 90, 180, 270];
-        const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
-        char.style.setProperty('--char-rotation', `rotate(${randomRotation}deg)`);
-        
-        // Set random character
-        const randomChar = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-        char.textContent = randomChar;
-        
-        container.appendChild(char);
-        
-        // Restart column when animation ends
-        char.addEventListener('animationend', () => {
-            restartMatrixColumn(char, columnIndex, columnWidth, matrixChars, container, columnLength);
-        });
-    }
+// Global arrays to track intervals and event listeners for cleanup
+let themeIntervals = [];
+let themeEventListeners = [];
+
+// Helper function to clear all theme-specific intervals (not global app intervals)
+function clearAllIntervals() {
+    themeIntervals.forEach(intervalId => {
+        clearInterval(intervalId);
+        clearTimeout(intervalId);
+    });
+    themeIntervals = [];
 }
 
-function restartMatrixColumn(triggerChar, columnIndex, columnWidth, matrixChars, container, originalLength) {
-    // Remove all characters from this column
-    const existingChars = container.querySelectorAll('.matrix-column-char');
-    existingChars.forEach(char => {
-        if (parseInt(char.style.left) === columnIndex * columnWidth) {
-            char.remove();
+// Helper function to remove all theme event listeners
+function removeThemeEventListeners() {
+    themeEventListeners.forEach(listener => {
+        if (listener.element && listener.event && listener.handler) {
+            listener.element.removeEventListener(listener.event, listener.handler);
+        }
+    });
+    themeEventListeners = [];
+}
+
+// Helper function to clear theme-specific DOM modifications
+function clearThemeDOM() {
+    // Remove all theme-specific classes
+    const elementsWithThemeClasses = document.querySelectorAll('[class*="-effect"], [class*="-particle"], [class*="-animation"]');
+    elementsWithThemeClasses.forEach(el => {
+        // Remove classes that contain effect, particle, or animation
+        el.className = el.className.split(' ').filter(cls => 
+            !cls.includes('-effect') && 
+            !cls.includes('-particle') && 
+            !cls.includes('-animation') &&
+            !cls.includes('glow') &&
+            !cls.includes('flicker')
+        ).join(' ');
+    });
+    
+    // Remove any dynamically created theme elements
+    const dynamicElements = document.querySelectorAll('.matrix-particle, .lcars-indicator, .thor-lightning, .theme-overlay');
+    dynamicElements.forEach(el => el.remove());
+    
+    // Clear theme background containers
+    const effectContainers = document.querySelectorAll('#particles, #warpStars, #lightningEffects, #thorParticles, #asgardRunes');
+    effectContainers.forEach(container => {
+        if (container) container.innerHTML = '';
+    });
+    
+    // Clear any inline styles added by themes
+    const styledElements = document.querySelectorAll('[style*="animation"], [style*="transform"], [style*="opacity"]');
+    styledElements.forEach(el => {
+        // Only clear style properties that themes might have added
+        const style = el.style;
+        style.animation = '';
+        style.transform = '';
+        if (style.opacity !== '' && !el.hasAttribute('data-original-opacity')) {
+            style.opacity = '';
+        }
+    });
+}
+
+// Register interval for cleanup
+function registerInterval(intervalId) {
+    themeIntervals.push(intervalId);
+    return intervalId;
+}
+
+// Register event listener for cleanup
+function registerEventListener(element, event, handler) {
+    themeEventListeners.push({ element, event, handler });
+    element.addEventListener(event, handler);
+}
+
+// Clean up current theme before switching
+function cleanupCurrentTheme() {
+    if (!currentTheme) return;
+    
+    console.log(`🧹 Cleaning up ${currentTheme.toUpperCase()} theme...`);
+    
+    // Clear all intervals and timeouts
+    clearAllIntervals();
+    
+    // Remove all theme-specific event listeners
+    removeThemeEventListeners();
+    
+    // Clear all theme-specific DOM modifications
+    clearThemeDOM();
+    
+    // Theme-specific cleanup functions
+    const cleanupFunctions = {
+        'matrix': () => typeof cleanupMatrixTheme === 'function' && cleanupMatrixTheme(),
+        'lcars': () => typeof cleanupLcarsTheme === 'function' && cleanupLcarsTheme(),
+        'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects()
+    };
+    
+    if (cleanupFunctions[currentTheme]) {
+        cleanupFunctions[currentTheme]();
+    }
+    
+    // Force garbage collection of theme assets
+    setTimeout(() => {
+        console.log(`✅ ${currentTheme.toUpperCase()} theme cleanup complete`);
+    }, 100);
+}
+
+// Switch to a specific theme with proper hygiene
+async function switchToTheme(themeName) {
+    if (currentTheme === themeName) return;
+    
+    console.log(`🔄 Switching from ${currentTheme || 'none'} to ${themeName.toUpperCase()} theme...`);
+    
+    // Step 1: Clean up current theme completely
+    cleanupCurrentTheme();
+    
+    // Step 2: Wait for cleanup to complete
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    // Step 3: Remove all theme-specific CSS classes from body
+    document.body.className = document.body.className.replace(/\b\w+-theme\b/g, '').trim();
+    
+    // Step 3.5: Force DOM reflow to ensure styles are applied
+    document.body.offsetHeight;
+    
+    // Step 4: Load new theme resources
+    const loaded = await loadTheme(themeName);
+    if (!loaded) {
+        console.error(`❌ Failed to load ${themeName} theme`);
+        return;
+    }
+    
+    // Step 5: Update current theme reference
+    const oldTheme = currentTheme;
+    currentTheme = themeName;
+    
+    // Step 6: Update theme selector buttons
+    const themeOptions = document.querySelectorAll('.theme-option');
+    themeOptions.forEach(option => {
+        option.classList.remove('active');
+        if (option.getAttribute('data-theme') === themeName) {
+            option.classList.add('active');
         }
     });
     
-    // Create new column with random length
-    createMatrixColumn(columnIndex, columnWidth, matrixChars, container);
+    // Step 7: Apply new theme CSS class
+    document.body.classList.add(`${themeName}-theme`);
+    
+    // Step 7.5: Manage background elements properly
+    const backgroundElements = {
+        'matrix': 'matrixBg',
+        'lcars': 'lcarsBg', 
+        'thor': 'thorBg'
+    };
+    
+    // Hide all background elements first
+    Object.values(backgroundElements).forEach(bgId => {
+        const bgElement = document.getElementById(bgId);
+        if (bgElement) {
+            bgElement.classList.add('hidden');
+        }
+    });
+    
+    // Show the correct background for the new theme
+    const newBgId = backgroundElements[themeName];
+    if (newBgId) {
+        const newBgElement = document.getElementById(newBgId);
+        if (newBgElement) {
+            newBgElement.classList.remove('hidden');
+        }
+    }
+    
+    // Step 8: Initialize the new theme after a brief delay
+    setTimeout(() => {
+        const initFunctions = {
+            'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
+            'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
+            'thor': () => typeof initThorTheme === 'function' && initThorTheme()
+        };
+        
+        if (initFunctions[themeName]) {
+            initFunctions[themeName]();
+        }
+        
+        console.log(`✨ Successfully switched from ${oldTheme || 'none'} to ${themeName.toUpperCase()} theme`);
+    }, 200);
+}
+
+// Initialize random theme on load
+function initRandomTheme() {
+    const randomTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
+    console.log(`🎲 Randomly selected theme: ${randomTheme.toUpperCase()}`);
+    switchToTheme(randomTheme);
 }
 
 // Enhanced ordinal suffix function
@@ -287,6 +478,25 @@ function formatTime(date) {
     const timezoneInfo = getTimezoneInfo(date, currentTimezoneOffset);
     
     return `${hours}:${minutesStr}:${secondsStr} <span class="time-suffix">${ampm}</span> <span class="time-suffix">${timezoneInfo.name}</span>`;
+}
+
+// Format time for popup/alert displays (plain text, no HTML)
+function formatTimeForPopup(date) {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    
+    const minutesStr = minutes.toString().padStart(2, '0');
+    const secondsStr = seconds.toString().padStart(2, '0');
+    
+    // Get timezone info with DST consideration
+    const timezoneInfo = getTimezoneInfo(date, currentTimezoneOffset);
+    
+    return `${hours}:${minutesStr}:${secondsStr} ${ampm} ${timezoneInfo.name}`;
 }
 
 // Get current timezone info with DST consideration from timezones.js data
@@ -792,11 +1002,34 @@ function initKeyboardShortcuts() {
         if (event.ctrlKey && event.key === 'c') {
             const now = getTimezoneDate();
             const formatted = formatDate(now);
-            const timeStr = formatTime(now);
+            const timeStr = formatTimeForPopup(now);
             
-            // Create Matrix exit message
-            const message = `⚡ MATRIX INTERFACE TERMINATED ⚡\n⏰ ${timeStr} on ${formatted.day}, ${formatted.date}\n🔌 Connection to the Matrix has been severed. Wake up, Neo. 🔌`;
-            alert(message);
+            // Create theme-specific exit messages (shortened for clean popup)
+            const exitMessages = {
+                'matrix': {
+                    title: '⚡ MATRIX TERMINATED ⚡',
+                    message: `Connection severed, Neo.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\n🔌 Wake up! 🔌`
+                },
+                'lcars': {
+                    title: '🖖 LCARS SHUTDOWN 🖖',
+                    message: `Starfleet protocol complete.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\n🚀 Live long & prosper! 🚀`
+                },
+                'thor': {
+                    title: '⚡ ASGARD DEACTIVATED ⚡',
+                    message: `The All-Father calls you.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\n🔨 For Asgard! 🔨`
+                }
+            };
+            
+            const currentMessage = exitMessages[currentTheme] || exitMessages['matrix'];
+            
+            // Show themed exit message and switch to random theme on OK
+            if (confirm(currentMessage.title + '\n\n' + currentMessage.message + '\n\nClick OK to journey to a new realm!')) {
+                // Switch to a different random theme
+                const otherThemes = availableThemes.filter(theme => theme !== currentTheme);
+                const nextTheme = otherThemes[Math.floor(Math.random() * otherThemes.length)];
+                console.log(`🎭 Switching from ${currentTheme.toUpperCase()} to ${nextTheme.toUpperCase()}`);
+                switchToTheme(nextTheme);
+            }
         }
         
         // Easter eggs for extra sass
@@ -839,7 +1072,7 @@ function detectMobileDevice() {
 }
 
 // Weather functionality
-let weatherApiKey = ''; // Using a free weather service that doesn't require API key
+let weatherApiKey = '1e9db439b2d25a3ec0549dd6dd6d5854'; // OpenWeatherMap API key
 
 // Weather icon mapping
 const weatherIcons = {
@@ -906,141 +1139,74 @@ function generateLocationData(cityName) {
     };
 }
 
-// Get city weather pattern for consistent demo data
-function getCityWeatherPattern(cityName) {
-    const patterns = {
-        // Common city weather patterns
-        'london': { temp: 285, desc: 'Overcast clouds', humidity: 75, pattern: 'cloudy' },
-        'paris': { temp: 288, desc: 'Partly cloudy', humidity: 65, pattern: 'mixed' },
-        'new york': { temp: 290, desc: 'Clear sky', humidity: 60, pattern: 'clear' },
-        'tokyo': { temp: 292, desc: 'Light rain', humidity: 80, pattern: 'rainy' },
-        'sydney': { temp: 295, desc: 'Sunny', humidity: 55, pattern: 'sunny' },
-        'berlin': { temp: 286, desc: 'Few clouds', humidity: 70, pattern: 'mixed' },
-        'moscow': { temp: 278, desc: 'Snow', humidity: 85, pattern: 'cold' },
-        'mumbai': { temp: 303, desc: 'Thunderstorm', humidity: 90, pattern: 'tropical' },
-        'cairo': { temp: 308, desc: 'Clear sky', humidity: 30, pattern: 'desert' },
-        'reykjavik': { temp: 275, desc: 'Overcast clouds', humidity: 80, pattern: 'cold' },
-        'miami': { temp: 298, desc: 'Partly cloudy', humidity: 75, pattern: 'tropical' },
-        'vancouver': { temp: 283, desc: 'Light rain', humidity: 78, pattern: 'rainy' },
-        'dubai': { temp: 313, desc: 'Clear sky', humidity: 45, pattern: 'desert' },
-        'singapore': { temp: 301, desc: 'Thunderstorm', humidity: 85, pattern: 'tropical' },
-        'stockholm': { temp: 280, desc: 'Snow', humidity: 82, pattern: 'cold' },
-        'los angeles': { temp: 295, desc: 'Clear sky', humidity: 50, pattern: 'sunny' },
-        'chicago': { temp: 285, desc: 'Overcast clouds', humidity: 68, pattern: 'mixed' },
-        'toronto': { temp: 282, desc: 'Light snow', humidity: 75, pattern: 'cold' },
-        'rio de janeiro': { temp: 299, desc: 'Partly cloudy', humidity: 70, pattern: 'tropical' },
-        'amsterdam': { temp: 287, desc: 'Drizzle', humidity: 78, pattern: 'rainy' }
-    };
-    
-    return patterns[cityName.toLowerCase()] || null;
-}
+// Demo weather functions removed - now using real OpenWeatherMap API
 
-// Generate demo weather data
-function generateDemoWeatherData(cityName) {
-    const now = new Date();
-    const hour = now.getHours();
-    const season = Math.floor((now.getMonth() % 12) / 3); // 0=winter, 1=spring, 2=summer, 3=fall
-    
-    // Try to get city-specific pattern first
-    let cityPattern = getCityWeatherPattern(cityName);
-    
-    if (!cityPattern) {
-        // Generate based on city name hash for consistency
-        let hash = 0;
-        for (let i = 0; i < cityName.length; i++) {
-            const char = cityName.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        
-        const patternTypes = ['sunny', 'cloudy', 'rainy', 'mixed', 'cold', 'tropical', 'desert'];
-        const patternIndex = Math.abs(hash) % patternTypes.length;
-        const pattern = patternTypes[patternIndex];
-        
-        // Base temperature varies by pattern and season
-        const baseTemps = {
-            'sunny': [285, 290, 300, 292], // by season
-            'cloudy': [280, 285, 295, 287],
-            'rainy': [278, 283, 290, 285],
-            'mixed': [282, 287, 297, 289],
-            'cold': [265, 275, 285, 278],
-            'tropical': [295, 298, 305, 300],
-            'desert': [288, 303, 318, 305]
-        };
-        
-        // Weather descriptions by pattern
-        const descriptions = {
-            'sunny': ['Clear sky', 'Sunny', 'Few clouds'],
-            'cloudy': ['Overcast clouds', 'Cloudy', 'Broken clouds'],
-            'rainy': ['Light rain', 'Moderate rain', 'Drizzle', 'Showers'],
-            'mixed': ['Partly cloudy', 'Scattered clouds', 'Few clouds'],
-            'cold': ['Snow', 'Light snow', 'Overcast clouds', 'Fog'],
-            'tropical': ['Thunderstorm', 'Heavy rain', 'Partly cloudy', 'Humid'],
-            'desert': ['Clear sky', 'Hot', 'Dusty', 'Sunny']
-        };
-        
-        const baseTemp = baseTemps[pattern][season];
-        const tempVariation = (Math.abs(hash * 7) % 20) - 10; // -10 to +10
-        const temp = baseTemp + tempVariation;
-        
-        const descIndex = Math.abs(hash * 3) % descriptions[pattern].length;
-        const desc = descriptions[pattern][descIndex];
-        
-        const humidityBase = {
-            'sunny': 50, 'cloudy': 70, 'rainy': 85, 'mixed': 60,
-            'cold': 80, 'tropical': 85, 'desert': 25
-        };
-        
-        const humidity = humidityBase[pattern] + ((Math.abs(hash * 5) % 30) - 15);
-        
-        cityPattern = { temp, desc, humidity: Math.max(10, Math.min(95, humidity)), pattern };
-    }
-    
-    // Add time-based variations
-    let { temp, desc, humidity } = cityPattern;
-    
-    // Night is typically cooler
-    if (hour < 6 || hour > 20) {
-        temp -= 5;
-    }
-    
-    // Add some daily variation
-    const dayHash = Math.abs((cityName + now.getDate()).split('').reduce((a, b) => {
-        a = ((a << 5) - a) + b.charCodeAt(0);
-        return a & a;
-    }, 0));
-    
-    temp += (dayHash % 8) - 4; // -4 to +4 degree variation
-    
-    const location = generateLocationData(cityName);
-    
-    return {
-        coord: location,
-        weather: [{ description: desc }],
-        main: {
-            temp: temp,
-            humidity: Math.max(10, Math.min(95, humidity + ((dayHash % 20) - 10)))
-        },
-        name: cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase()
-    };
+// Convert Celsius to Fahrenheit
+function celsiusToFahrenheit(celsius) {
+    return Math.round((celsius * 9/5) + 32);
 }
 
 // Create weather ticker display
-function createWeatherTicker(weatherData, cityName) {
-    const icon = getWeatherIcon(weatherData.weather[0].description);
-    const tempF = kelvinToFahrenheit(weatherData.main.temp);
-    const coords = `${weatherData.coord.latitude}°, ${weatherData.coord.longitude}°`;
+function createWeatherTicker(weatherData, locationName) {
+    const weatherScroll = document.getElementById('weatherScroll');
     
-    return `
-        <div class="weather-item">
+    // Check if weatherScroll element exists
+    if (!weatherScroll) {
+        console.error('❌ weatherScroll element not found in DOM');
+        return;
+    }
+    
+    // Clear existing content
+    weatherScroll.innerHTML = '';
+    
+    // Extract weather details
+    const icon = getWeatherIcon(weatherData.weather[0].description);
+    const tempF = celsiusToFahrenheit(weatherData.main.temp);
+    const coords = `${weatherData.coord.latitude}°, ${weatherData.coord.longitude}°`;
+    const windSpeed = weatherData.wind?.speed ? `${weatherData.wind.speed.toFixed(1)} m/s` : 'N/A';
+    const formattedLocation = `${weatherData.name}, ${weatherData.country || ''}`;
+    
+    // Helper function to create weather content block
+    function createWeatherContent() {
+        const contentBlock = document.createElement('div');
+        contentBlock.style.display = 'inline-flex';
+        contentBlock.style.alignItems = 'center';
+        
+        // Add location separator at the start
+        const startSeparator = document.createElement('div');
+        startSeparator.className = 'weather-separator';
+        startSeparator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
+        contentBlock.appendChild(startSeparator);
+        
+        // Create main weather item
+        const weatherItem = document.createElement('div');
+        weatherItem.className = 'weather-item';
+        
+        weatherItem.innerHTML = `
             <span class="weather-icon">${icon}</span>
-            <span class="weather-city">${weatherData.name}</span>
+            <span class="weather-city">${formattedLocation}</span>
             <span class="weather-temp">${tempF}°F</span>
             <span class="weather-desc">${weatherData.weather[0].description}</span>
             <span class="weather-humidity">💧${weatherData.main.humidity}%</span>
+            <span class="weather-wind">💨${windSpeed}</span>
             <span class="weather-coords">📍${coords}</span>
-        </div>
-    `;
+        `;
+        
+        contentBlock.appendChild(weatherItem);
+        
+        // Add location separator after weather item
+        const endSeparator = document.createElement('div');
+        endSeparator.className = 'weather-separator';
+        endSeparator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
+        contentBlock.appendChild(endSeparator);
+        
+        return contentBlock;
+    }
+    
+    // Create chain of weather content blocks for continuous scroll
+    for (let i = 0; i < 15; i++) {
+        weatherScroll.appendChild(createWeatherContent());
+    }
 }
 
 // Initialize weather functionality
@@ -1060,23 +1226,145 @@ function initWeather() {
     
     // Add fancy input effects
     cityInput.addEventListener('input', function() {
-        // Allow letters, spaces, hyphens, dots, and apostrophes for city names
-        this.value = this.value.replace(/[^a-zA-Z\s\-\.\']/g, '');
+        // Allow letters, digits, spaces, commas, periods, hyphens for global locations, coordinates, and ZIP codes
+        this.value = this.value.replace(/[^a-zA-Z0-9\s,.\-]/g, '');
     });
     
     // Handle reset button
-    const resetButton = document.getElementById('resetWeather');
-    resetButton.addEventListener('click', function() {
-        const weatherTicker = document.getElementById('weatherTicker');
-        weatherTicker.innerHTML = '';
-        weatherTicker.classList.add('hidden');
-        cityInput.value = '';
-        console.log('🌦️ Weather data cleared');
-    });
+    const resetButton = document.getElementById('resetButton');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            const weatherTicker = document.getElementById('weatherTicker');
+            weatherTicker.innerHTML = '';
+            weatherTicker.classList.add('hidden');
+            cityInput.value = '';
+            console.log('🌦️ Weather data cleared');
+        });
+    }
 }
 
-// Handle weather request (simplified for demo)
-function handleWeatherRequest() {
+// Fetch real weather data from OpenWeatherMap API
+// Check if input is coordinates (lat,lon format)
+function isCoordinates(input) {
+    const coordPattern = /^-?\d+\.?\d*,-?\d+\.?\d*$/;
+    return coordPattern.test(input.trim());
+}
+
+// Parse coordinates from string
+function parseCoordinates(input) {
+    const [lat, lon] = input.trim().split(',').map(parseFloat);
+    return { lat, lon, name: `${lat}, ${lon}` };
+}
+
+// Get coordinates from location name using OpenWeather Geocoding API
+async function getCoordinatesFromLocation(locationInput, apiKey) {
+    try {
+        // Use geocoding API to get coordinates
+        const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(locationInput)}&limit=5&appid=${apiKey}`;
+        
+        const geoResponse = await fetch(geoUrl);
+        if (!geoResponse.ok) {
+            throw new Error(`Geocoding API error: ${geoResponse.status}`);
+        }
+        
+        const geoData = await geoResponse.json();
+        
+        if (geoData.length === 0) {
+            // Try ZIP code geocoding if regular search fails
+            const zipUrl = `https://api.openweathermap.org/geo/1.0/zip?zip=${encodeURIComponent(locationInput)}&appid=${apiKey}`;
+            const zipResponse = await fetch(zipUrl);
+            
+            if (zipResponse.ok) {
+                const zipData = await zipResponse.json();
+                return {
+                    lat: zipData.lat,
+                    lon: zipData.lon,
+                    name: `${zipData.name}, ${zipData.country}`
+                };
+            }
+            
+            throw new Error(`Location "${locationInput}" not found`);
+        }
+        
+        // Use the first result
+        const location = geoData[0];
+        return {
+            lat: location.lat,
+            lon: location.lon,
+            name: `${location.name}${location.state ? ', ' + location.state : ''}, ${location.country}`
+        };
+        
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        throw error;
+    }
+}
+
+// Enhanced weather data fetch with location search support
+async function fetchWeatherData(locationInput) {
+    const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+    const API_KEY = weatherApiKey;
+    
+    try {
+        console.log(`🌡️ Connecting to OpenWeather API for location: ${locationInput}`);
+        
+        // First, get coordinates for the location using Geocoding API
+        let coordinates;
+        
+        // Check if input is coordinates, ZIP code, or city name
+        if (isCoordinates(locationInput)) {
+            coordinates = parseCoordinates(locationInput);
+        } else {
+            coordinates = await getCoordinatesFromLocation(locationInput, API_KEY);
+        }
+        
+        // Get current weather using coordinates
+        const weatherResponse = await fetch(
+            `${BASE_URL}/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${API_KEY}&units=metric`
+        );
+        
+        if (!weatherResponse.ok) {
+            throw new Error(`OpenWeather API error: ${weatherResponse.status}`);
+        }
+        
+        const weatherData = await weatherResponse.json();
+        
+        // Transform to consistent format
+        const transformedData = {
+            name: coordinates.name || weatherData.name,
+            country: weatherData.sys.country,
+            coord: {
+                latitude: coordinates.lat.toFixed(2),
+                longitude: coordinates.lon.toFixed(2)
+            },
+            main: {
+                temp: weatherData.main.temp, // Celsius from API
+                humidity: weatherData.main.humidity,
+                pressure: weatherData.main.pressure
+            },
+            weather: [{
+                description: weatherData.weather[0].description,
+                main: weatherData.weather[0].main,
+                icon: weatherData.weather[0].icon
+            }],
+            wind: {
+                speed: weatherData.wind?.speed || 0,
+                deg: weatherData.wind?.deg || 0
+            },
+            visibility: weatherData.visibility ? (weatherData.visibility / 1000).toFixed(1) : 'N/A'
+        };
+        
+        console.log(`🌦️ Weather data successfully retrieved for: ${transformedData.name}`);
+        return transformedData;
+        
+    } catch (error) {
+        console.error('❌ Weather API fetch failed:', error);
+        throw new Error(`Weather data access denied: ${error.message}`);
+    }
+}
+
+// Handle weather request with real API integration
+async function handleWeatherRequest() {
     const cityInput = document.getElementById('cityInput');
     const cityName = cityInput.value.trim();
     
@@ -1085,109 +1373,34 @@ function handleWeatherRequest() {
         return;
     }
     
-    console.log(`🌦️ Fetching weather for: ${cityName}`);
+    console.log(`🌦️ Fetching real weather for: ${cityName}`);
     
-    // Generate demo data
-    const weatherData = generateDemoWeatherData(cityName);
+    // Show loading indicator
     const weatherTicker = document.getElementById('weatherTicker');
-    
-    weatherTicker.innerHTML = createWeatherTicker(weatherData, cityName);
+    weatherTicker.innerHTML = '<div class="weather-loading">🌐 Fetching weather data...</div>';
     weatherTicker.classList.remove('hidden');
     
-    cityInput.value = ''; // Clear input
-}
-
-// Matrix theme functions
-function switchToMatrixTheme() {
-    currentTheme = 'matrix';
-    document.body.classList.remove('lcars-theme', 'thor-theme');
-    
-    // Show matrix background
-    document.getElementById('matrixBg').classList.remove('hidden');
-    
-    // Start matrix effects (only if not mobile)
-    if (!isMobileDevice) {
-        initParticles();
+    try {
+        // Fetch real weather data from OpenWeatherMap
+        const weatherData = await fetchWeatherData(cityName);
+        
+        if (weatherData) {
+            createWeatherTicker(weatherData, cityName);
+            // Ensure the ticker is visible after successful creation
+            const weatherTicker = document.getElementById('weatherTicker');
+            if (weatherTicker) weatherTicker.classList.remove('hidden');
+            cityInput.value = ''; // Clear input only on success
+        } else {
+            weatherTicker.innerHTML = '<div class="weather-error">❌ City not found. Please try again.</div>';
+        }
+    } catch (error) {
+        console.error('Weather API error:', error);
+        weatherTicker.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
     }
-    initMatrixKanjiRotation();
-    
-    console.log('⚡ MATRIX THEME ACTIVATED ⚡');
 }
 
-// Matrix kanji rotation
-function initMatrixKanjiRotation() {
-    // Stop any existing interval
-    if (matrixKanjiInterval) {
-        clearInterval(matrixKanjiInterval);
-    }
-    
-    // Array of Matrix-themed kanji characters
-    const matrixKanji = [
-        '時', // time
-        '空', // void/sky  
-        '夢', // dream
-        '魂', // soul
-        '心', // heart
-        '光', // light
-        '影', // shadow
-        '真', // truth
-        '偽', // false
-        '現', // reality
-        '幻', // illusion
-        '始', // beginning
-        '終', // end
-        '道', // way
-        '力', // power
-        '愛', // love
-        '死', // death
-        '生', // life
-        '運', // fate
-        '選', // choice
-        '自', // self
-        '由', // freedom
-        '束', // restraint
-        '縛', // binding
-        '解', // release
-        '放', // liberation
-        '知', // knowledge
-        '無', // nothingness
-        '有', // existence
-        '一', // one
-        '二', // two
-        '三', // three
-        '四', // four
-        '五', // five
-        '六', // six
-        '七', // seven
-        '八', // eight
-        '九', // nine
-        '十', // ten
-        '百', // hundred
-        '千', // thousand
-        '万', // ten thousand
-        '億', // hundred million
-        '兆'  // trillion
-    ];
-    
-    // Rotate characters every 3 seconds
-    matrixKanjiInterval = setInterval(() => {
-        const kanjiElements = document.querySelectorAll('.matrix-column-char');
-        kanjiElements.forEach(char => {
-            if (Math.random() < 0.3) { // 30% chance to change
-                const randomKanji = matrixKanji[Math.floor(Math.random() * matrixKanji.length)];
-                char.textContent = randomKanji;
-            }
-        });
-    }, 3000);
-}
 
-// Theme switching infrastructure (simplified for Matrix only)
-function initThemeSwitcher() {
-    // Set to Matrix theme by default
-    switchToMatrixTheme();
-}
-
-// Global click handler
+// Global click handler for theme-specific effects
 function handleGlobalClick(event) {
     console.log('Global click detected! Current theme:', currentTheme);
     
@@ -1222,29 +1435,16 @@ function handleGlobalClick(event) {
         return;
     }
     
-    // Matrix theme effects - create white rabbit
-    createWhiteRabbit(event.clientX, event.clientY);
-}
-
-// White Rabbit effect (simplified)
-function createWhiteRabbit(clickX, clickY) {
-    const rabbit = document.createElement('div');
-    rabbit.innerHTML = '🐰';
-    rabbit.style.position = 'fixed';
-    rabbit.style.left = clickX + 'px';
-    rabbit.style.top = clickY + 'px';
-    rabbit.style.fontSize = '24px';
-    rabbit.style.zIndex = '10000';
-    rabbit.style.pointerEvents = 'none';
-    rabbit.style.animation = 'fadeInOut 2s ease-out forwards';
+    // Delegate to theme-specific click handlers
+    const clickHandlers = {
+        'matrix': () => typeof handleMatrixClick === 'function' && handleMatrixClick(event.clientX, event.clientY),
+        'lcars': () => typeof handleLcarsClick === 'function' && handleLcarsClick(event.clientX, event.clientY),
+        'thor': () => typeof handleThorClick === 'function' && handleThorClick(event.clientX, event.clientY)
+    };
     
-    document.body.appendChild(rabbit);
-    
-    setTimeout(() => {
-        if (rabbit.parentNode) {
-            rabbit.parentNode.removeChild(rabbit);
-        }
-    }, 2000);
+    if (currentTheme && clickHandlers[currentTheme]) {
+        clickHandlers[currentTheme]();
+    }
 }
 
 // Initialize everything
@@ -1252,27 +1452,22 @@ function init() {
     // Detect mobile device first
     detectMobileDevice();
     
-    // Only initialize complex effects on non-mobile devices
-    if (!isMobileDevice) {
-        initParticles();
-    }
-    
     initTimezoneSlider();
     initKeyboardShortcuts();
     addScreenShake();
-    initThemeSwitcher();
+    initRandomTheme();
     initWeather();
     
     updateClock();
     adjustFontSizes();
     
-    // Update every second
+    // Update every second (this interval should persist across themes, so no registration)
     setInterval(updateClock, 1000);
     
-    // Adjust font sizes on window resize
+    // Adjust font sizes on window resize (global, not theme-specific)
     window.addEventListener('resize', adjustFontSizes);
     
-    // Add global click handler
+    // Add global click handler (global, not theme-specific)
     document.addEventListener('click', handleGlobalClick);
     
     // Add enhanced console message with auto-detection info

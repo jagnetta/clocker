@@ -856,6 +856,17 @@
     color: #cc6600;
 }
 
+/* LCARS theme focused input - maintain theme styling */
+.lcars-theme .city-input:focus {
+    border-color: #ff9900;
+    color: #ff9900;
+    text-shadow: 0 0 8px rgba(255, 153, 0, 0.9);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(255, 153, 0, 0.5);
+    outline: none;
+}
+
 .lcars-theme .weather-button {
     background: 
         linear-gradient(145deg, #ff9900, #cc6600),
@@ -1017,4 +1028,22 @@
     font-size: 80px;
     z-index: 10000;
     pointer-events: none;
+}
+
+/* LCARS Theme Weather Loading/Error States */
+.lcars-theme .weather-loading {
+    color: #ff9900;
+    text-shadow: 0 0 8px rgba(255, 153, 0, 0.6);
+}
+
+.lcars-theme .weather-error {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+}
+
+.lcars-theme .weather-wind {
+    color: #ff9900;
+    text-shadow: 0 0 6px rgba(255, 153, 0, 0.6);
 }

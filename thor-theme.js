@@ -12,7 +12,20 @@ let thorEffectsInterval;
  * This function can be called from external scripts to activate Thor theme
  */
 function initThorTheme() {
-    switchToThorTheme();
+    console.log('🔨 Initializing Thor theme...');
+    
+    // Ensure theme is properly set (should already be done by switchToTheme)
+    currentTheme = 'thor';
+    
+    // Start Thor-specific effects
+    if (!isMobileDevice) {
+        initThorEffects();
+    }
+    
+    // Update Thor-specific labels
+    updateThorLabels();
+    
+    console.log('🔨 THOR THEME ACTIVATED - FOR ASGARD! 🔨');
 }
 
 /**
@@ -91,7 +104,7 @@ function initThorEffects() {
     }
     
     // Periodically create effects
-    thorEffectsInterval = setInterval(() => {
+    thorEffectsInterval = registerInterval(setInterval(() => {
         // Lightning bolts
         if (Math.random() < 0.3) {
             createLightningBolt(lightningContainer);
@@ -114,7 +127,7 @@ function initThorEffects() {
         if (bolts.length > 10) bolts[0].remove();
         if (sparks.length > 50) sparks[0].remove();
         if (currentRunes.length > 40) currentRunes[0].remove();
-    }, 200);
+    }, 200));
 }
 
 /**
