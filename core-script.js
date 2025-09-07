@@ -276,46 +276,57 @@ function clearThemeDOM() {
         ).join(' ');
     });
     
-    // Clear all containers that might have theme-specific content
-    const containers = [
-        '#particles', '.floating-particles', '#thorParticles', '#asgardRunes',
-        '#lightningEffects', '#mjolnirHammer'
+    // Clear ALL theme background containers more comprehensively
+    const allContainers = [
+        '#particles', '.floating-particles', '#warpStars', '#lightningEffects',
+        '#thorParticles', '#asgardRunes', '#mjolnirHammer', '#compyWindow'
     ];
     
-    containers.forEach(selector => {
-        const container = document.querySelector(selector);
-        if (container) {
-            container.innerHTML = '';
-            container.removeAttribute('style');
-        }
-    });
-    
-    // Remove any dynamically created theme elements - comprehensive cleanup
-    const themeSelectors = [
-        '.matrix-particle', '.lcars-indicator', '.thor-lightning', '.theme-overlay',
-        '.matrix-column-char', '.matrix-white-rabbit', 
-        '.warp-star', '.star-trek-flyby', '.photon-torpedo-formation',
-        '.og-boxing-gloves', '.og-boxing-gloves-pair', '.og-trogdor', '.og-pulsing-star',
-        '.og-terminal-window'
-    ];
-    
-    themeSelectors.forEach(selector => {
+    allContainers.forEach(selector => {
         const elements = document.querySelectorAll(selector);
-        elements.forEach(el => el.remove());
+        elements.forEach(container => {
+            if (container) {
+                container.innerHTML = '';
+                container.removeAttribute('style');
+                // Force stop any animations
+                container.style.animation = 'none';
+                container.offsetHeight; // Force reflow
+                container.style.animation = '';
+            }
+        });
     });
     
-    // Clear theme background containers
-    const effectContainers = document.querySelectorAll('#particles, #warpStars, #lightningEffects, #thorParticles, #asgardRunes');
-    effectContainers.forEach(container => {
-        if (container) container.innerHTML = '';
+    // Remove ALL dynamically created theme elements - comprehensive cleanup
+    const allThemeSelectors = [
+        '.matrix-particle', '.matrix-column-char', '.matrix-white-rabbit', '.matrix-red-pill', '.matrix-blue-pill',
+        '.warp-star', '.star-trek-flyby', '.photon-torpedo-formation', '.lcars-indicator',
+        '.lightning-flash', '.mjolnir-strike', '.loki-illusion', '.loki-shapeshift', '.thor-lightning',
+        '.og-boxing-gloves', '.og-boxing-gloves-pair', '.og-trogdor', '.og-trogdor-test', '.og-pulsing-star',
+        '.og-terminal-window', '.theme-overlay', '.theme-dynamic'
+    ];
+    
+    allThemeSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            if (el && el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+        });
     });
     
-    // Hide all theme backgrounds during cleanup
+    // FORCE hide and completely reset all theme backgrounds
     const backgroundElements = ['matrixBg', 'lcarsBg', 'thorBg'];
     backgroundElements.forEach(bgId => {
         const bgElement = document.getElementById(bgId);
         if (bgElement) {
             bgElement.classList.add('hidden');
+            bgElement.removeAttribute('style');
+            // Force stop any background animations
+            bgElement.style.animation = 'none';
+            bgElement.style.transition = 'none';
+            bgElement.offsetHeight; // Force reflow
+            bgElement.style.animation = '';
+            bgElement.style.transition = '';
         }
     });
     
@@ -386,8 +397,9 @@ async function switchToTheme(themeName) {
     // Step 1: Clean up current theme completely
     cleanupCurrentTheme();
     
-    // Step 2: Wait for cleanup to complete - longer delay to prevent bleeding
-    await new Promise(resolve => setTimeout(resolve, 150));
+    // Step 2: Wait for cleanup to complete - extra time for Matrix theme animations
+    const cleanupDelay = currentTheme === 'matrix' ? 300 : 150;
+    await new Promise(resolve => setTimeout(resolve, cleanupDelay));
     
     // Step 3: Remove all theme-specific CSS classes from body
     document.body.className = document.body.className.replace(/\b\w+-theme\b/g, '').trim();
@@ -395,9 +407,25 @@ async function switchToTheme(themeName) {
     // Step 3.3: Clear any inline styles from body that might cause theme bleeding
     document.body.removeAttribute('style');
     
-    // Step 3.4: Force remove Matrix contamination from all elements
+    // Step 3.4: Force remove Matrix contamination and animations from all elements
     const allElements = document.querySelectorAll('*');
     allElements.forEach(el => {
+        // Force stop ALL animations and transitions that could cause movement
+        if (el.style) {
+            if (el.style.animation && el.style.animation !== 'none') {
+                el.style.animation = 'none';
+            }
+            if (el.style.transition && el.style.transition !== 'none') {
+                el.style.transition = 'none';
+            }
+            if (el.style.transform && el.style.transform.includes('translate')) {
+                el.style.transform = '';
+            }
+            if (el.style.animationPlayState) {
+                el.style.animationPlayState = 'paused';
+            }
+        }
+        
         // Remove Matrix green color contamination
         if (el.style && (el.style.color === 'rgb(0, 255, 0)' || el.style.color === '#00ff00')) {
             if (!el.closest('.matrix-theme')) {
@@ -438,29 +466,43 @@ async function switchToTheme(themeName) {
     // Step 7: Apply new theme CSS class
     document.body.classList.add(`${themeName}-theme`);
     
-    // Step 7.5: Manage background elements properly
+    // Step 7.5: Manage background elements properly with COMPLETE reset
     const backgroundElements = {
         'matrix': 'matrixBg',
         'lcars': 'lcarsBg', 
         'thor': 'thorBg'
     };
     
-    // Hide all background elements first
+    // FORCE hide and completely reset ALL background elements first
     Object.values(backgroundElements).forEach(bgId => {
         const bgElement = document.getElementById(bgId);
         if (bgElement) {
             bgElement.classList.add('hidden');
+            bgElement.removeAttribute('style');
+            bgElement.style.animation = 'none';
+            bgElement.style.transition = 'none';
+            bgElement.offsetHeight; // Force reflow
         }
     });
     
-    // Show the correct background for the new theme
-    const newBgId = backgroundElements[themeName];
-    if (newBgId) {
-        const newBgElement = document.getElementById(newBgId);
-        if (newBgElement) {
-            newBgElement.classList.remove('hidden');
+    // Wait for complete cleanup before showing new background
+    setTimeout(() => {
+        // Show and properly initialize the correct background for the new theme
+        const newBgId = backgroundElements[themeName];
+        if (newBgId) {
+            const newBgElement = document.getElementById(newBgId);
+            if (newBgElement) {
+                // Reset styles completely before showing
+                newBgElement.removeAttribute('style');
+                newBgElement.style.animation = '';
+                newBgElement.style.transition = '';
+                newBgElement.classList.remove('hidden');
+                
+                // Force reflow to ensure clean display
+                newBgElement.offsetHeight;
+            }
         }
-    }
+    }, 50);
     
     // Step 8: Initialize the new theme with proper delay to prevent bleeding
     setTimeout(() => {

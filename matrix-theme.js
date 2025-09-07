@@ -25,6 +25,9 @@ function initMatrixTheme() {
     initMatrixKanjiRotation();
     initMatrixSpecialClick();
     
+    // Update labels to Matrix theme
+    updateMatrixLabels();
+    
     console.log('⚡ MATRIX THEME ACTIVATED ⚡');
 }
 
@@ -41,14 +44,27 @@ function switchToMatrixTheme() {
     document.body.classList.remove('lcars-theme', 'thor-theme');
     document.body.classList.add('matrix-theme');
     
-    // Show/hide backgrounds
+    // Show/hide backgrounds with complete reset
     const matrixBg = document.getElementById('matrixBg');
     const lcarsBg = document.getElementById('lcarsBg');
     const thorBg = document.getElementById('thorBg');
     
-    if (matrixBg) matrixBg.classList.remove('hidden');
-    if (lcarsBg) lcarsBg.classList.add('hidden');
-    if (thorBg) thorBg.classList.add('hidden');
+    // Force hide other backgrounds and reset their styles
+    if (lcarsBg) {
+        lcarsBg.classList.add('hidden');
+        lcarsBg.removeAttribute('style');
+    }
+    if (thorBg) {
+        thorBg.classList.add('hidden');
+        thorBg.removeAttribute('style');
+    }
+    
+    // Show Matrix background cleanly
+    if (matrixBg) {
+        matrixBg.removeAttribute('style');
+        matrixBg.classList.remove('hidden');
+        matrixBg.offsetHeight; // Force reflow
+    }
     
     // Stop other effects - check if cleanup functions exist
     if (typeof cleanupLcarsTheme === 'function') {
@@ -395,23 +411,53 @@ function handleMatrixClick(clickX, clickY) {
 function cleanupMatrixTheme() {
     console.log('🧹 Starting Matrix theme cleanup...');
     
-    // Clear intervals
+    // Clear ALL Matrix intervals
     if (matrixKanjiInterval) {
         clearInterval(matrixKanjiInterval);
         matrixKanjiInterval = null;
     }
     
+    // Clear any Matrix particle creation loops
+    if (typeof matrixParticleInterval !== 'undefined' && matrixParticleInterval) {
+        clearInterval(matrixParticleInterval);
+        matrixParticleInterval = null;
+    }
+    
+    // FORCE stop all Matrix animations first
+    const allMatrixElements = document.querySelectorAll('.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill');
+    allMatrixElements.forEach(el => {
+        if (el.style) {
+            el.style.animation = 'none';
+            el.style.animationPlayState = 'paused';
+        }
+    });
+    
     // Clear particles container completely
     const particlesContainer = document.getElementById('particles');
     if (particlesContainer) {
+        // Force stop container animations
+        particlesContainer.style.animation = 'none';
+        particlesContainer.style.animationPlayState = 'paused';
         // Remove all children
         particlesContainer.innerHTML = '';
         // Remove any inline styles that might persist
         particlesContainer.removeAttribute('style');
+        // Force reflow
+        particlesContainer.offsetHeight;
     }
     
     // Clear particles array
     matrixParticles = [];
+    
+    // Force cleanup any animations on the clock display that might be moving
+    const clockDisplay = document.querySelector('.clock-display');
+    if (clockDisplay) {
+        clockDisplay.style.animation = 'none';
+        clockDisplay.style.transform = '';
+        clockDisplay.style.transition = 'none';
+        clockDisplay.offsetHeight; // Force reflow
+        clockDisplay.style.transition = '';
+    }
     
     // Remove any lingering Matrix elements more comprehensively
     const matrixElements = document.querySelectorAll(
@@ -439,12 +485,19 @@ function cleanupMatrixTheme() {
         document.body.removeAttribute('style');
     }
     
+    // Remove Matrix theme class completely
+    document.body.classList.remove('matrix-theme');
+    
     // Hide Matrix background
     const matrixBg = document.getElementById('matrixBg');
     if (matrixBg) {
         matrixBg.classList.add('hidden');
         // Remove any inline styles from the background
         matrixBg.removeAttribute('style');
+        // Force stop any background animations
+        matrixBg.style.animation = 'none';
+        matrixBg.offsetHeight; // Force reflow
+        matrixBg.style.animation = '';
     }
     
     // Force cleanup of any matrix-themed elements that might affect other themes

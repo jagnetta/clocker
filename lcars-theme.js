@@ -17,15 +17,186 @@ function initLcarsTheme() {
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'lcars';
     
-    // Start LCARS-specific effects
-    if (!isMobileDevice) {
-        initWarpSpeed();
+    // FORCE ensure LCARS theme class is applied and others are removed
+    document.body.classList.remove('matrix-theme', 'thor-theme', 'og-theme');
+    document.body.classList.add('lcars-theme');
+    
+    // Force clean up any lingering Matrix/Thor contamination
+    document.body.removeAttribute('style');
+    
+    // Force stop ALL animations that might be affecting layout
+    const animatedElements = document.querySelectorAll('*');
+    animatedElements.forEach(el => {
+        if (el.style) {
+            // Stop animations completely
+            if (el.style.animation && el.style.animation !== 'none') {
+                el.style.animation = 'none';
+            }
+            if (el.style.animationPlayState) {
+                el.style.animationPlayState = 'paused';
+            }
+            // Reset transforms that cause movement
+            if (el.style.transform && (el.style.transform.includes('translate') || el.style.transform.includes('matrix'))) {
+                el.style.transform = '';
+            }
+            // Reset transitions that might cause movement
+            if (el.style.transition) {
+                el.style.transition = 'none';
+            }
+        }
+    });
+    
+    // SPECIFICALLY target and fix the clock display positioning
+    const clockDisplay = document.querySelector('.clock-display');
+    if (clockDisplay && clockDisplay.style) {
+        clockDisplay.style.transform = '';
+        clockDisplay.style.animation = 'none';
+        clockDisplay.style.transition = 'none';
+        clockDisplay.style.top = '';
+        clockDisplay.style.left = '';
+        clockDisplay.style.position = '';
+        // Force reflow
+        clockDisplay.offsetHeight;
     }
+    
+    // FORCE proper background management
+    const matrixBg = document.getElementById('matrixBg');
+    const lcarsBg = document.getElementById('lcarsBg'); 
+    const thorBg = document.getElementById('thorBg');
+    
+    if (matrixBg) {
+        matrixBg.classList.add('hidden');
+        matrixBg.removeAttribute('style');
+    }
+    if (thorBg) {
+        thorBg.classList.add('hidden');
+        thorBg.removeAttribute('style');
+    }
+    if (lcarsBg) {
+        lcarsBg.removeAttribute('style');
+        lcarsBg.classList.remove('hidden');
+        
+        // Force LCARS background visibility with !important override
+        lcarsBg.style.setProperty('opacity', '1', 'important');
+        lcarsBg.style.setProperty('visibility', 'visible', 'important');
+        lcarsBg.style.setProperty('display', 'block', 'important');
+        lcarsBg.style.setProperty('z-index', '1', 'important');
+        
+        lcarsBg.offsetHeight; // Force reflow
+        
+        // Ensure LCARS interface elements are visible
+        const lcarsInterface = lcarsBg.querySelector('.lcars-interface');
+        if (lcarsInterface) {
+            lcarsInterface.style.setProperty('opacity', '1', 'important');
+            lcarsInterface.style.setProperty('visibility', 'visible', 'important');
+            lcarsInterface.style.setProperty('display', 'block', 'important');
+        }
+    }
+    
+    // Force cleanup any lingering Matrix/Thor elements
+    const contaminationElements = document.querySelectorAll(
+        '.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill, .lightning-flash, .mjolnir-strike, .loki-illusion'
+    );
+    contaminationElements.forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    
+    // AGGRESSIVE Matrix color contamination cleanup
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+        if (el.style) {
+            // Remove Matrix green colors
+            if (el.style.color === 'rgb(0, 255, 0)' || el.style.color === '#00ff00' || 
+                el.style.color === '#00FF00' || el.style.color.toLowerCase().includes('#0f0')) {
+                el.style.color = '';
+            }
+            // Remove Matrix text-shadow
+            if (el.style.textShadow && (el.style.textShadow.includes('0 0') || el.style.textShadow.includes('green'))) {
+                el.style.textShadow = '';
+            }
+            // Remove Matrix background colors
+            if (el.style.background && el.style.background.includes('#00ff00')) {
+                el.style.background = '';
+            }
+        }
+    });
+    
+    // Clear all effect containers
+    const containers = ['particles', 'lightningEffects', 'thorParticles', 'asgardRunes'];
+    containers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = '';
+            container.removeAttribute('style');
+        }
+    });
+    
+    // FORCE cleanup any existing LCARS effects before starting new ones
+    if (warpStarsInterval) {
+        clearInterval(warpStarsInterval);
+        warpStarsInterval = null;
+    }
+    
+    // Clear warp container completely and reset
+    const warpContainer = document.getElementById('warpStars');
+    if (warpContainer) {
+        warpContainer.innerHTML = '';
+        warpContainer.removeAttribute('style');
+        // Force stop any CSS animations on the container
+        warpContainer.style.animation = 'none';
+        warpContainer.offsetHeight; // Force reflow
+        warpContainer.style.animation = '';
+    }
+    
+    // Remove any lingering LCARS animation elements
+    const existingLcarsElements = document.querySelectorAll('.warp-star, .star-trek-flyby, .photon-torpedo-formation');
+    existingLcarsElements.forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    
+    // Reset UFO counter
+    activeUfos = 0;
+    
+    // Wait a moment for cleanup to complete before starting new effects
+    setTimeout(() => {
+        // Start LCARS-specific effects
+        if (!isMobileDevice) {
+            initWarpSpeed();
+        }
+    }, 50);
     
     // Update LCARS-specific labels
     updateLcarsLabels();
     
-    console.log('🖖 LCARS INTERFACE ENGAGED 🖖');
+    // Force DOM reflow and CSS application with delay
+    document.body.offsetHeight; // Force reflow
+    
+    setTimeout(() => {
+        // Double-check theme class application
+        if (!document.body.classList.contains('lcars-theme')) {
+            document.body.classList.add('lcars-theme');
+        }
+        
+        // Force another reflow to ensure LCARS styles are applied
+        const clockDisplay = document.querySelector('.clock-display');
+        if (clockDisplay) {
+            clockDisplay.offsetHeight;
+        }
+        
+        // Final check to ensure LCARS background is visible
+        const finalLcarsBg = document.getElementById('lcarsBg');
+        if (finalLcarsBg) {
+            finalLcarsBg.style.setProperty('opacity', '1', 'important');
+            finalLcarsBg.style.setProperty('visibility', 'visible', 'important');
+            const lcarsInterface = finalLcarsBg.querySelector('.lcars-interface');
+            if (lcarsInterface) {
+                lcarsInterface.style.setProperty('opacity', '1', 'important');
+                lcarsInterface.style.setProperty('visibility', 'visible', 'important');
+            }
+        }
+        
+        console.log('🖖 LCARS INTERFACE ENGAGED 🖖');
+    }, 100);
 }
 
 /**
@@ -97,14 +268,27 @@ function switchToLcarsTheme() {
     // Force clean body styles to prevent Matrix green contamination
     document.body.removeAttribute('style');
     
-    // Show/hide backgrounds properly
+    // Show/hide backgrounds properly with complete reset
     const matrixBg = document.getElementById('matrixBg');
     const lcarsBg = document.getElementById('lcarsBg'); 
     const thorBg = document.getElementById('thorBg');
     
-    if (matrixBg) matrixBg.classList.add('hidden');
-    if (lcarsBg) lcarsBg.classList.remove('hidden');
-    if (thorBg) thorBg.classList.add('hidden');
+    // Force hide other backgrounds and reset their styles
+    if (matrixBg) {
+        matrixBg.classList.add('hidden');
+        matrixBg.removeAttribute('style');
+    }
+    if (thorBg) {
+        thorBg.classList.add('hidden');
+        thorBg.removeAttribute('style');
+    }
+    
+    // Show LCARS background cleanly
+    if (lcarsBg) {
+        lcarsBg.removeAttribute('style');
+        lcarsBg.classList.remove('hidden');
+        lcarsBg.offsetHeight; // Force reflow
+    }
     
     // Clean up Matrix contamination completely
     if (typeof cleanupMatrixTheme === 'function') {
@@ -119,19 +303,28 @@ function switchToLcarsTheme() {
         clearInterval(matrixKanjiInterval);
     }
     
-    // Force remove any Matrix elements that might be lingering
-    const matrixElements = document.querySelectorAll(
-        '.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill, .matrix-particle'
+    // FORCE cleanup Thor contamination too
+    if (typeof cleanupThorEffects === 'function') {
+        cleanupThorEffects();
+    }
+    
+    // Force remove any lingering elements from ALL other themes
+    const allOtherThemeElements = document.querySelectorAll(
+        '.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill, .matrix-particle, .lightning-flash, .mjolnir-strike, .loki-illusion, .loki-shapeshift, .thor-particle'
     );
-    matrixElements.forEach(el => {
+    allOtherThemeElements.forEach(el => {
         if (el.parentNode) el.parentNode.removeChild(el);
     });
     
-    // Clear particles container
-    const particlesContainer = document.getElementById('particles');
-    if (particlesContainer) {
-        particlesContainer.innerHTML = '';
-    }
+    // Clear ALL effect containers
+    const allContainers = ['particles', 'lightningEffects', 'thorParticles', 'asgardRunes'];
+    allContainers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = '';
+            container.removeAttribute('style');
+        }
+    });
     
     // Start warp effects (only if not mobile)
     if (!isMobileDevice) {
@@ -160,8 +353,18 @@ function updateLcarsLabels() {
  */
 function initWarpSpeed() {
     const warpContainer = document.getElementById('warpStars');
+    if (!warpContainer) {
+        console.warn('Warp stars container not found');
+        return;
+    }
     
-    // Clear existing stars
+    // Double-check: clear any existing interval first
+    if (warpStarsInterval) {
+        clearInterval(warpStarsInterval);
+        warpStarsInterval = null;
+    }
+    
+    // Clear existing stars completely
     warpContainer.innerHTML = '';
     
     // Create initial stars
@@ -169,14 +372,26 @@ function initWarpSpeed() {
         createWarpStar();
     }
     
-    // Continuously create new stars
+    // Continuously create new stars with defensive checks
     warpStarsInterval = registerInterval(setInterval(() => {
+        // Check if container still exists and theme is still LCARS
+        if (!document.getElementById('warpStars') || !document.body.classList.contains('lcars-theme')) {
+            if (warpStarsInterval) {
+                clearInterval(warpStarsInterval);
+                warpStarsInterval = null;
+            }
+            return;
+        }
+        
         createWarpStar();
         
         // Clean up old stars
         const stars = warpContainer.querySelectorAll('.warp-star');
         if (stars.length > 80) {
-            stars[0].remove();
+            const oldStar = stars[0];
+            if (oldStar && oldStar.parentNode) {
+                oldStar.parentNode.removeChild(oldStar);
+            }
         }
     }, 300));
 }

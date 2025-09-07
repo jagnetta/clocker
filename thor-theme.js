@@ -60,12 +60,42 @@ function switchToThorTheme() {
         }
     });
     
-    // Stop other theme effects (assumes these variables exist globally)
+    // Stop other theme effects and force cleanup
     if (typeof warpStarsInterval !== 'undefined' && warpStarsInterval) {
         clearInterval(warpStarsInterval);
     }
     if (typeof matrixKanjiInterval !== 'undefined' && matrixKanjiInterval) {
         clearInterval(matrixKanjiInterval);
+    }
+    
+    // FORCE cleanup Matrix contamination
+    if (typeof cleanupMatrixTheme === 'function') {
+        cleanupMatrixTheme();
+    }
+    if (typeof cleanupLcarsTheme === 'function') {
+        cleanupLcarsTheme();
+    }
+    
+    // Remove Matrix elements that might be lingering
+    const matrixElements = document.querySelectorAll(
+        '.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill, .warp-star, .star-trek-flyby'
+    );
+    matrixElements.forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    
+    // Clear particles container
+    const particlesContainer = document.getElementById('particles');
+    if (particlesContainer) {
+        particlesContainer.innerHTML = '';
+        particlesContainer.removeAttribute('style');
+    }
+    
+    // Clear warp stars
+    const warpContainer = document.getElementById('warpStars');
+    if (warpContainer) {
+        warpContainer.innerHTML = '';
+        warpContainer.removeAttribute('style');
     }
     
     // Start Thor effects (only if not mobile)
@@ -538,19 +568,42 @@ function handleThorClick(clickX, clickY) {
  * Call this when switching away from Thor theme
  */
 function cleanupThorEffects() {
+    console.log('🧹 Starting Thor theme cleanup...');
+    
     if (thorEffectsInterval) {
         clearInterval(thorEffectsInterval);
         thorEffectsInterval = null;
     }
     
-    // Clear effect containers
+    // Clear Thor effect containers completely
     const containers = ['lightningEffects', 'thorParticles', 'asgardRunes'];
     containers.forEach(containerId => {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = '';
+            container.removeAttribute('style');
         }
     });
+    
+    // Remove any lingering Thor elements
+    const thorElements = document.querySelectorAll(
+        '.lightning-flash, .mjolnir-strike, .loki-illusion, .loki-shapeshift, .thor-particle'
+    );
+    thorElements.forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    
+    // Remove Thor theme class
+    document.body.classList.remove('thor-theme');
+    
+    // Hide Thor background
+    const thorBg = document.getElementById('thorBg');
+    if (thorBg) {
+        thorBg.classList.add('hidden');
+        thorBg.removeAttribute('style');
+    }
+    
+    console.log('✅ Thor theme cleanup complete');
 }
 
 /**

@@ -49,7 +49,8 @@
 }
 
 /* LCARS Background - Warp Speed Effect */
-.lcars-theme .lcars-bg {
+.lcars-theme .lcars-bg,
+.lcars-theme #lcarsBg {
     position: fixed;
     top: 0;
     left: 0;
@@ -58,6 +59,29 @@
     background: #000000;
     overflow: hidden;
     z-index: 1;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* LCARS Background Element - Main visibility control */
+#lcarsBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    background: #000000;
+    overflow: hidden;
+}
+
+/* Show LCARS background when theme is active */
+.lcars-theme #lcarsBg {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .warp-stars {

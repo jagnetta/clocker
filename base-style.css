@@ -54,14 +54,9 @@
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
-/* Matrix Theme Body (Default) */
+/* Base Body Styles (Theme-neutral) */
 body {
-    background: 
-        radial-gradient(ellipse at center, rgba(0, 40, 0, 0.6) 0%, transparent 70%),
-        linear-gradient(0deg, #000000, #001100, #000000);
-    background-size: 100% 200%;
-    animation: matrixBackground 10s ease infinite;
-    color: #00ff00;
+    background: #000000; /* Neutral black background */
     font-family: 'Antonio', sans-serif;
     overflow: hidden;
     position: relative;
@@ -71,6 +66,16 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+/* Matrix Theme Body Styles (Applied only when .matrix-theme class is present) */
+body.matrix-theme {
+    background: 
+        radial-gradient(ellipse at center, rgba(0, 40, 0, 0.6) 0%, transparent 70%),
+        linear-gradient(0deg, #000000, #001100, #000000);
+    background-size: 100% 200%;
+    animation: matrixBackground 10s ease infinite;
+    color: #00ff00;
 }
 
 /* Allow text selection for interactive elements */
@@ -85,8 +90,8 @@ input, button, textarea, select {
    MOBILE DEVICE SIMPLIFIED STYLES
    ======================================== */
 
-/* Mobile-specific simplifications */
-.mobile-device body {
+/* Mobile-specific simplifications for Matrix theme */
+.mobile-device body.matrix-theme {
     /* Disable complex background animations */
     animation: none;
     background: linear-gradient(0deg, #000000, #001100, #000000);
@@ -98,33 +103,35 @@ input, button, textarea, select {
     display: none;
 }
 
-/* Simplify floating particles container on mobile */
-.mobile-device .floating-particles {
+/* Matrix Theme Mobile Simplifications */
+.mobile-device .matrix-theme .floating-particles {
     display: none;
 }
 
-/* Disable matrix effects on mobile */
 .mobile-device .matrix-column-char {
     display: none;
 }
 
-/* Simplify clock display for mobile */
+/* Base Mobile Clock Display (all themes) */
 .mobile-device .clock-display {
     width: 95vw;
     padding: 20px 30px;
-    border: 2px solid #00ff00;
     border-radius: 15px;
+    transform: none;
+    backdrop-filter: none;
+}
+
+/* Matrix Theme Mobile Clock Display */
+.mobile-device .matrix-theme .clock-display {
+    border: 2px solid #00ff00;
     box-shadow: 
         0 0 20px rgba(0, 255, 0, 0.3),
         inset 0 0 15px rgba(0, 255, 0, 0.05);
-    /* Remove 3D transforms that can be performance heavy */
-    transform: none;
-    backdrop-filter: none;
     background: rgba(0, 20, 0, 0.8);
 }
 
-/* Simplify kanji rotation on mobile */
-.mobile-device .clock-display::before {
+/* Matrix Theme Mobile Kanji */
+.mobile-device .matrix-theme .clock-display::before {
     animation: none;
     opacity: 0.6;
     transform: none;
@@ -148,47 +155,71 @@ input, button, textarea, select {
     font-size: 0.7rem;
 }
 
-/* Simplify weather ticker on mobile */
+/* Base Mobile Weather Ticker (all themes) */
 .mobile-device .weather-ticker {
-    background: rgba(0, 20, 0, 0.8);
     backdrop-filter: none;
 }
 
-/* Mobile typography adjustments */
+/* Matrix Theme Mobile Weather Ticker */
+.mobile-device .matrix-theme .weather-ticker {
+    background: rgba(0, 20, 0, 0.8);
+}
+
+/* Base Mobile Typography (all themes) */
 .mobile-device .day {
     font-size: 8vw;
-    text-shadow: 0 0 10px #00ff00;
 }
 
 .mobile-device .date {
     font-size: 4vw;
-    text-shadow: 0 0 8px #00ff00;
 }
 
 .mobile-device .time {
     font-size: 6vw;
+}
+
+/* Matrix Theme Mobile Typography */
+.mobile-device .matrix-theme .day {
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.mobile-device .matrix-theme .date {
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.mobile-device .matrix-theme .time {
     text-shadow: 0 0 10px #00ff00;
 }
 
 
 /* Simplify controls section on mobile */
+/* Base Mobile Controls (all themes) */
 .mobile-device .controls {
     padding: 15px;
     margin: 15px 10px;
-    background: rgba(0, 20, 0, 0.8);
     backdrop-filter: none;
 }
 
+/* Matrix Theme Mobile Controls */
+.mobile-device .matrix-theme .controls {
+    background: rgba(0, 20, 0, 0.8);
+}
+
+/* Base Mobile Timezone Container (all themes) */
 .mobile-device .timezone-container {
     top: 70px; /* Move down to avoid theme selector overlap */
     min-width: 300px;
     max-width: 90vw;
     padding: 12px 20px;
-    background: rgba(0, 20, 0, 0.8);
     backdrop-filter: none;
 }
 
-.mobile-device .timezone-slider {
+/* Matrix Theme Mobile Timezone */
+.mobile-device .matrix-theme .timezone-container {
+    background: rgba(0, 20, 0, 0.8);
+}
+
+.mobile-device .matrix-theme .timezone-slider {
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
 }
 
@@ -211,16 +242,23 @@ input, button, textarea, select {
     display: none !important;
 }
 
-/* Simplify input styles on mobile */
+/* Base Mobile Input Styles (all themes) */
 .mobile-device input[type="text"] {
-    background: rgba(0, 20, 0, 0.8);
     backdrop-filter: none;
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
 }
 
 .mobile-device button {
-    background: rgba(0, 40, 0, 0.8);
     backdrop-filter: none;
+}
+
+/* Matrix Theme Mobile Input Styles */
+.mobile-device .matrix-theme input[type="text"] {
+    background: rgba(0, 20, 0, 0.8);
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.mobile-device .matrix-theme button {
+    background: rgba(0, 40, 0, 0.8);
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
 }
 
@@ -343,20 +381,16 @@ body::before {
     transform-style: preserve-3d;
 }
 
+/* Base Clock Display Styles (Theme-neutral) */
 .clock-display {
     position: relative;
     width: 75vw;
     padding: 40px 60px;
-    background: 
-        linear-gradient(145deg, rgba(0, 20, 0, 0.15), rgba(0, 40, 0, 0.1)),
-        radial-gradient(ellipse at center, rgba(0, 255, 0, 0.05) 0%, transparent 70%);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(3px);
-    border: 3px solid #00ff00;
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 25px;
-    box-shadow: 
-        0 0 40px rgba(0, 255, 0, 0.4),
-        inset 0 0 30px rgba(0, 255, 0, 0.05),
-        0 20px 40px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
     transform-style: preserve-3d;
     z-index: 15;
     display: flex;
@@ -365,7 +399,19 @@ body::before {
     justify-content: center;
 }
 
-.clock-display::before {
+/* Matrix Theme Clock Display */
+.matrix-theme .clock-display {
+    background: 
+        linear-gradient(145deg, rgba(0, 20, 0, 0.15), rgba(0, 40, 0, 0.1)),
+        radial-gradient(ellipse at center, rgba(0, 255, 0, 0.05) 0%, transparent 70%);
+    border: 3px solid #00ff00;
+    box-shadow: 
+        0 0 40px rgba(0, 255, 0, 0.4),
+        inset 0 0 30px rgba(0, 255, 0, 0.05),
+        0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.matrix-theme .clock-display::before {
     content: var(--matrix-kanji, '時');
     position: absolute;
     top: -15px;
@@ -434,6 +480,7 @@ body::before {
     }
 }
 
+/* Base Day Styles (Theme-neutral) */
 .day {
     font-family: 'Antonio', sans-serif;
     font-size: 6vw;
@@ -442,18 +489,8 @@ body::before {
     white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: normal;
-    color: #00ff00;
-    text-shadow: 
-        0 0 0 #004400,
-        0 2px 0 #003800,
-        0 4px 0 #003000,
-        0 6px 0 #002800,
-        0 8px 0 #002000,
-        0 10px 0 #001800,
-        0 15px 25px rgba(0, 0, 0, 0.8),
-        0 0 20px #00ff00,
-        0 0 35px #00ff00,
-        0 0 50px rgba(0, 255, 0, 0.6);
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     animation: none;
     position: relative;
     filter: brightness(1.4) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.8));
@@ -461,12 +498,8 @@ body::before {
     z-index: 100;
 }
 
-.date {
-    font-family: 'Antonio', sans-serif;
-    font-size: 4.5vw;
-    font-weight: 900;
-    margin-bottom: 2vh;
-    white-space: nowrap;
+/* Matrix Theme Day Styles */
+.matrix-theme .day {
     color: #00ff00;
     text-shadow: 
         0 0 0 #004400,
@@ -479,6 +512,17 @@ body::before {
         0 0 20px #00ff00,
         0 0 35px #00ff00,
         0 0 50px rgba(0, 255, 0, 0.6);
+}
+
+/* Base Date Styles (Theme-neutral) */
+.date {
+    font-family: 'Antonio', sans-serif;
+    font-size: 4.5vw;
+    font-weight: 900;
+    margin-bottom: 2vh;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     animation: none;
     position: relative;
     filter: brightness(1.3) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.8));
@@ -486,15 +530,43 @@ body::before {
     z-index: 100;
 }
 
+/* Matrix Theme Date Styles */
+.matrix-theme .date {
+    color: #00ff00;
+    text-shadow: 
+        0 0 0 #004400,
+        0 2px 0 #003800,
+        0 4px 0 #003000,
+        0 6px 0 #002800,
+        0 8px 0 #002000,
+        0 10px 0 #001800,
+        0 15px 25px rgba(0, 0, 0, 0.8),
+        0 0 20px #00ff00,
+        0 0 35px #00ff00,
+        0 0 50px rgba(0, 255, 0, 0.6);
+}
+
+/* Base Time Styles (Theme-neutral) */
 .time {
     font-family: 'JetBrains Mono', monospace;
     font-size: 5.5vw;
     font-weight: 800;
     white-space: nowrap;
-    color: #00ff00;
+    color: rgba(255, 255, 255, 0.9);
     max-width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    animation: none;
+    position: relative;
+    filter: brightness(1.4) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
+    transform-style: preserve-3d;
+    z-index: 100;
+}
+
+/* Matrix Theme Time Styles */
+.matrix-theme .time {
+    color: #00ff00;
     text-shadow: 
         0 0 0 #004400,
         0 2px 0 #003800,
@@ -506,11 +578,6 @@ body::before {
         0 0 20px #00ff00,
         0 0 35px #00ff00,
         0 0 50px rgba(0, 255, 0, 0.6);
-    animation: none;
-    position: relative;
-    filter: brightness(1.4) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
-    transform-style: preserve-3d;
-    z-index: 100;
 }
 
 .time-suffix {
