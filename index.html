@@ -80,25 +80,21 @@
         </div>
     </div>
     
-    <!-- Matrix Weather System -->
+    <!-- Weather Control Panel -->
     <div class="weather-container">
-        <div class="weather-panel">
-            <div class="weather-panel-header">
-                <div class="city-label">🌐 WEATHER DATA INTERFACE</div>
-                <button id="resetWeather" class="weather-reset-btn hidden" title="Reset Weather">↻</button>
-            </div>
-            
-            <div class="weather-content">
-                <div class="weather-controls" id="weatherControls">
-                    <input type="text" id="cityInput" class="city-input" placeholder="New York, Tokyo, London" maxlength="50">
-                    <button id="weatherButton" class="weather-button">ACCESS DATA</button>
-                </div>
-                
-                <div id="weatherTicker" class="weather-ticker hidden">
-                    <div class="weather-scroll" id="weatherScroll">
-                        <!-- Weather data stream will be displayed here -->
-                    </div>
-                </div>
+        <div class="weather-panel-header">
+            <div class="weather-label">🌐 WEATHER DATA INTERFACE 🌐</div>
+            <button id="resetWeather" class="weather-reset-btn hidden" title="Reset Weather">↻</button>
+        </div>
+        
+        <div class="weather-controls" id="weatherControls">
+            <input type="text" id="cityInput" class="weather-input" placeholder="New York, Tokyo, London" maxlength="50">
+            <button id="weatherButton" class="weather-button">ACCESS DATA</button>
+        </div>
+        
+        <div id="weatherTicker" class="weather-ticker hidden">
+            <div class="weather-scroll" id="weatherScroll">
+                <!-- Weather data stream will be displayed here -->
             </div>
         </div>
     </div>

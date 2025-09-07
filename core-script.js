@@ -279,7 +279,7 @@ function clearThemeDOM() {
     // Clear ALL theme background containers more comprehensively
     const allContainers = [
         '#particles', '.floating-particles', '#warpStars', '#lightningEffects',
-        '#thorParticles', '#asgardRunes', '#mjolnirHammer', '#compyWindow'
+        '#thorParticles', '#asgardRunes', '#compyWindow'
     ];
     
     allContainers.forEach(selector => {
@@ -1243,7 +1243,9 @@ function celsiusToFahrenheit(celsius) {
 
 // Create weather ticker display
 function createWeatherTicker(weatherData, locationName) {
+    console.log('🎯 createWeatherTicker called - starting immediately');
     const weatherScroll = document.getElementById('weatherScroll');
+    
     
     // Check if weatherScroll element exists
     if (!weatherScroll) {
@@ -1256,13 +1258,16 @@ function createWeatherTicker(weatherData, locationName) {
     
     // Extract location details
     const coords = `${weatherData.coord.latitude}°, ${weatherData.coord.longitude}°`;
-    const formattedLocation = `${weatherData.name}, ${weatherData.country || ''}`;
+    // Use the already formatted location name from coordinates, don't add country again
+    const formattedLocation = weatherData.name;
     
     // Helper function to create 5-day forecast content block
     function createWeatherContent() {
         const contentBlock = document.createElement('div');
         contentBlock.style.display = 'inline-flex';
         contentBlock.style.alignItems = 'center';
+        contentBlock.style.marginRight = '20px';
+        contentBlock.style.whiteSpace = 'nowrap';
         
         // Current weather
         const currentIcon = getWeatherIcon(weatherData.current.description);
@@ -1279,7 +1284,7 @@ function createWeatherTicker(weatherData, locationName) {
         const currentWeatherItem = document.createElement('div');
         currentWeatherItem.className = 'weather-item';
         currentWeatherItem.innerHTML = `
-            <span class="weather-label">NOW:</span>
+            <span class="weather-day">NOW:</span>
             <span class="weather-icon">${currentIcon}</span>
             <span class="weather-temp">${currentTempF}°F</span>
             <span class="weather-desc">${weatherData.current.description}</span>
@@ -1288,10 +1293,10 @@ function createWeatherTicker(weatherData, locationName) {
         `;
         contentBlock.appendChild(currentWeatherItem);
         
-        // Add forecast separator
+        // Add forecast separator with Matrix theme styling
         const midSeparator = document.createElement('div');
         midSeparator.className = 'weather-separator';
-        midSeparator.textContent = ' | FORECAST: ';
+        midSeparator.innerHTML = ' ⚡ FORECAST ⚡ ';
         contentBlock.appendChild(midSeparator);
         
         // 5-day forecast (take every 8th item to get daily forecasts)
@@ -1309,7 +1314,7 @@ function createWeatherTicker(weatherData, locationName) {
             const forecastItem = document.createElement('div');
             forecastItem.className = 'weather-item forecast-weather';
             forecastItem.innerHTML = `
-                <span class="weather-label">${dayName}:</span>
+                <span class="weather-day">${dayName}:</span>
                 <span class="weather-icon">${forecastIcon}</span>
                 <span class="weather-temp">${forecastTempF}°F</span>
                 <span class="weather-desc">${forecast.description}</span>
@@ -1335,8 +1340,40 @@ function createWeatherTicker(weatherData, locationName) {
     }
     
     // Create chain of weather content blocks for continuous scroll
-    for (let i = 0; i < 3; i++) {
-        weatherScroll.appendChild(createWeatherContent());
+    for (let i = 0; i < 4; i++) {
+        const contentBlock = createWeatherContent();
+        weatherScroll.appendChild(contentBlock);
+    }
+    
+    console.log('🎯 Weather ticker creation completed - should be visible now');
+    
+    // Debug: Check if elements were actually created
+    console.log('🔍 DEBUG: weatherScroll children count:', weatherScroll.children.length);
+    console.log('🔍 DEBUG: weatherScroll innerHTML length:', weatherScroll.innerHTML.length);
+    
+    // Check first few weather elements for visibility
+    const firstWeatherDay = weatherScroll.querySelector('.weather-day');
+    const firstWeatherTemp = weatherScroll.querySelector('.weather-temp');
+    
+    if (firstWeatherDay) {
+        const dayStyles = window.getComputedStyle(firstWeatherDay);
+        console.log('🔍 DEBUG: weather-day element found');
+        console.log('🔍 DEBUG: weather-day color:', dayStyles.color);
+        console.log('🔍 DEBUG: weather-day font-size:', dayStyles.fontSize);
+        console.log('🔍 DEBUG: weather-day display:', dayStyles.display);
+        console.log('🔍 DEBUG: weather-day visibility:', dayStyles.visibility);
+        console.log('🔍 DEBUG: weather-day opacity:', dayStyles.opacity);
+    } else {
+        console.log('❌ DEBUG: No weather-day element found');
+    }
+    
+    if (firstWeatherTemp) {
+        const tempStyles = window.getComputedStyle(firstWeatherTemp);
+        console.log('🔍 DEBUG: weather-temp element found');
+        console.log('🔍 DEBUG: weather-temp color:', tempStyles.color);
+        console.log('🔍 DEBUG: weather-temp font-size:', tempStyles.fontSize);
+    } else {
+        console.log('❌ DEBUG: No weather-temp element found');
     }
 }
 
@@ -1365,11 +1402,7 @@ function initWeather() {
     const resetButton = document.getElementById('resetWeather');
     if (resetButton) {
         resetButton.addEventListener('click', function() {
-            const weatherTicker = document.getElementById('weatherTicker');
-            weatherTicker.innerHTML = '';
-            weatherTicker.classList.add('hidden');
-            cityInput.value = '';
-            console.log('🌦️ Weather data cleared');
+            resetWeatherPanel();
         });
     }
 }
@@ -1446,10 +1479,20 @@ async function fetchWeatherData(locationInput) {
         if (isCoordinates(locationInput)) {
             coordinates = parseCoordinates(locationInput);
         } else {
+            // Update loading message
+            const weatherScroll = document.getElementById('weatherScroll');
+            if (weatherScroll) {
+                weatherScroll.innerHTML = '<div class="weather-loading">📍 Finding location...</div>';
+            }
             coordinates = await getCoordinatesFromLocation(locationInput, API_KEY);
         }
         
         // Get 5-day forecast using coordinates
+        // Update loading message
+        const weatherScroll = document.getElementById('weatherScroll');
+        if (weatherScroll) {
+            weatherScroll.innerHTML = '<div class="weather-loading">⛅ Fetching weather forecast...</div>';
+        }
         const forecastResponse = await fetch(
             `${BASE_URL}/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${API_KEY}&units=metric`
         );
@@ -1499,6 +1542,41 @@ async function fetchWeatherData(locationInput) {
     }
 }
 
+// Helper functions for weather panel state management
+function showWeatherResult() {
+    const weatherControls = document.getElementById('weatherControls');
+    const weatherTicker = document.getElementById('weatherTicker');
+    const weatherScroll = document.getElementById('weatherScroll');
+    const resetButton = document.getElementById('resetWeather');
+    
+    // Instant replacement: hide controls, show ticker and reset button
+    if (weatherControls) weatherControls.classList.add('hidden');
+    if (weatherTicker) weatherTicker.classList.remove('hidden');
+    if (resetButton) resetButton.classList.remove('hidden');
+}
+
+function resetWeatherPanel() {
+    const weatherControls = document.getElementById('weatherControls');
+    const weatherTicker = document.getElementById('weatherTicker');
+    const resetButton = document.getElementById('resetWeather');
+    const cityInput = document.getElementById('cityInput');
+    
+    // Instant replacement: hide ticker and reset button, show controls
+    if (weatherTicker) {
+        weatherTicker.classList.add('hidden');
+        // Only clear the weatherScroll content, don't destroy the element
+        const weatherScroll = document.getElementById('weatherScroll');
+        if (weatherScroll) {
+            weatherScroll.innerHTML = '';
+        }
+    }
+    if (resetButton) resetButton.classList.add('hidden');
+    if (weatherControls) weatherControls.classList.remove('hidden');
+    if (cityInput) cityInput.value = '';
+    
+    console.log('🌦️ Weather panel reset');
+}
+
 // Handle weather request with real API integration
 async function handleWeatherRequest() {
     const cityInput = document.getElementById('cityInput');
@@ -1517,25 +1595,25 @@ async function handleWeatherRequest() {
         }
     }
     
-    console.log(`🌦️ Fetching real weather for: ${cityName}`);
-    
     // Show loading indicator
     const weatherTicker = document.getElementById('weatherTicker');
     const weatherScroll = document.getElementById('weatherScroll');
     if (weatherScroll) {
         weatherScroll.innerHTML = '<div class="weather-loading">🌐 Fetching weather data...</div>';
     }
-    weatherTicker.classList.remove('hidden');
+    // Show the ticker with loading message first
+    showWeatherResult();
     
     try {
         // Fetch real weather data from OpenWeatherMap
         const weatherData = await fetchWeatherData(cityName);
         
         if (weatherData) {
+            
+            // Create ticker immediately - no delay
             createWeatherTicker(weatherData, cityName);
-            // Ensure the ticker is visible after successful creation
-            const weatherTicker = document.getElementById('weatherTicker');
-            if (weatherTicker) weatherTicker.classList.remove('hidden');
+            
+            // Weather ticker is already visible, just populated with data
             
             // Synchronize with OG theme if it's active
             if (currentTheme === 'og') {
@@ -1565,12 +1643,14 @@ async function handleWeatherRequest() {
         } else {
             if (weatherScroll) {
                 weatherScroll.innerHTML = '<div class="weather-error">❌ City not found. Please try again.</div>';
+                // Error message shown in already visible ticker
             }
         }
     } catch (error) {
         console.error('Weather API error:', error);
         if (weatherScroll) {
             weatherScroll.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
+            // Error message shown in already visible ticker
         }
     }
 }
@@ -1592,9 +1672,9 @@ function handleGlobalClick(event) {
         return;
     }
     
-    // Don't trigger on weather tracker clicks
-    if (event.target.closest('.weather-ticker')) {
-        console.log('Weather tracker clicked, ignoring');
+    // Don't trigger on weather interface clicks
+    if (event.target.closest('.weather-container')) {
+        console.log('Weather interface clicked, ignoring');
         return;
     }
     

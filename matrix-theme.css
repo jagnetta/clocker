@@ -246,6 +246,61 @@
     outline: none;
 }
 
+/* Matrix Weather Container */
+.matrix-theme .weather-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 20, 0, 0.3), rgba(0, 40, 0, 0.2)),
+        radial-gradient(circle at center, rgba(0, 255, 0, 0.05), transparent);
+    border: 2px solid #00ff00;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 255, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.matrix-theme .weather-label {
+    color: #00ff00;
+}
+
+.matrix-theme .weather-input {
+    background: 
+        linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(0, 30, 0, 0.6));
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+.matrix-theme .weather-input:focus {
+    border-color: #00ff00;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.matrix-theme .weather-input::placeholder {
+    color: #006600;
+}
+
+.matrix-theme .weather-reset-btn {
+    background: 
+        radial-gradient(circle at center, #00ff00, #00cc00);
+    border: 2px solid #00ff00;
+    color: #000000;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.6),
+        0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-theme .weather-reset-btn:hover {
+    box-shadow: 
+        inset 0 0 12px rgba(255, 255, 255, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.5);
+}
+
 .matrix-theme .weather-button {
     background: 
         linear-gradient(145deg, #00ff00, #008800),
@@ -298,7 +353,7 @@
     text-shadow: 0 0 4px rgba(0, 255, 0, 0.4);
 }
 
-.matrix-theme .weather-reset-button {
+.matrix-theme .weather-reset-button-old {
     background: 
         radial-gradient(circle at center, #00ff00, #008800);
     border: 2px solid #00ff00;

@@ -831,6 +831,62 @@
     animation: lcarsGlow 4s ease-in-out infinite alternate reverse;
 }
 
+/* LCARS Weather Container */
+.lcars-theme .weather-container {
+    background: 
+        linear-gradient(145deg, rgba(0, 30, 60, 0.3), rgba(0, 20, 40, 0.2)),
+        radial-gradient(circle at center, rgba(255, 153, 0, 0.05), transparent);
+    border: 2px solid #ff9900;
+    border-radius: 20px 5px 20px 5px;
+    box-shadow: 
+        inset 0 0 20px rgba(255, 153, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.lcars-theme .weather-label {
+    color: #ff9900;
+}
+
+.lcars-theme .weather-input {
+    background: 
+        linear-gradient(145deg, rgba(0, 20, 40, 0.95), rgba(0, 30, 60, 0.6));
+    border: 2px solid #ff9900;
+    color: #ff9900;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(255, 153, 0, 0.2);
+    text-shadow: 0 0 8px rgba(255, 153, 0, 0.5);
+}
+
+.lcars-theme .weather-input:focus {
+    border-color: #ffaa22;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(255, 153, 0, 0.5);
+}
+
+.lcars-theme .weather-input::placeholder {
+    color: #cc6600;
+}
+
+.lcars-theme .weather-reset-btn {
+    background: 
+        radial-gradient(circle at center, #ff9900, #cc6600);
+    border: 2px solid #ff9900;
+    color: #000000;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.6),
+        0 0 10px rgba(255, 153, 0, 0.3);
+}
+
+.lcars-theme .weather-reset-btn:hover {
+    box-shadow: 
+        inset 0 0 12px rgba(255, 255, 255, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 153, 0, 0.5);
+}
+
 .lcars-theme .weather-ticker {
     background: 
         linear-gradient(145deg, rgba(0, 30, 60, 0.95), rgba(0, 10, 20, 0.95)),
@@ -927,7 +983,7 @@
     text-shadow: 0 0 8px rgba(255, 153, 0, 0.6);
 }
 
-.lcars-theme .weather-reset-button {
+.lcars-theme .weather-reset-button-old {
     background: 
         radial-gradient(circle at center, #ff9900, #cc6600);
     border: 2px solid #ff9900;

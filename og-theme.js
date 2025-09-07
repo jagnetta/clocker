@@ -56,7 +56,7 @@ function cleanupOGTheme() {
         ogTerminalInterval = null;
     }
     
-    // Clear weather scrolling interval
+    // Clear weather scrolling interval (no longer needed with CSS animation)
     if (ogWeatherScrollInterval) {
         clearInterval(ogWeatherScrollInterval);
         ogWeatherScrollInterval = null;
@@ -100,7 +100,6 @@ function createCompy386() {
             <div class="og-terminal-header">
                 <div class="og-header-text">
                     <span class="og-terminal-title">COMPY 386</span>
-                    <span class="og-status-text">EMAIL TERMINAL</span>
                 </div>
                 <div class="og-terminal-buttons">
                     <span class="og-btn og-btn-close"></span>
@@ -118,27 +117,34 @@ function createCompy386() {
                         <div class="og-startup-line og-startup-delay-4">Time display ready. Holy crap on a cracker!</div>
                     </div>
                     <div class="og-clock-display" id="ogClockDisplay">
+                        <div class="og-timezone-control">
+                            <label class="og-timezone-label">TIMEZONE:</label>
+                            <input type="range" id="ogTimezoneSlider" class="og-timezone-slider" min="0" max="38" value="0" step="1">
+                        </div>
                         <div class="og-clock-day" id="ogClockDay"></div>
                         <div class="og-clock-date" id="ogClockDate"></div>
                         <div class="og-clock-time" id="ogClockTime"></div>
                     </div>
                     <div class="og-weather-search" id="ogWeatherSearch" style="display: none;">
-                        <div class="og-search-prompt">WEATHER SEARCH:</div>
-                        <input type="text" class="og-search-input" id="ogSearchInput" placeholder="ENTER CITY NAME">
-                        <button class="og-search-button" id="ogSearchButton">SEARCH</button>
+                        <div class="og-input-container">
+                            <span class="og-search-prompt">WEATHER SEARCH:</span>
+                            <input type="text" class="og-search-input" id="ogSearchInput" placeholder="ENTER CITY NAME">
+                            <button class="og-search-button" id="ogSearchButton">SEARCH</button>
+                        </div>
                         <div class="og-weather-ticker" id="ogWeatherTicker" style="display: none;">
-                            <div class="og-ticker-label">WEATHER DATA:</div>
-                            <div class="og-ticker-content" id="ogTickerContent">NO DATA LOADED</div>
+                            <div class="og-ticker-container">
+                                <span class="og-ticker-label">WEATHER DATA:</span>
+                                <div class="og-ticker-content" id="ogTickerContent">NO DATA LOADED</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="og-terminal-cursor" id="ogCursor">█</div>
                 </div>
                 <div class="og-terminal-scrollbar">
                     <div class="og-scrollbar-thumb"></div>
                 </div>
             </div>
             <div class="og-terminal-footer">
-                <!-- Status text moved to header -->
+                <!-- Footer area -->
             </div>
         </div>
     `;
@@ -177,6 +183,9 @@ function createCompy386() {
                 
                 // Initialize weather search functionality after displaying
                 initOgWeatherSearch();
+                
+                // Initialize timezone slider functionality
+                initOgTimezoneSlider();
             }, 1500); // Show weather tool 1.5 seconds after clock panel
         }
     }, 4000);
@@ -195,15 +204,27 @@ function startCompyClock() {
 
 // Update Compy 386 clock display (replicates clocker-improved formatting)
 function updateCompyClock() {
+    // Get timezone offset from window or main system
+    let timezoneOffset = 0;
+    if (typeof window.currentTimezoneOffset !== 'undefined') {
+        timezoneOffset = window.currentTimezoneOffset;
+    } else if (typeof currentTimezoneOffset !== 'undefined') {
+        timezoneOffset = currentTimezoneOffset;
+    }
+    
+    // Create date with timezone offset
     const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const targetTime = new Date(utc + (timezoneOffset * 3600000));
+    
     
     // Format day (same as clocker-improved)
-    const dayStr = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayStr = targetTime.toLocaleDateString('en-US', { weekday: 'long' });
     
     // Format date with ordinal suffix (same logic as clocker-improved)
-    const month = now.toLocaleDateString('en-US', { month: 'short' }).replace('May', 'May');
-    const day = now.getDate();
-    const year = now.getFullYear();
+    const month = targetTime.toLocaleDateString('en-US', { month: 'short' }).replace('May', 'May');
+    const day = targetTime.getDate();
+    const year = targetTime.getFullYear();
     
     // Apply ordinal suffix logic from clocker-improved
     let ordinalSuffix;
@@ -221,14 +242,61 @@ function updateCompyClock() {
     
     const dateStr = `${month}. ${day}${ordinalSuffix}, ${year}`;
     
-    // Format time (same as clocker-improved)
-    const timeStr = now.toLocaleTimeString('en-US', { 
+    // Format time without timezone (we'll add it manually)
+    const timeStr = targetTime.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit', 
         second: '2-digit',
-        hour12: true,
-        timeZoneName: 'short'
+        hour12: true
     }).replace(/\s+/g, ' ');
+    
+    // Get the current timezone info for display with DST consideration
+    let timezoneAbbr = '';
+    const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    if (timezoneSlider && typeof timezones !== 'undefined') {
+        const index = parseInt(timezoneSlider.value);
+        if (timezones[index]) {
+            const tzInfo = timezones[index];
+            
+            // Check if DST is currently active using the main system's logic
+            const now = new Date();
+            let isDstActive = false;
+            
+            if (tzInfo.daylightSaving && tzInfo.daylightSaving.observesDST) {
+                // Use the main system's DST detection function if available
+                if (typeof isDSTActiveForTimezone === 'function') {
+                    isDstActive = isDSTActiveForTimezone(now, tzInfo);
+                } else {
+                    // Fallback to simpler DST check for US/Canada timezones
+                    const month = now.getMonth();
+                    const day = now.getDate();
+                    
+                    if (month > 2 && month < 10) { // April through September
+                        isDstActive = true;
+                    } else if (month === 2) { // March - check for second Sunday
+                        const firstDay = new Date(now.getFullYear(), 2, 1);
+                        const firstSunday = 1 + (7 - firstDay.getDay()) % 7;
+                        const secondSunday = firstSunday + 7;
+                        isDstActive = day >= secondSunday;
+                    } else if (month === 10) { // November - check for first Sunday
+                        const firstDay = new Date(now.getFullYear(), 10, 1);
+                        const firstSunday = 1 + (7 - firstDay.getDay()) % 7;
+                        isDstActive = day < firstSunday;
+                    }
+                }
+            }
+            
+            // Use DST abbreviation if active, otherwise use standard
+            if (isDstActive && tzInfo.daylightSaving && tzInfo.daylightSaving.dstAbbreviation) {
+                timezoneAbbr = tzInfo.daylightSaving.dstAbbreviation;
+            } else {
+                timezoneAbbr = tzInfo.abbreviation || tzInfo.offset;
+            }
+        }
+    }
+    
+    // Combine time with timezone abbreviation
+    const fullTimeStr = timezoneAbbr ? `${timeStr} ${timezoneAbbr}` : timeStr;
     
     // Update Compy 386 display
     const dayElement = document.getElementById('ogClockDay');
@@ -237,7 +305,7 @@ function updateCompyClock() {
     
     if (dayElement) dayElement.textContent = dayStr.toUpperCase();
     if (dateElement) dateElement.textContent = dateStr.toUpperCase();
-    if (timeElement) timeElement.textContent = timeStr.toUpperCase();
+    if (timeElement) timeElement.textContent = fullTimeStr.toUpperCase();
 }
 
 
@@ -248,51 +316,80 @@ let ogWeatherScrollPosition = 0;
 
 // Update weather ticker in the search tool area
 function updateOgWeatherTicker() {
+    console.log('🔧 OG: updateOgWeatherTicker called');
     const tickerContent = document.getElementById('ogTickerContent');
-    if (!tickerContent) return;
+    if (!tickerContent) {
+        console.log('❌ OG: tickerContent element not found');
+        return;
+    }
     
     // Try to get weather data from main weather system
     const weatherScroll = document.getElementById('weatherScroll');
+    console.log('🔧 OG: weatherScroll element:', weatherScroll);
+    console.log('🔧 OG: weatherScroll children:', weatherScroll ? weatherScroll.children.length : 'null');
     let newWeatherText = '';
     
+    // Extract weather data more efficiently from the main weather system
     if (weatherScroll && weatherScroll.children.length > 0) {
-        // Extract all weather information for scrolling display
-        const weatherItems = weatherScroll.querySelectorAll('.weather-item');
+        console.log('🔧 OG: Found weather data in hidden scroll element');
+        
+        // Get basic info
         const citySeparator = weatherScroll.querySelector('.city-separator');
         const city = citySeparator ? citySeparator.textContent.replace(/🌐/g, '').trim() : 'UNKNOWN';
         
-        if (weatherItems.length > 0) {
-            // Build comprehensive weather string
+        // Get only the first content block to avoid massive duplication
+        const firstBlock = weatherScroll.children[0];
+        if (firstBlock) {
+            console.log('🔧 OG: Processing first weather block only');
+            
+            // Extract current weather
+            const currentItems = firstBlock.querySelectorAll('.weather-item');
+            const coords = firstBlock.querySelector('.weather-coords')?.textContent || '';
+            
             let weatherParts = [`🌐 ${city.toUpperCase()}`];
             
-            weatherItems.forEach(item => {
-                const label = item.querySelector('.weather-label')?.textContent || '';
-                const icon = item.querySelector('.weather-icon')?.textContent || '';
-                const temp = item.querySelector('.weather-temp')?.textContent || '';
-                const desc = item.querySelector('.weather-desc')?.textContent || '';
-                const humidity = item.querySelector('.weather-humidity')?.textContent || '';
-                const wind = item.querySelector('.weather-wind')?.textContent || '';
+            // Process only unique weather items (avoid duplicates)
+            const processedDays = new Set();
+            
+            currentItems.forEach(item => {
+                const dayElement = item.querySelector('.weather-day');
+                const tempElement = item.querySelector('.weather-temp');
+                const iconElement = item.querySelector('.weather-icon');
+                const descElement = item.querySelector('.weather-desc');
+                const humidityElement = item.querySelector('.weather-humidity');
+                const windElement = item.querySelector('.weather-wind');
                 
-                if (label && temp) {
-                    let itemText = `${label} ${icon} ${temp} ${desc.toUpperCase()}`;
-                    if (humidity) itemText += ` ${humidity}`;
-                    if (wind) itemText += ` ${wind}`;
-                    weatherParts.push(itemText);
+                if (dayElement && tempElement) {
+                    const day = dayElement.textContent.trim();
+                    const temp = tempElement.textContent.trim();
+                    const icon = iconElement ? iconElement.textContent.trim() : '';
+                    const desc = descElement ? descElement.textContent.trim().toUpperCase() : '';
+                    const humidity = humidityElement ? humidityElement.textContent.trim() : '';
+                    const wind = windElement ? windElement.textContent.trim() : '';
+                    
+                    // Only add if we haven't seen this day yet
+                    if (!processedDays.has(day)) {
+                        processedDays.add(day);
+                        let itemText = `${day} ${icon} ${temp} ${desc}`;
+                        if (humidity) itemText += ` ${humidity}`;
+                        if (wind) itemText += ` ${wind}`;
+                        weatherParts.push(itemText);
+                    }
                 }
             });
             
-            // Get coordinates if available
-            const coords = weatherScroll.querySelector('.weather-coords')?.textContent;
             if (coords) {
                 weatherParts.push(coords.toUpperCase());
             }
             
             newWeatherText = weatherParts.join(' • ') + ' • ';
+            console.log('🔧 OG: Built optimized weather text:', newWeatherText);
         } else {
             newWeatherText = 'WEATHER: NO DATA AVAILABLE • ';
         }
     } else {
-        newWeatherText = 'WEATHER: CLICK SEARCH TO LOAD DATA • ';
+        newWeatherText = 'WEATHER: LOADING DATA... • ';
+        console.log('🔧 OG: No weatherScroll or no children');
     }
     
     // Update weather text if changed and start/restart scrolling
@@ -303,41 +400,29 @@ function updateOgWeatherTicker() {
     }
 }
 
-// Start scrolling animation for weather ticker
+// Start smooth CSS-based scrolling animation for weather ticker
 function startOgWeatherTickerScrolling() {
     const tickerContent = document.getElementById('ogTickerContent');
     if (!tickerContent || !ogWeatherText) return;
     
-    // Clear existing interval
+    // Clear existing interval if any
     if (ogWeatherScrollInterval) {
         clearInterval(ogWeatherScrollInterval);
+        ogWeatherScrollInterval = null;
     }
     
-    // Start scrolling animation
-    ogWeatherScrollInterval = setInterval(() => {
-        const displayWidth = 50; // Character width for ticker area
-        
-        if (ogWeatherText.length <= displayWidth) {
-            // Text fits, no scrolling needed
-            tickerContent.textContent = ogWeatherText;
-        } else {
-            // Create scrolling effect
-            let displayText = ogWeatherText.substring(ogWeatherScrollPosition, ogWeatherScrollPosition + displayWidth);
-            
-            // If we're near the end, wrap around
-            if (displayText.length < displayWidth) {
-                displayText += ogWeatherText.substring(0, displayWidth - displayText.length);
-            }
-            
-            tickerContent.textContent = displayText;
-            
-            // Advance scroll position
-            ogWeatherScrollPosition++;
-            if (ogWeatherScrollPosition >= ogWeatherText.length) {
-                ogWeatherScrollPosition = 0;
-            }
-        }
-    }, 150); // Scroll speed: update every 150ms
+    console.log('🔧 OG: Starting smooth CSS scrolling');
+    
+    // Create scrolling container with CSS animation
+    const scrollContainer = document.createElement('div');
+    scrollContainer.className = 'og-ticker-scroll';
+    scrollContainer.textContent = ogWeatherText;
+    
+    // Clear and add the scrolling element
+    tickerContent.innerHTML = '';
+    tickerContent.appendChild(scrollContainer);
+    
+    console.log('🔧 OG: Smooth scrolling started with text:', ogWeatherText);
 }
 
 // Strong Bad's sbemail-specific keyboard handlers
@@ -574,6 +659,117 @@ function createTrogdor(x, y) {
     }, 6000);
 }
 
+// Initialize OG timezone slider functionality
+function initOgTimezoneSlider() {
+    const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    
+    if (timezoneSlider) {
+        console.log('🕰️ OG: Initializing timezone slider');
+        
+        // Sync with main timezone system
+        const mainSlider = document.getElementById('timezoneSlider');
+        if (mainSlider) {
+            timezoneSlider.value = mainSlider.value;
+            console.log('🕰️ OG: Synced slider value from main system:', mainSlider.value);
+        }
+        
+        // Initial display update
+        updateOgTimezoneDisplay();
+        
+        // Force clock update to show correct timezone
+        updateCompyClock();
+        
+        timezoneSlider.addEventListener('input', () => {
+            console.log('🕰️ OG: Timezone slider changed to:', timezoneSlider.value);
+            
+            // Update main timezone system
+            if (mainSlider) {
+                mainSlider.value = timezoneSlider.value;
+                // Trigger main timezone change event
+                const event = new Event('input', { bubbles: true });
+                mainSlider.dispatchEvent(event);
+            }
+            
+            // Update the display and clock immediately
+            updateOgTimezoneDisplay();
+            updateCompyClock();
+            
+            // Force a small delay to ensure DOM updates
+            setTimeout(() => {
+                updateOgTimezoneDisplay();
+                updateCompyClock();
+            }, 50);
+        });
+    }
+}
+
+// Update OG timezone display
+function updateOgTimezoneDisplay() {
+    const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    
+    if (timezoneSlider && typeof timezones !== 'undefined') {
+        const index = parseInt(timezoneSlider.value);
+        console.log('🕰️ OG: Updating timezone display for index:', index);
+        
+        if (timezones[index]) {
+            const tzInfo = timezones[index];
+            console.log('🕰️ OG: Timezone info:', tzInfo);
+            
+            // Check if DST is currently active using the main system's logic
+            const now = new Date();
+            let isDstActive = false;
+            let displayOffset = tzInfo.offset;
+            let displayAbbr = tzInfo.abbreviation;
+            
+            if (tzInfo.daylightSaving && tzInfo.daylightSaving.observesDST) {
+                // Use the main system's DST detection function if available
+                if (typeof isDSTActiveForTimezone === 'function') {
+                    isDstActive = isDSTActiveForTimezone(now, tzInfo);
+                } else {
+                    // Fallback to more accurate DST check for US/Canada timezones
+                    const month = now.getMonth();
+                    const day = now.getDate();
+                    
+                    if (month > 2 && month < 10) { // April through September
+                        isDstActive = true;
+                    } else if (month === 2) { // March - check for second Sunday
+                        const firstDay = new Date(now.getFullYear(), 2, 1);
+                        const firstSunday = 1 + (7 - firstDay.getDay()) % 7;
+                        const secondSunday = firstSunday + 7;
+                        isDstActive = day >= secondSunday;
+                    } else if (month === 10) { // November - check for first Sunday
+                        const firstDay = new Date(now.getFullYear(), 10, 1);
+                        const firstSunday = 1 + (7 - firstDay.getDay()) % 7;
+                        isDstActive = day < firstSunday;
+                    }
+                }
+                
+                if (isDstActive && tzInfo.daylightSaving.dstOffset) {
+                    displayOffset = tzInfo.daylightSaving.dstOffset;
+                    displayAbbr = tzInfo.daylightSaving.dstAbbreviation || tzInfo.daylightSaving.abbreviation;
+                }
+            }
+            
+            console.log('🕰️ OG: Using timezone:', `${displayOffset} ${tzInfo.location}`);
+            
+            // Update global timezone offset for the clock
+            // Parse the offset (e.g., "UTC-05:00" -> -5)
+            const offsetStr = displayOffset.replace('UTC', '');
+            let offset;
+            
+            if (offsetStr.includes(':')) {
+                const [hours, minutes] = offsetStr.split(':');
+                offset = parseFloat(hours) + (parseFloat(minutes) / 60) * Math.sign(parseFloat(hours));
+            } else {
+                offset = parseFloat(offsetStr);
+            }
+            
+            window.currentTimezoneOffset = offset;
+            console.log('🕰️ OG: Set timezone offset to:', offset, '(DST active:', isDstActive + ')');
+        }
+    }
+}
+
 // Initialize OG weather search functionality
 function initOgWeatherSearch() {
     const searchButton = document.getElementById('ogSearchButton');
@@ -608,8 +804,10 @@ async function handleOgWeatherSearch() {
                 
                 // Show the weather ticker after successful search
                 setTimeout(() => {
+                    console.log('🔧 OG: Attempting to show weather ticker');
                     const weatherTicker = document.getElementById('ogWeatherTicker');
                     if (weatherTicker) {
+                        console.log('🔧 OG: Weather ticker found, showing it');
                         weatherTicker.style.display = 'block';
                         updateOgWeatherTicker(); // Start the ticker
                         
@@ -617,6 +815,8 @@ async function handleOgWeatherSearch() {
                         setTimeout(() => {
                             scrollToWeatherWidget();
                         }, 500); // Small delay to let ticker render
+                    } else {
+                        console.log('❌ OG: Weather ticker element not found');
                     }
                 }, 1000); // Wait a second for weather data to load
                 
