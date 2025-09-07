@@ -1,0 +1,985 @@
+/* OG Theme - Strong Bad's Compy 386 Styling */
+/* Authentic HomestarRunner.com sbemail experience */
+
+/* Import authentic 1970s chunky robot computer fonts */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700;900&family=VT323&display=swap');
+
+/* Note: Removed problematic external fonts that were causing 404 errors.
+   Theme will use Google Fonts (Press Start 2P, Orbitron, VT323) and fallback fonts.
+   This provides authentic retro computer appearance without loading errors. */
+
+/* Compy 386 Computer Container */
+.og-terminal-window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 600px;
+    background: linear-gradient(135deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%);
+    border-radius: 0;
+    border: 8px solid #8b8b6b;
+    box-shadow: 
+        inset -4px -4px 8px rgba(0, 0, 0, 0.3),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.2),
+        0 8px 24px rgba(0, 0, 0, 0.6);
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    overflow: hidden;
+    z-index: 1000;
+    animation: compyBoot 1.2s ease-out;
+}
+
+@keyframes compyBoot {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+        filter: brightness(0);
+    }
+    30% {
+        opacity: 1;
+        filter: brightness(0.3);
+    }
+    60% {
+        filter: brightness(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* Compy 386 Header (Monitor Bezel) */
+.og-terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    background: linear-gradient(180deg, #a8a888 0%, #8b8b6b 100%);
+    border-bottom: 3px solid #6b6b4b;
+    padding: 0 15px;
+    user-select: none;
+    position: relative;
+}
+
+/* Header Text Section - Horizontal Layout */
+.og-header-text {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.og-terminal-title {
+    color: #2a2a2a;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    font-family: 'Arial Black', Arial, sans-serif;
+    letter-spacing: 2px;
+}
+
+.og-status-text {
+    color: #2a2a2a;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+}
+
+.og-runtime {
+    color: #000000;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-weight: normal;
+    font-size: 11px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Compy 386 Power Indicator */
+.og-terminal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.og-btn {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.og-btn-close {
+    background: #ff3333;
+    box-shadow: 
+        0 0 6px rgba(255, 51, 51, 0.8),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+    animation: powerBlink 2s infinite;
+}
+
+.og-btn-minimize {
+    background: #33ff33;
+    box-shadow: 
+        0 0 4px rgba(51, 255, 51, 0.6),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.og-btn-maximize {
+    background: #ffff33;
+    box-shadow: 
+        0 0 4px rgba(255, 255, 51, 0.6),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes powerBlink {
+    0%, 70% { opacity: 1; }
+    85%, 100% { opacity: 0.3; }
+}
+
+.og-terminal-title {
+    color: #2a2a2a;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+    font-family: 'Arial Black', Arial, sans-serif;
+}
+
+/* Compy 386 Screen */
+.og-terminal-body {
+    display: flex;
+    height: calc(100% - 40px - 30px);
+    background: #000000;
+    position: relative;
+    border: 4px solid #333333;
+    border-radius: 4px;
+    margin: 8px;
+    box-shadow: 
+        inset 2px 2px 4px rgba(0, 0, 0, 0.8),
+        inset -1px -1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Full monitor scan line - covers entire screen area */
+.og-terminal-body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0, 255, 0, 0.4) 10%,
+        rgba(0, 255, 0, 0.8) 50%,
+        rgba(0, 255, 0, 0.4) 90%,
+        transparent
+    );
+    pointer-events: none;
+    z-index: 20;
+    animation: screenScanLine 3s infinite linear;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+.og-terminal-content {
+    flex: 1;
+    padding: 15px;
+    color: #00ff00;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100% - 30px);
+    position: relative;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-weight: normal;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+    background: 
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.03) 50%, transparent 100%),
+        linear-gradient(0deg, transparent 0%, rgba(0, 255, 0, 0.02) 50%, transparent 100%);
+    animation: screenFlicker 2s infinite linear alternate;
+    /* Authentic computer font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    text-rendering: optimizeSpeed;
+    
+    /* Add scan line effect overlay */
+    position: relative;
+}
+
+/* Screen content scan line overlay patterns */
+.og-terminal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 255, 0, 0.05) 1px,
+        rgba(0, 255, 0, 0.05) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+    pointer-events: none;
+    z-index: 1;
+    animation: diagonalScanLines 4s infinite linear;
+}
+
+.og-terminal-content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 255, 0, 0.05) 1px,
+        rgba(0, 255, 0, 0.05) 2px
+    );
+    pointer-events: none;
+    z-index: 2;
+    animation: horizontalScanLines 3s infinite linear;
+}
+
+/* Ensure content is above scan lines */
+.og-terminal-content > * {
+    position: relative;
+    z-index: 5;
+}
+
+/* Add animated CRT diagonal scan line */
+.og-terminal-body::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 120%;
+    height: 6px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0, 255, 0, 0.3) 10%,
+        rgba(0, 255, 0, 0.8) 50%,
+        rgba(0, 255, 0, 0.3) 90%,
+        transparent
+    );
+    pointer-events: none;
+    z-index: 15;
+    animation: crtDiagonalScan 4s infinite linear;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
+    transform: rotate(110deg);
+    transform-origin: left center;
+}
+
+
+@keyframes diagonalScanLines {
+    0% { transform: translateY(0px) translateX(0px); }
+    100% { transform: translateY(6px) translateX(6px); }
+}
+
+@keyframes horizontalScanLines {
+    0% { 
+        opacity: 0.4; 
+        transform: translateY(0px);
+    }
+    50% { 
+        opacity: 0.8; 
+        transform: translateY(2px);
+    }
+    100% { 
+        opacity: 0.4; 
+        transform: translateY(4px);
+    }
+}
+
+@keyframes screenScanLine {
+    0% { 
+        top: -3px; 
+        opacity: 0;
+    }
+    5% { 
+        opacity: 1;
+    }
+    95% { 
+        opacity: 1;
+    }
+    100% { 
+        top: 100%; 
+        opacity: 0;
+    }
+}
+
+@keyframes crtDiagonalScan {
+    0% { 
+        transform: rotate(110deg) translate(-150%, -50%);
+        opacity: 0;
+        box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    }
+    10% { 
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+    }
+    90% { 
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+    }
+    100% { 
+        transform: rotate(110deg) translate(150%, 150%);
+        opacity: 0;
+        box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    }
+}
+
+
+@keyframes screenFlicker {
+    0% { filter: brightness(1) contrast(1.05); }
+    100% { filter: brightness(0.98) contrast(1.02); }
+}
+
+/* SBEmail Startup */
+.og-terminal-startup {
+    margin-bottom: 20px;
+    opacity: 1;
+    transition: opacity 1s ease;
+    position: relative;
+    z-index: 10;
+}
+
+.og-startup-line {
+    opacity: 0;
+    animation: sbemailType 1.2s ease forwards;
+    margin-bottom: 6px;
+    color: #00ff00;
+}
+
+.og-startup-line:first-child {
+    color: #00ffff;
+    font-weight: normal;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.og-startup-delay-1 { animation-delay: 0.8s; }
+.og-startup-delay-2 { animation-delay: 1.6s; }
+.og-startup-delay-3 { animation-delay: 2.4s; }
+.og-startup-delay-4 { 
+    animation-delay: 3.2s; 
+    color: #ffff00;
+    font-size: 12px;
+}
+
+@keyframes sbemailType {
+    0% {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+    }
+    1% {
+        opacity: 1;
+        width: 0;
+    }
+    100% {
+        opacity: 1;
+        width: 100%;
+        overflow: visible;
+    }
+}
+
+/* Compy 386 Clock Display */
+.og-clock-display {
+    text-align: center;
+    margin: 40px 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+    border: 2px solid #00ff00;
+    padding: 20px;
+    background: rgba(0, 255, 0, 0.05);
+    border-radius: 8px;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.3),
+        inset 0 0 10px rgba(0, 255, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.og-clock-day,
+.og-clock-date,
+.og-clock-time {
+    color: #00ff00;
+    font-weight: normal;
+    margin: 12px 0;
+    text-shadow: 0 0 12px rgba(0, 255, 0, 0.8);
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    animation: compyGlow 3s ease-in-out infinite alternate;
+}
+
+.og-clock-day {
+    font-size: 20px;
+    color: #00ffff;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+}
+
+.og-clock-date {
+    font-size: 16px;
+    color: #00ff00;
+}
+
+.og-clock-time {
+    font-size: 18px;
+    color: #ffff00;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+}
+
+@keyframes compyGlow {
+    0% { text-shadow: 0 0 8px currentColor; }
+    100% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+}
+
+/* OG Weather Search Interface */
+.og-weather-search {
+    margin: 20px 0;
+    padding: 15px;
+    border: 2px solid #00ff00;
+    background: rgba(0, 255, 0, 0.05);
+    border-radius: 8px;
+    position: relative;
+    z-index: 10;
+}
+
+.og-search-prompt {
+    color: #00ff00;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+}
+
+.og-search-input {
+    width: 70%;
+    padding: 8px 12px;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 12px;
+    background: #000000;
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    border-radius: 4px;
+    outline: none;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+}
+
+.og-search-input:focus {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    border-color: #00ffff;
+}
+
+.og-search-input::placeholder {
+    color: #006600;
+    opacity: 0.7;
+}
+
+.og-search-button {
+    width: 25%;
+    padding: 8px 12px;
+    margin-left: 10px;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 12px;
+    background: #006600;
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    border-radius: 4px;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+    transition: all 0.3s ease;
+}
+
+.og-search-button:hover {
+    background: #008800;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+}
+
+.og-search-button:active {
+    background: #00aa00;
+    transform: scale(0.95);
+}
+
+/* OG Weather Ticker */
+.og-weather-ticker {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #006600;
+    background: rgba(0, 255, 0, 0.03);
+    border-radius: 4px;
+    max-height: 80px;
+    overflow: hidden;
+}
+
+.og-ticker-label {
+    color: #00ff00;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 10px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px rgba(0, 255, 0, 0.8);
+}
+
+.og-ticker-content {
+    color: #00cc00;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 1.4;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+    background: #000000;
+    padding: 6px 8px;
+    border: 1px solid #003300;
+    border-radius: 2px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/* Compy 386 Cursor */
+.og-terminal-cursor {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    color: #00ff00;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    animation: compyCursorBlink 0.8s infinite;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+    z-index: 10;
+}
+
+@keyframes compyCursorBlink {
+    0%, 60% { opacity: 1; }
+    61%, 100% { opacity: 0; }
+}
+
+/* Compy 386 styled scrollbars */
+.og-terminal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.og-terminal-content::-webkit-scrollbar-track {
+    background: #001100;
+    border-radius: 4px;
+}
+
+.og-terminal-content::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 255, 0, 0.5);
+}
+
+.og-terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+}
+
+/* Hide the fake scrollbar element */
+.og-terminal-scrollbar {
+    display: none;
+}
+
+/* Compy 386 Footer */
+.og-terminal-footer {
+    height: 30px;
+    background: linear-gradient(180deg, #a8a888 0%, #8b8b6b 100%);
+    border-top: 2px solid #6b6b4b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    font-size: 12px;
+}
+
+.og-status-text {
+    color: #2a2a2a;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+}
+
+.og-runtime {
+    color: #000000;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-weight: normal;
+    font-size: 12px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* HomestarRunner.com Background */
+body.og-theme {
+    background: 
+        radial-gradient(circle at center, #1a4d80 0%, #0d2340 100%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="1" cy="1" r="0.5" fill="%23ffffff" opacity="0.1"/></svg>');
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+body.og-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, rgba(26, 77, 128, 0.3) 0%, rgba(13, 35, 64, 0.5) 100%);
+    pointer-events: none;
+    z-index: 1;
+    animation: backgroundShimmer 4s ease-in-out infinite alternate;
+}
+
+/* Pulsing Stars Background */
+body.og-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.og-pulsing-star {
+    position: fixed;
+    color: #ffffff;
+    font-size: 36px;
+    pointer-events: none;
+    z-index: 500; /* Higher than background but lower than terminal (1001) */
+    opacity: 0;
+    animation: starPulse 3s ease-in-out;
+    text-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.9),
+        0 0 30px rgba(255, 255, 255, 0.7),
+        0 0 45px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes starPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.4) rotate(72deg);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1) rotate(144deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(180deg);
+    }
+}
+
+@keyframes backgroundShimmer {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Boxing Gloves Click Animation */
+.og-boxing-gloves {
+    position: fixed;
+    font-size: 40px;
+    pointer-events: none;
+    z-index: 500;
+    opacity: 0;
+    animation: boxingGlovesMove 4s ease-out forwards;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.og-boxing-gloves-pair {
+    position: fixed;
+    pointer-events: none;
+    z-index: 500;
+    opacity: 0;
+    animation: boxingGlovesPairMove 4s ease-out forwards;
+}
+
+.og-boxing-gloves-left,
+.og-boxing-gloves-right {
+    position: absolute;
+    font-size: 60px;
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+.og-boxing-gloves-left {
+    left: -60px;
+    animation: leftGloveBob 1s ease-in-out infinite alternate;
+}
+
+.og-boxing-gloves-right {
+    right: -60px;
+    animation: rightGloveBob 1s ease-in-out infinite alternate 0.3s;
+}
+
+/* Trogdor the Burninator Animation */
+.og-trogdor-test {
+    position: fixed;
+    font-size: 200px;
+    pointer-events: none;
+    z-index: 500;
+    opacity: 0;
+    animation: trogdorBurninateGreen 6s ease-in-out forwards;
+    filter: 
+        drop-shadow(6px 6px 12px rgba(0, 0, 0, 0.6))
+        drop-shadow(0 0 30px rgba(0, 255, 0, 0.9))
+        drop-shadow(0 0 60px rgba(0, 200, 0, 0.7))
+        drop-shadow(0 0 90px rgba(0, 150, 0, 0.5));
+}
+
+@keyframes trogdorBurninateGreen {
+    0% {
+        opacity: 1;
+        transform: scale(0.5) rotate(-20deg);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.2) rotate(5deg);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.0) rotate(-10deg);
+    }
+    45% {
+        opacity: 1;
+        transform: scale(1.1) rotate(15deg);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(0.9) rotate(-5deg);
+    }
+    80% {
+        opacity: 1;
+        transform: scale(1.0) rotate(0deg);
+    }
+    95% {
+        opacity: 0.8;
+        transform: scale(0.8) rotate(-10deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-25deg);
+    }
+}
+
+@keyframes boxingGlovesMove {
+    0% {
+        opacity: 1;
+        transform: scale(0.8) rotate(-10deg);
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1.1) rotate(5deg);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1) rotate(-2deg);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.05) rotate(3deg);
+    }
+    80% {
+        opacity: 0.8;
+        transform: scale(0.9) rotate(-1deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.6) rotate(10deg) translateY(-20px);
+    }
+}
+
+@keyframes boxingGlovesPairMove {
+    0% {
+        opacity: 1;
+        transform: scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    80% {
+        opacity: 0.8;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.6) translateY(-20px);
+    }
+}
+
+@keyframes leftGloveBob {
+    0% {
+        transform: translateY(0) rotate(-5deg);
+    }
+    100% {
+        transform: translateY(-8px) rotate(5deg);
+    }
+}
+
+@keyframes rightGloveBob {
+    0% {
+        transform: translateY(0) rotate(5deg);
+    }
+    100% {
+        transform: translateY(-8px) rotate(-5deg);
+    }
+}
+
+@keyframes trogdorBurninate {
+    0% {
+        opacity: 1;
+        transform: scale(0.5) rotate(-20deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 20px rgba(0, 255, 0, 0.8))
+            drop-shadow(0 0 40px rgba(0, 200, 0, 0.6))
+            hue-rotate(120deg);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.2) rotate(5deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 30px rgba(50, 255, 50, 0.9))
+            drop-shadow(0 0 50px rgba(0, 255, 0, 0.7))
+            hue-rotate(100deg);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1) rotate(-10deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 35px rgba(0, 255, 100, 0.8))
+            drop-shadow(0 0 60px rgba(100, 255, 100, 0.6))
+            hue-rotate(110deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) rotate(8deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 40px rgba(0, 255, 0, 1))
+            drop-shadow(0 0 70px rgba(0, 200, 0, 0.8))
+            hue-rotate(120deg);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(0.9) rotate(-5deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 45px rgba(100, 255, 0, 0.9))
+            drop-shadow(0 0 80px rgba(50, 255, 50, 0.7))
+            hue-rotate(130deg);
+    }
+    85% {
+        opacity: 0.8;
+        transform: scale(1.3) rotate(15deg);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 50px rgba(150, 255, 150, 1))
+            drop-shadow(0 0 90px rgba(0, 255, 0, 0.9))
+            hue-rotate(140deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.4) rotate(25deg) translateY(-50px);
+        filter: 
+            drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 60px rgba(200, 255, 200, 0.5))
+            drop-shadow(0 0 100px rgba(0, 255, 0, 0.3))
+            hue-rotate(120deg);
+    }
+}
+
+body.og-theme .og-terminal-window {
+    z-index: 1001;
+}
+
+/* Hide other theme elements when OG is active */
+body.og-theme .clock-container,
+body.og-theme .weather-container,
+body.og-theme .timezone-container {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .og-terminal-window {
+        width: 90vw;
+        height: 70vh;
+        max-width: 600px;
+        max-height: 400px;
+    }
+    
+    .og-clock-day { font-size: 20px; }
+    .og-clock-date { font-size: 16px; }
+    .og-clock-time { font-size: 18px; }
+    
+    .og-terminal-content {
+        padding: 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .og-terminal-window {
+        width: 95vw;
+        height: 80vh;
+    }
+    
+    .og-terminal-header {
+        height: 30px;
+        padding: 0 10px;
+    }
+    
+    .og-terminal-title {
+        font-size: 11px;
+    }
+    
+    .og-btn {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .og-terminal-footer {
+        height: 20px;
+        font-size: 10px;
+    }
+}

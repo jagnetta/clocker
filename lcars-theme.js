@@ -29,25 +29,53 @@ function initLcarsTheme() {
 }
 
 /**
- * Clean up LCARS theme effects and resources
+ * Clean up LCARS theme effects and resources - complete cleanup
  */
 function cleanupLcarsTheme() {
-    console.log('🧹 Cleaning up LCARS theme...');
+    console.log('🧹 Starting LCARS theme cleanup...');
     
-    // Clear LCARS-specific intervals
+    // Clear intervals
     if (warpStarsInterval) {
         clearInterval(warpStarsInterval);
         warpStarsInterval = null;
     }
     
-    // Remove all warp stars
+    // Clear warp stars container completely
     const warpContainer = document.getElementById('warpStars');
     if (warpContainer) {
         warpContainer.innerHTML = '';
+        warpContainer.removeAttribute('style');
     }
     
-    // Reset UFO counter
+    // Remove any lingering LCARS elements more comprehensively
+    const lcarsElements = document.querySelectorAll(
+        '.warp-star, .star-trek-flyby, .photon-torpedo-formation, .lcars-element, .lcars-panel'
+    );
+    lcarsElements.forEach(el => el.remove());
+    
+    // Clear active UFO counter
     activeUfos = 0;
+    
+    // Remove LCARS-specific body classes
+    document.body.classList.remove('lcars-theme');
+    
+    // Hide LCARS background
+    const lcarsBg = document.getElementById('lcarsBg');
+    if (lcarsBg) {
+        lcarsBg.classList.add('hidden');
+        lcarsBg.removeAttribute('style');
+    }
+    
+    // Force cleanup of any LCARS-themed elements that might affect other themes
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+        if (el.style && el.style.color === 'rgb(255, 153, 0)' && !el.closest('.clock-display, .weather-panel')) {
+            el.style.color = '';
+        }
+        if (el.style && el.style.textShadow && el.style.textShadow.includes('255, 153, 0')) {
+            el.style.textShadow = '';
+        }
+    });
     
     console.log('✅ LCARS theme cleanup complete');
 }
@@ -61,13 +89,27 @@ function switchToLcarsTheme() {
     if (typeof currentTheme !== 'undefined') {
         currentTheme = 'lcars';
     }
-    document.body.classList.remove('thor-theme');
+    
+    // Remove ALL theme classes first to prevent contamination
+    document.body.classList.remove('matrix-theme', 'thor-theme', 'og-theme');
     document.body.classList.add('lcars-theme');
     
-    // Show/hide backgrounds
-    document.getElementById('matrixBg').classList.add('hidden');
-    document.getElementById('lcarsBg').classList.remove('hidden');
-    document.getElementById('thorBg').classList.add('hidden');
+    // Force clean body styles to prevent Matrix green contamination
+    document.body.removeAttribute('style');
+    
+    // Show/hide backgrounds properly
+    const matrixBg = document.getElementById('matrixBg');
+    const lcarsBg = document.getElementById('lcarsBg'); 
+    const thorBg = document.getElementById('thorBg');
+    
+    if (matrixBg) matrixBg.classList.add('hidden');
+    if (lcarsBg) lcarsBg.classList.remove('hidden');
+    if (thorBg) thorBg.classList.add('hidden');
+    
+    // Clean up Matrix contamination completely
+    if (typeof cleanupMatrixTheme === 'function') {
+        cleanupMatrixTheme();
+    }
     
     // Stop other effects
     if (typeof thorEffectsInterval !== 'undefined' && thorEffectsInterval) {
@@ -75,6 +117,20 @@ function switchToLcarsTheme() {
     }
     if (typeof matrixKanjiInterval !== 'undefined' && matrixKanjiInterval) {
         clearInterval(matrixKanjiInterval);
+    }
+    
+    // Force remove any Matrix elements that might be lingering
+    const matrixElements = document.querySelectorAll(
+        '.matrix-column-char, .matrix-white-rabbit, .matrix-red-pill, .matrix-blue-pill, .matrix-particle'
+    );
+    matrixElements.forEach(el => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    
+    // Clear particles container
+    const particlesContainer = document.getElementById('particles');
+    if (particlesContainer) {
+        particlesContainer.innerHTML = '';
     }
     
     // Start warp effects (only if not mobile)
@@ -249,10 +305,16 @@ function createStarTrekFlyby(clickX, clickY) {
     starTrekObject.style.position = 'fixed';
     starTrekObject.style.left = clickX + 'px';
     starTrekObject.style.top = clickY + 'px';
-    starTrekObject.style.fontSize = '80px';
+    starTrekObject.style.fontSize = '200px';
     starTrekObject.style.zIndex = '10000';
-    starTrekObject.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #ff9900) drop-shadow(0 0 30px #ff9900)';
-    starTrekObject.style.textShadow = '0 0 20px #ff9900, 0 0 40px #ffcc66';
+    starTrekObject.style.filter = `
+        brightness(1.8) 
+        drop-shadow(6px 6px 12px rgba(0, 0, 0, 0.6))
+        drop-shadow(0 0 30px rgba(255, 153, 0, 0.9))
+        drop-shadow(0 0 60px rgba(255, 153, 0, 0.7))
+        drop-shadow(0 0 90px rgba(255, 204, 102, 0.5))
+    `;
+    starTrekObject.style.textShadow = '0 0 30px #ff9900, 0 0 60px #ffcc66, 0 0 90px #ff9900';
     starTrekObject.style.transition = 'none';
     
     document.body.appendChild(starTrekObject);
@@ -279,15 +341,15 @@ function createStarTrekFlyby(clickX, clickY) {
         currentY += vy;
         
         // Warp core breach - bounce off edges
-        if (currentX <= 0 || currentX >= vw - 80) {
+        if (currentX <= 0 || currentX >= vw - 200) {
             vx = -vx;
-            currentX = Math.max(0, Math.min(currentX, vw - 80));
+            currentX = Math.max(0, Math.min(currentX, vw - 200));
             bounces++;
         }
         
-        if (currentY <= 0 || currentY >= vh - 80) {
+        if (currentY <= 0 || currentY >= vh - 200) {
             vy = -vy;
-            currentY = Math.max(0, Math.min(currentY, vh - 80));
+            currentY = Math.max(0, Math.min(currentY, vh - 200));
             bounces++;
         }
         
@@ -305,7 +367,12 @@ function createStarTrekFlyby(clickX, clickY) {
             setTimeout(() => {
                 starTrekObject.style.transform = `translate(${exitDirection.x}px, ${exitDirection.y}px) scale(0.2)`;
                 starTrekObject.style.opacity = '0';
-                starTrekObject.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #ff9900) drop-shadow(0 0 30px #ff9900) blur(3px)';
+                starTrekObject.style.filter = `
+                    brightness(2.0) 
+                    drop-shadow(0 0 40px rgba(255, 153, 0, 0.9))
+                    drop-shadow(0 0 80px rgba(255, 153, 0, 0.7))
+                    blur(5px)
+                `;
             }, 50);
             
             setTimeout(() => {
@@ -353,18 +420,6 @@ function handleLcarsClick(clickX, clickY) {
     }
 }
 
-/**
- * Cleanup function for LCARS theme
- */
-function cleanupLcarsTheme() {
-    if (warpStarsInterval) {
-        clearInterval(warpStarsInterval);
-        warpStarsInterval = null;
-    }
-    
-    // Clear active UFO counter
-    activeUfos = 0;
-}
 
 // Export functions for use in main script
 if (typeof module !== 'undefined' && module.exports) {

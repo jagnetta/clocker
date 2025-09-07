@@ -22,7 +22,7 @@ Both implementations display formatted time with day of week, date with ordinal 
 - **`index.html`**: Main HTML structure with theme selector and weather integration
 - **`base-style.css`**: Core styling and layout foundation
 - **`core-script.js`**: Main application logic with modular theme management
-- **Theme Modules**: Separate JS/CSS files for Matrix, LCARS, and Thor themes
+- **Theme Modules**: Separate JS/CSS files for Matrix, LCARS, Thor, and OG themes
 - **`timezones.js`**: Comprehensive timezone data with DST calculations
 
 ## Key Technical Systems
@@ -34,15 +34,16 @@ Both implementations display formatted time with day of week, date with ordinal 
 - **Random Initialization**: Randomly selects theme on startup
 
 ### Weather Integration System
-- **OpenWeatherMap API**: Live weather data with API key: `1e9db439b2d25a3ec0549dd6dd6d5854`
+- **OpenWeatherMap API**: Live weather data (API key configured in core-script.js)
 - **Multi-format Search**: Cities, ZIP codes, coordinates, international locations
 - **Geocoding Support**: Converts locations to precise coordinates
 - **Error Handling**: Comprehensive API failure management and user feedback
 
 ### Theme-Specific Features
 - **Matrix Theme**: Green terminal aesthetic with Matrix rain effects and kanji rotation
-- **LCARS Theme**: Star Trek orange interface with warp speed animations
+- **LCARS Theme**: Star Trek orange interface with warp speed animations  
 - **Thor Theme**: Norse gold theme with lightning effects and runes
+- **OG Theme**: Strong Bad's Compy 386 retro computer theme with nostalgic HomestarRunner aesthetics
 
 ## Common Commands
 

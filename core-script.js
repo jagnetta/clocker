@@ -6,7 +6,7 @@ let isMobileDevice = false;
 // Modular theme system
 let loadedThemes = new Set();
 let currentlyLoadedCss = null;
-const availableThemes = ['matrix', 'lcars', 'thor'];
+const availableThemes = ['matrix', 'lcars', 'thor', 'og'];
 
 // Use timezone data from timezones.js - create compatibility layer
 let currentTimezoneIndex = 0;
@@ -226,8 +226,8 @@ async function loadTheme(themeName) {
             loadedThemes.add(themeName);
         }
         
-        // Small delay to ensure CSS is applied
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Minimal delay to ensure CSS is applied (reduced for faster Matrix startup)
+        await new Promise(resolve => setTimeout(resolve, 20));
         
         console.log(`🎨 Theme loaded: ${themeName.toUpperCase()}`);
         return true;
@@ -276,14 +276,47 @@ function clearThemeDOM() {
         ).join(' ');
     });
     
-    // Remove any dynamically created theme elements
-    const dynamicElements = document.querySelectorAll('.matrix-particle, .lcars-indicator, .thor-lightning, .theme-overlay');
-    dynamicElements.forEach(el => el.remove());
+    // Clear all containers that might have theme-specific content
+    const containers = [
+        '#particles', '.floating-particles', '#thorParticles', '#asgardRunes',
+        '#lightningEffects', '#mjolnirHammer'
+    ];
+    
+    containers.forEach(selector => {
+        const container = document.querySelector(selector);
+        if (container) {
+            container.innerHTML = '';
+            container.removeAttribute('style');
+        }
+    });
+    
+    // Remove any dynamically created theme elements - comprehensive cleanup
+    const themeSelectors = [
+        '.matrix-particle', '.lcars-indicator', '.thor-lightning', '.theme-overlay',
+        '.matrix-column-char', '.matrix-white-rabbit', 
+        '.warp-star', '.star-trek-flyby', '.photon-torpedo-formation',
+        '.og-boxing-gloves', '.og-boxing-gloves-pair', '.og-trogdor', '.og-pulsing-star',
+        '.og-terminal-window'
+    ];
+    
+    themeSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+    });
     
     // Clear theme background containers
     const effectContainers = document.querySelectorAll('#particles, #warpStars, #lightningEffects, #thorParticles, #asgardRunes');
     effectContainers.forEach(container => {
         if (container) container.innerHTML = '';
+    });
+    
+    // Hide all theme backgrounds during cleanup
+    const backgroundElements = ['matrixBg', 'lcarsBg', 'thorBg'];
+    backgroundElements.forEach(bgId => {
+        const bgElement = document.getElementById(bgId);
+        if (bgElement) {
+            bgElement.classList.add('hidden');
+        }
     });
     
     // Clear any inline styles added by themes
@@ -330,7 +363,8 @@ function cleanupCurrentTheme() {
     const cleanupFunctions = {
         'matrix': () => typeof cleanupMatrixTheme === 'function' && cleanupMatrixTheme(),
         'lcars': () => typeof cleanupLcarsTheme === 'function' && cleanupLcarsTheme(),
-        'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects()
+        'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects(),
+        'og': () => typeof cleanupOGTheme === 'function' && cleanupOGTheme()
     };
     
     if (cleanupFunctions[currentTheme]) {
@@ -352,11 +386,31 @@ async function switchToTheme(themeName) {
     // Step 1: Clean up current theme completely
     cleanupCurrentTheme();
     
-    // Step 2: Wait for cleanup to complete
+    // Step 2: Wait for cleanup to complete - longer delay to prevent bleeding
     await new Promise(resolve => setTimeout(resolve, 150));
     
     // Step 3: Remove all theme-specific CSS classes from body
     document.body.className = document.body.className.replace(/\b\w+-theme\b/g, '').trim();
+    
+    // Step 3.3: Clear any inline styles from body that might cause theme bleeding
+    document.body.removeAttribute('style');
+    
+    // Step 3.4: Force remove Matrix contamination from all elements
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+        // Remove Matrix green color contamination
+        if (el.style && (el.style.color === 'rgb(0, 255, 0)' || el.style.color === '#00ff00')) {
+            if (!el.closest('.matrix-theme')) {
+                el.style.color = '';
+            }
+        }
+        // Remove Matrix text-shadow contamination
+        if (el.style && el.style.textShadow && el.style.textShadow.includes('0 0')) {
+            if (!el.closest('.matrix-theme')) {
+                el.style.textShadow = '';
+            }
+        }
+    });
     
     // Step 3.5: Force DOM reflow to ensure styles are applied
     document.body.offsetHeight;
@@ -408,12 +462,13 @@ async function switchToTheme(themeName) {
         }
     }
     
-    // Step 8: Initialize the new theme after a brief delay
+    // Step 8: Initialize the new theme with proper delay to prevent bleeding
     setTimeout(() => {
         const initFunctions = {
             'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
             'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
-            'thor': () => typeof initThorTheme === 'function' && initThorTheme()
+            'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
+            'og': () => typeof initOGTheme === 'function' && initOGTheme()
         };
         
         if (initFunctions[themeName]) {
@@ -421,7 +476,7 @@ async function switchToTheme(themeName) {
         }
         
         console.log(`✨ Successfully switched from ${oldTheme || 'none'} to ${themeName.toUpperCase()} theme`);
-    }, 200);
+    }, 100);
 }
 
 // Initialize random theme on load
@@ -1139,9 +1194,7 @@ function generateLocationData(cityName) {
     };
 }
 
-// Demo weather functions removed - now using real OpenWeatherMap API
-
-// Convert Celsius to Fahrenheit
+// Convert Celsius to Fahrenheit  
 function celsiusToFahrenheit(celsius) {
     return Math.round((celsius * 9/5) + 32);
 }
@@ -1159,52 +1212,88 @@ function createWeatherTicker(weatherData, locationName) {
     // Clear existing content
     weatherScroll.innerHTML = '';
     
-    // Extract weather details
-    const icon = getWeatherIcon(weatherData.weather[0].description);
-    const tempF = celsiusToFahrenheit(weatherData.main.temp);
+    // Extract location details
     const coords = `${weatherData.coord.latitude}°, ${weatherData.coord.longitude}°`;
-    const windSpeed = weatherData.wind?.speed ? `${weatherData.wind.speed.toFixed(1)} m/s` : 'N/A';
     const formattedLocation = `${weatherData.name}, ${weatherData.country || ''}`;
     
-    // Helper function to create weather content block
+    // Helper function to create 5-day forecast content block
     function createWeatherContent() {
         const contentBlock = document.createElement('div');
         contentBlock.style.display = 'inline-flex';
         contentBlock.style.alignItems = 'center';
         
+        // Current weather
+        const currentIcon = getWeatherIcon(weatherData.current.description);
+        const currentTempF = celsiusToFahrenheit(weatherData.current.temp);
+        const currentWindSpeed = weatherData.wind?.speed ? `${weatherData.wind.speed.toFixed(1)} m/s` : 'N/A';
+        
         // Add location separator at the start
         const startSeparator = document.createElement('div');
         startSeparator.className = 'weather-separator';
-        startSeparator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
+        startSeparator.innerHTML = `<span class="city-separator">🌐 ${formattedLocation} 🌐</span>`;
         contentBlock.appendChild(startSeparator);
         
-        // Create main weather item
-        const weatherItem = document.createElement('div');
-        weatherItem.className = 'weather-item';
-        
-        weatherItem.innerHTML = `
-            <span class="weather-icon">${icon}</span>
-            <span class="weather-city">${formattedLocation}</span>
-            <span class="weather-temp">${tempF}°F</span>
-            <span class="weather-desc">${weatherData.weather[0].description}</span>
-            <span class="weather-humidity">💧${weatherData.main.humidity}%</span>
-            <span class="weather-wind">💨${windSpeed}</span>
-            <span class="weather-coords">📍${coords}</span>
+        // Current weather item
+        const currentWeatherItem = document.createElement('div');
+        currentWeatherItem.className = 'weather-item';
+        currentWeatherItem.innerHTML = `
+            <span class="weather-label">NOW:</span>
+            <span class="weather-icon">${currentIcon}</span>
+            <span class="weather-temp">${currentTempF}°F</span>
+            <span class="weather-desc">${weatherData.current.description}</span>
+            <span class="weather-humidity">💧${weatherData.current.humidity}%</span>
+            <span class="weather-wind">💨${currentWindSpeed}</span>
         `;
+        contentBlock.appendChild(currentWeatherItem);
         
-        contentBlock.appendChild(weatherItem);
+        // Add forecast separator
+        const midSeparator = document.createElement('div');
+        midSeparator.className = 'weather-separator';
+        midSeparator.textContent = ' | FORECAST: ';
+        contentBlock.appendChild(midSeparator);
         
-        // Add location separator after weather item
-        const endSeparator = document.createElement('div');
-        endSeparator.className = 'weather-separator';
-        endSeparator.innerHTML = `<span class="city-separator">-- ${formattedLocation} --</span>`;
-        contentBlock.appendChild(endSeparator);
+        // 5-day forecast (take every 8th item to get daily forecasts)
+        const dailyForecasts = [];
+        for (let i = 8; i < weatherData.forecast.length && dailyForecasts.length < 5; i += 8) {
+            dailyForecasts.push(weatherData.forecast[i]);
+        }
+        
+        dailyForecasts.forEach((forecast, index) => {
+            const forecastIcon = getWeatherIcon(forecast.description);
+            const forecastTempF = celsiusToFahrenheit(forecast.temp);
+            const forecastDate = new Date(forecast.dt * 1000);
+            const dayName = forecastDate.toLocaleDateString('en-US', { weekday: 'short' });
+            
+            const forecastItem = document.createElement('div');
+            forecastItem.className = 'weather-item forecast-weather';
+            forecastItem.innerHTML = `
+                <span class="weather-label">${dayName}:</span>
+                <span class="weather-icon">${forecastIcon}</span>
+                <span class="weather-temp">${forecastTempF}°F</span>
+                <span class="weather-desc">${forecast.description}</span>
+            `;
+            contentBlock.appendChild(forecastItem);
+            
+            // Add separator between days
+            if (index < dailyForecasts.length - 1) {
+                const daySeparator = document.createElement('div');
+                daySeparator.className = 'weather-separator';
+                daySeparator.textContent = ' • ';
+                contentBlock.appendChild(daySeparator);
+            }
+        });
+        
+        // Add coordinates at the end
+        const coordsItem = document.createElement('div');
+        coordsItem.className = 'weather-coords';
+        coordsItem.innerHTML = ` 📍${coords}`;
+        contentBlock.appendChild(coordsItem);
         
         return contentBlock;
     }
     
     // Create chain of weather content blocks for continuous scroll
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 3; i++) {
         weatherScroll.appendChild(createWeatherContent());
     }
 }
@@ -1231,7 +1320,7 @@ function initWeather() {
     });
     
     // Handle reset button
-    const resetButton = document.getElementById('resetButton');
+    const resetButton = document.getElementById('resetWeather');
     if (resetButton) {
         resetButton.addEventListener('click', function() {
             const weatherTicker = document.getElementById('weatherTicker');
@@ -1318,40 +1407,45 @@ async function fetchWeatherData(locationInput) {
             coordinates = await getCoordinatesFromLocation(locationInput, API_KEY);
         }
         
-        // Get current weather using coordinates
-        const weatherResponse = await fetch(
-            `${BASE_URL}/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${API_KEY}&units=metric`
+        // Get 5-day forecast using coordinates
+        const forecastResponse = await fetch(
+            `${BASE_URL}/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${API_KEY}&units=metric`
         );
         
-        if (!weatherResponse.ok) {
-            throw new Error(`OpenWeather API error: ${weatherResponse.status}`);
+        if (!forecastResponse.ok) {
+            throw new Error(`OpenWeather API error: ${forecastResponse.status}`);
         }
         
-        const weatherData = await weatherResponse.json();
+        const forecastData = await forecastResponse.json();
         
-        // Transform to consistent format
+        // Transform to consistent format with 5-day forecast
         const transformedData = {
-            name: coordinates.name || weatherData.name,
-            country: weatherData.sys.country,
+            name: coordinates.name || forecastData.city.name,
+            country: forecastData.city.country,
             coord: {
                 latitude: coordinates.lat.toFixed(2),
                 longitude: coordinates.lon.toFixed(2)
             },
-            main: {
-                temp: weatherData.main.temp, // Celsius from API
-                humidity: weatherData.main.humidity,
-                pressure: weatherData.main.pressure
+            current: {
+                temp: forecastData.list[0].main.temp, // Current temperature
+                humidity: forecastData.list[0].main.humidity,
+                pressure: forecastData.list[0].main.pressure,
+                description: forecastData.list[0].weather[0].description,
+                icon: forecastData.list[0].weather[0].icon
             },
-            weather: [{
-                description: weatherData.weather[0].description,
-                main: weatherData.weather[0].main,
-                icon: weatherData.weather[0].icon
-            }],
+            forecast: forecastData.list.slice(0, 40).map(item => ({ // 5 days * 8 per day = 40 entries
+                dt: item.dt,
+                temp: item.main.temp,
+                description: item.weather[0].description,
+                humidity: item.main.humidity,
+                wind_speed: item.wind?.speed || 0,
+                icon: item.weather[0].icon,
+                date: new Date(item.dt * 1000).toLocaleDateString()
+            })),
             wind: {
-                speed: weatherData.wind?.speed || 0,
-                deg: weatherData.wind?.deg || 0
-            },
-            visibility: weatherData.visibility ? (weatherData.visibility / 1000).toFixed(1) : 'N/A'
+                speed: forecastData.list[0].wind?.speed || 0,
+                deg: forecastData.list[0].wind?.deg || 0
+            }
         };
         
         console.log(`🌦️ Weather data successfully retrieved for: ${transformedData.name}`);
@@ -1373,11 +1467,22 @@ async function handleWeatherRequest() {
         return;
     }
     
+    // Synchronize search term with OG input if OG theme is active
+    if (currentTheme === 'og') {
+        const ogSearchInput = document.getElementById('ogSearchInput');
+        if (ogSearchInput) {
+            ogSearchInput.value = cityName;
+        }
+    }
+    
     console.log(`🌦️ Fetching real weather for: ${cityName}`);
     
     // Show loading indicator
     const weatherTicker = document.getElementById('weatherTicker');
-    weatherTicker.innerHTML = '<div class="weather-loading">🌐 Fetching weather data...</div>';
+    const weatherScroll = document.getElementById('weatherScroll');
+    if (weatherScroll) {
+        weatherScroll.innerHTML = '<div class="weather-loading">🌐 Fetching weather data...</div>';
+    }
     weatherTicker.classList.remove('hidden');
     
     try {
@@ -1389,13 +1494,42 @@ async function handleWeatherRequest() {
             // Ensure the ticker is visible after successful creation
             const weatherTicker = document.getElementById('weatherTicker');
             if (weatherTicker) weatherTicker.classList.remove('hidden');
-            cityInput.value = ''; // Clear input only on success
+            
+            // Synchronize with OG theme if it's active
+            if (currentTheme === 'og') {
+                setTimeout(() => {
+                    const ogWeatherTicker = document.getElementById('ogWeatherTicker');
+                    if (ogWeatherTicker && typeof updateOgWeatherTicker === 'function') {
+                        ogWeatherTicker.style.display = 'block';
+                        updateOgWeatherTicker(); // Update OG ticker with new data
+                        
+                        // Auto-scroll to show the weather widget
+                        setTimeout(() => {
+                            if (typeof scrollToWeatherWidget === 'function') {
+                                scrollToWeatherWidget();
+                            }
+                        }, 500); // Small delay to let ticker render
+                    }
+                }, 1000);
+            }
+            
+            cityInput.value = ''; // Clear main input only on success
+            
+            // Clear OG input if it exists for consistency
+            const ogSearchInput = document.getElementById('ogSearchInput');
+            if (ogSearchInput) {
+                ogSearchInput.value = '';
+            }
         } else {
-            weatherTicker.innerHTML = '<div class="weather-error">❌ City not found. Please try again.</div>';
+            if (weatherScroll) {
+                weatherScroll.innerHTML = '<div class="weather-error">❌ City not found. Please try again.</div>';
+            }
         }
     } catch (error) {
         console.error('Weather API error:', error);
-        weatherTicker.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
+        if (weatherScroll) {
+            weatherScroll.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
+        }
     }
 }
 

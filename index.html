@@ -13,6 +13,7 @@
             <button id="matrixTheme" class="theme-option" data-theme="matrix">⚡ MATRIX</button>
             <button id="lcarsTheme" class="theme-option" data-theme="lcars">🖖 LCARS</button>
             <button id="thorTheme" class="theme-option" data-theme="thor">🔨 THOR</button>
+            <button id="ogTheme" class="theme-option" data-theme="og">🖥️ OG</button>
         </div>
     </div>
     
@@ -81,19 +82,25 @@
     
     <!-- Matrix Weather System -->
     <div class="weather-container">
-        <div id="cityInputContainer" class="city-input-container">
-            <div class="city-label">🌐 WEATHER DATA INTERFACE</div>
-            <input type="text" id="cityInput" class="city-input" placeholder="Taunton" maxlength="50">
-            <button id="weatherButton" class="weather-button">ACCESS DATA</button>
-        </div>
-        
-        <div id="weatherTicker" class="weather-ticker hidden">
-            <div class="weather-scroll" id="weatherScroll">
-                <!-- Weather data stream will be displayed here -->
+        <div class="weather-panel">
+            <div class="weather-panel-header">
+                <div class="city-label">🌐 WEATHER DATA INTERFACE</div>
+                <button id="resetWeather" class="weather-reset-btn hidden" title="Reset Weather">↻</button>
+            </div>
+            
+            <div class="weather-content">
+                <div class="weather-controls" id="weatherControls">
+                    <input type="text" id="cityInput" class="city-input" placeholder="New York, Tokyo, London" maxlength="50">
+                    <button id="weatherButton" class="weather-button">ACCESS DATA</button>
+                </div>
+                
+                <div id="weatherTicker" class="weather-ticker hidden">
+                    <div class="weather-scroll" id="weatherScroll">
+                        <!-- Weather data stream will be displayed here -->
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <button id="resetButton" class="weather-reset-button hidden"></button>
     </div>
     
     <!-- Core Script with Modular Theme System -->

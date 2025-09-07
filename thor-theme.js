@@ -369,6 +369,150 @@ function createMjolnirStrike(clickX, clickY) {
 }
 
 /**
+ * Create Loki mischief effect
+ */
+function createLokiTrick(clickX, clickY) {
+    console.log('Loki weaves his mischief...', clickX, clickY);
+    
+    // Create multiple illusion effects
+    const numberOfIllusions = 3 + Math.floor(Math.random() * 4); // 3-6 illusions
+    
+    for (let i = 0; i < numberOfIllusions; i++) {
+        setTimeout(() => {
+            createLokiIllusion(clickX, clickY, i);
+        }, i * 200); // Stagger the illusions
+    }
+    
+    // Create shapeshifting effect
+    setTimeout(() => {
+        createLokiShapeshift(clickX, clickY);
+    }, 500);
+}
+
+/**
+ * Create individual Loki illusion
+ */
+function createLokiIllusion(originX, originY, index) {
+    const illusion = document.createElement('div');
+    illusion.className = 'loki-illusion';
+    
+    // Loki's trickster symbols
+    const tricksterSymbols = ['🐍', '🎭', '🃏', '👻', '🔮', '⚡', '🌪️', '🔥'];
+    const symbol = tricksterSymbols[Math.floor(Math.random() * tricksterSymbols.length)];
+    
+    illusion.innerHTML = symbol;
+    illusion.style.position = 'fixed';
+    illusion.style.fontSize = '60px';
+    illusion.style.zIndex = '9999';
+    illusion.style.pointerEvents = 'none';
+    
+    // Random position near the click
+    const offsetX = (Math.random() - 0.5) * 400;
+    const offsetY = (Math.random() - 0.5) * 400;
+    illusion.style.left = (originX + offsetX) + 'px';
+    illusion.style.top = (originY + offsetY) + 'px';
+    
+    // Green mystical glow for Loki's magic
+    illusion.style.filter = `
+        brightness(1.3) 
+        drop-shadow(0 0 15px #00ff88) 
+        drop-shadow(0 0 30px #00cc66)
+        hue-rotate(${Math.random() * 60}deg)
+    `;
+    illusion.style.textShadow = '0 0 20px #00ff88, 0 0 40px #00cc66';
+    
+    // Animation
+    illusion.style.opacity = '0';
+    illusion.style.transform = 'scale(0.5) rotate(0deg)';
+    illusion.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    
+    document.body.appendChild(illusion);
+    
+    // Animate in
+    setTimeout(() => {
+        illusion.style.opacity = '0.9';
+        illusion.style.transform = `scale(1.2) rotate(${360 + Math.random() * 180}deg)`;
+    }, 50);
+    
+    // Flicker effect (Loki's trickery)
+    const flickerInterval = setInterval(() => {
+        illusion.style.opacity = Math.random() > 0.3 ? '0.9' : '0.3';
+    }, 100);
+    
+    // Animate out and cleanup
+    setTimeout(() => {
+        clearInterval(flickerInterval);
+        illusion.style.transition = 'all 0.6s ease-out';
+        illusion.style.opacity = '0';
+        illusion.style.transform = `scale(0.3) rotate(${720 + Math.random() * 360}deg)`;
+        
+        setTimeout(() => {
+            if (illusion.parentNode) {
+                illusion.remove();
+            }
+        }, 600);
+    }, 1500 + Math.random() * 1000);
+}
+
+/**
+ * Create Loki shapeshifting effect
+ */
+function createLokiShapeshift(clickX, clickY) {
+    const shapeshifter = document.createElement('div');
+    shapeshifter.className = 'loki-shapeshift';
+    shapeshifter.style.position = 'fixed';
+    shapeshifter.style.left = clickX + 'px';
+    shapeshifter.style.top = clickY + 'px';
+    shapeshifter.style.fontSize = '80px';
+    shapeshifter.style.zIndex = '10000';
+    shapeshifter.style.pointerEvents = 'none';
+    
+    // Loki shapeshifts through different forms
+    const shapes = ['🐍', '🐺', '🦅', '🐉', '👤', '🎭'];
+    let currentShape = 0;
+    
+    shapeshifter.innerHTML = shapes[currentShape];
+    shapeshifter.style.filter = 'brightness(1.5) drop-shadow(0 0 25px #00ff88) drop-shadow(0 0 50px #00cc66)';
+    shapeshifter.style.textShadow = '0 0 30px #00ff88, 0 0 60px #00cc66';
+    shapeshifter.style.opacity = '0';
+    shapeshifter.style.transform = 'scale(0.5)';
+    shapeshifter.style.transition = 'all 0.3s ease-in-out';
+    
+    document.body.appendChild(shapeshifter);
+    
+    // Fade in
+    setTimeout(() => {
+        shapeshifter.style.opacity = '1';
+        shapeshifter.style.transform = 'scale(1)';
+    }, 50);
+    
+    // Shapeshift animation
+    const shapeInterval = setInterval(() => {
+        currentShape = (currentShape + 1) % shapes.length;
+        shapeshifter.innerHTML = shapes[currentShape];
+        shapeshifter.style.transform = 'scale(1.2)';
+        
+        setTimeout(() => {
+            shapeshifter.style.transform = 'scale(1)';
+        }, 150);
+    }, 400);
+    
+    // Cleanup
+    setTimeout(() => {
+        clearInterval(shapeInterval);
+        shapeshifter.style.transition = 'all 0.8s ease-out';
+        shapeshifter.style.opacity = '0';
+        shapeshifter.style.transform = 'scale(0) rotate(360deg)';
+        
+        setTimeout(() => {
+            if (shapeshifter.parentNode) {
+                shapeshifter.remove();
+            }
+        }, 800);
+    }, 3000);
+}
+
+/**
  * Handle Thor theme click events
  * Should be called from main click handler when Thor theme is active
  */
