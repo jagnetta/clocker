@@ -119,8 +119,8 @@ function initMatrixParticles() {
         '低', '上', '下', '左', '右', '東', '西', '南', '北'
     ];
     
-    // Create columns across the full screen width
-    const columnWidth = 60;
+    // Create columns across the full screen width (10% fewer columns)
+    const columnWidth = 67; // Increased from 60 to reduce columns by ~10%
     const numColumns = Math.floor(window.innerWidth / columnWidth);
     
     for (let col = 0; col < numColumns; col++) {
@@ -134,7 +134,7 @@ function initMatrixParticles() {
 function createMatrixColumn(columnIndex, columnWidth, matrixChars, container) {
     const columnLength = 5 + Math.floor(Math.random() * 45);
     const columnX = columnIndex * columnWidth;
-    const animationDelay = Math.random() * 0.3; // Start within 300ms, some immediately
+    const animationDelay = Math.random() * 0.1; // Start within 100ms, most immediately
     const fallSpeed = 8 + Math.random() * 12;
     
     const blurLevels = [2.0, 3.5, 5.5, 7.5, 10.0];

@@ -120,7 +120,7 @@ const timezones = [
     }
   },
   {
-    "name": "South Georgia and the South Sandwich Islands Time",
+    "name": "S. Georgia & S. Sandwich Isl. Time",
     "abbreviation": "GST",
     "offset": "UTC-02:00",
     "daylightSaving": {

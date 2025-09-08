@@ -10,7 +10,8 @@
 .theme-selector {
     position: fixed;
     top: 20px;
-    right: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
 }
 
@@ -44,14 +45,40 @@
     transform: translateY(-1px);
 }
 
-/* Matrix theme active state (default) */
-.theme-option.active {
+/* Matrix Theme Switcher Styling */
+.matrix-theme .theme-switch {
+    background: 
+        linear-gradient(145deg, rgba(0, 40, 0, 0.9), rgba(0, 20, 0, 0.8));
+    border: 2px solid #00ff00;
+    border-radius: 15px;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.matrix-theme .theme-option {
+    color: #00ff00;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 8px;
+}
+
+.matrix-theme .theme-option:hover {
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+.matrix-theme .theme-option.active {
     background: linear-gradient(145deg, #00cc00, #009900);
     color: #000000;
     box-shadow: 
         0 2px 4px rgba(0, 0, 0, 0.5),
-        0 0 10px rgba(0, 255, 0, 0.3);
+        0 0 15px rgba(0, 255, 0, 0.5);
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+    border: 1px solid #00ff00;
 }
 
 /* Base Body Styles (Theme-neutral) */
@@ -115,7 +142,7 @@ input, button, textarea, select {
 /* Base Mobile Clock Display (all themes) */
 .mobile-device .clock-display {
     width: 95vw;
-    padding: 20px 30px;
+    padding: 16px 24px;
     border-radius: 15px;
     transform: none;
     backdrop-filter: none;
@@ -141,19 +168,50 @@ input, button, textarea, select {
 .mobile-device .theme-selector {
     top: 10px;
     left: 50%;
-    right: auto;
     transform: translateX(-50%);
 }
 
+/* Mobile Theme Switcher Adjustments */
 .mobile-device .theme-switch {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: none;
+    padding: 4px;
+    border-radius: 12px;
 }
 
 .mobile-device .theme-option {
     padding: 6px 10px;
     font-size: 0.7rem;
+    margin: 1px;
 }
+
+.mobile-device.matrix-theme .theme-switch {
+    border-width: 1px;
+}
+
+.mobile-device.lcars-theme .theme-switch {
+    border-radius: 15px 3px 15px 3px;
+    border-width: 1px;
+}
+
+.mobile-device.lcars-theme .theme-option {
+    border-radius: 12px 2px 12px 2px;
+}
+
+.mobile-device.og-theme .theme-switch {
+    border-width: 2px;
+    border-radius: 0;
+}
+
+.mobile-device.og-theme .theme-option {
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    border-radius: 0;
+}
+
+/* Base mobile fallback - overridden by theme-specific styles */
+.mobile-device .theme-switch {
+    backdrop-filter: none;
+}
+
 
 /* Base Mobile Weather Ticker (all themes) */
 .mobile-device .weather-ticker {
@@ -167,11 +225,11 @@ input, button, textarea, select {
 
 /* Base Mobile Typography (all themes) */
 .mobile-device .day {
-    font-size: 8vw;
+    font-size: 6vw;
 }
 
 .mobile-device .date {
-    font-size: 4vw;
+    font-size: 6vw;
 }
 
 .mobile-device .time {
@@ -207,7 +265,7 @@ input, button, textarea, select {
 
 /* Base Mobile Timezone Container (all themes) */
 .mobile-device .timezone-container {
-    top: 3vh; /* Move down to avoid theme selector overlap */
+    top: 14vh; /* Move down to avoid theme selector overlap */
     min-width: 300px;
     max-width: 90vw;
     padding: 12px 20px;
@@ -401,7 +459,7 @@ body::before {
 .clock-display {
     position: relative;
     width: 75vw;
-    padding: 40px 60px;
+    padding: 30px 45px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(3px);
     border: 3px solid rgba(255, 255, 255, 0.3);
@@ -499,9 +557,9 @@ body::before {
 /* Base Day Styles (Theme-neutral) */
 .day {
     font-family: 'Antonio', sans-serif;
-    font-size: 6vw;
+    font-size: 4.5vw;
     font-weight: 900;
-    margin-bottom: 2vh;
+    margin-bottom: 1.5vh;
     white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: normal;
@@ -535,7 +593,7 @@ body::before {
     font-family: 'Antonio', sans-serif;
     font-size: 4.5vw;
     font-weight: 900;
-    margin-bottom: 2vh;
+    margin-bottom: 1.5vh;
     white-space: nowrap;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
@@ -720,7 +778,7 @@ body::before {
 
 .timezone-container {
     position: fixed;
-    top: 2vh;
+    top: 12vh;
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
@@ -733,7 +791,7 @@ body::before {
     backdrop-filter: blur(5px);
     border: 2px solid #00ff00;
     border-radius: 10px;
-    padding: 15px 25px;
+    padding: 12px 20px;
     box-shadow: 
         inset 0 0 20px rgba(0, 255, 0, 0.1),
         0 4px 8px rgba(0, 0, 0, 0.8);
@@ -876,7 +934,7 @@ body::before {
     backdrop-filter: blur(5px);
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
-    padding: 15px 25px;
+    padding: 12px 20px;
     box-shadow: 
         inset 0 0 20px rgba(255, 255, 255, 0.05),
         0 4px 8px rgba(0, 0, 0, 0.8);
@@ -1050,10 +1108,10 @@ body.matrix-theme .city-separator {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 12px;
     width: 100%;
-    height: 70px;
-    margin-bottom: 15px;
+    height: 60px;
+    margin-bottom: 12px;
 }
 
 .weather-input {
@@ -1161,14 +1219,14 @@ body.matrix-theme .city-separator {
         linear-gradient(145deg, rgba(0, 0, 0, 0.2), rgba(30, 30, 30, 0.3));
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 8px 12px;
     box-shadow: 
         inset 0 0 15px rgba(255, 255, 255, 0.02);
     overflow: hidden;
-    height: 70px;
+    height: 60px;
     position: relative;
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -1279,14 +1337,18 @@ body.matrix-theme .city-separator {
    ======================================== */
 
 @media (max-width: 768px) {
+    .theme-selector {
+        top: 15px;
+    }
+    
     .day {
-        font-size: 9vw;
-        margin-bottom: 2vh;
+        font-size: 7vw;
+        margin-bottom: 1.5vh;
     }
     
     .date {
-        font-size: 6vw;
-        margin-bottom: 2vh;
+        font-size: 7vw;
+        margin-bottom: 1.5vh;
     }
     
     .time {
@@ -1295,7 +1357,7 @@ body.matrix-theme .city-separator {
     
     
     .timezone-container {
-        top: 2vh;
+        top: 12vh;
         padding: 10px 20px;
         min-width: 280px;
         max-width: 350px;
@@ -1320,7 +1382,8 @@ body.matrix-theme .city-separator {
     
     .weather-controls {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+        height: 50px;
     }
     
     .weather-label {
@@ -1333,7 +1396,7 @@ body.matrix-theme .city-separator {
     }
     
     .weather-ticker {
-        height: 60px;
+        height: 50px;
     }
     
     .weather-day {

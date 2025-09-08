@@ -661,20 +661,29 @@ function updateTimezoneDisplay() {
         // Determine if DST is active and get correct offset/abbreviation
         let effectiveOffset = selectedTz.offset;
         let effectiveAbbrev = selectedTz.abbreviation;
+        let effectiveName = selectedTz.name;
         let dstIndicator = '';
         
         if (selectedTz.daylightSaving.observesDST && isDSTActiveForTimezone(now, selectedTz)) {
             effectiveOffset = selectedTz.daylightSaving.dstOffset;
             effectiveAbbrev = selectedTz.daylightSaving.dstAbbreviation;
             dstIndicator = ' ☀️ DST';
+            
+            // Update the name to show "Daylight" instead of "Standard" when DST is active
+            if (effectiveName.includes('Standard')) {
+                effectiveName = effectiveName.replace('Standard', 'Daylight');
+            }
         }
+        
+        // Abbreviate DAYLIGHT and STANDARD in timezone names
+        effectiveName = effectiveName.replace(/\bDaylight\b/g, 'DL').replace(/\bStandard\b/g, 'STD');
         
         // Check if this is the browser's detected timezone
         const browserOffset = detectBrowserTimezone();
         const isLocalTime = Math.abs(currentTimezoneOffset - browserOffset) < 0.1;
         const localIndicator = isLocalTime ? ' 🏠 LOCAL' : '';
         
-        display.textContent = `${effectiveOffset} (${effectiveAbbrev}) - ${selectedTz.name}${dstIndicator}${localIndicator}`;
+        display.textContent = `${effectiveOffset} (${effectiveAbbrev}) - ${effectiveName}${dstIndicator}${localIndicator}`;
     } else {
         // Fallback to old method
         const now = getTimezoneDate();

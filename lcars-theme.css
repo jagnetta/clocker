@@ -28,12 +28,62 @@
     display: none !important;
 }
 
-/* LCARS Theme Active State */
+/* LCARS Mobile Status Bar Adjustment */
+.mobile-device .lcars-status-bar {
+    bottom: 80px;
+    right: 20px;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+}
+
+/* LCARS Theme Switcher Styling */
+.lcars-theme .theme-switch {
+    background: 
+        linear-gradient(145deg, rgba(0, 30, 60, 0.9), rgba(0, 20, 40, 0.8));
+    border: 2px solid #ff9900;
+    border-radius: 20px 5px 20px 5px;
+    box-shadow: 
+        0 0 20px rgba(255, 153, 0, 0.3),
+        inset 0 0 15px rgba(255, 153, 0, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.lcars-theme .theme-switch::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, #ff9900, #cc6600, #ff9900, #cc6600);
+    border-radius: 23px 8px 23px 8px;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.lcars-theme .theme-option {
+    color: #ff9900;
+    text-shadow: 0 0 8px rgba(255, 153, 0, 0.6);
+    border: 1px solid rgba(255, 153, 0, 0.3);
+    border-radius: 15px 3px 15px 3px;
+}
+
+.lcars-theme .theme-option:hover {
+    color: #ffaa22;
+    background: rgba(255, 153, 0, 0.1);
+    box-shadow: 0 0 10px rgba(255, 153, 0, 0.4);
+    transform: translateY(-1px);
+}
+
 .lcars-theme .theme-option.active {
-    background: linear-gradient(145deg, #006600, #004400);
-    border: 2px solid #00aa00;
+    background: linear-gradient(145deg, #ff9900, #cc6600);
     color: #000000;
-    box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.2);
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(255, 153, 0, 0.5);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+    border: 1px solid #ff9900;
 }
 
 /* LCARS Main Theme Body */
@@ -256,17 +306,23 @@
 
 .lcars-status-bar {
     position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 150px;
+    right: 40px;
+    transform: none;
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(30, 30, 60, 0.9));
     border: 2px solid #ffcc99;
     border-radius: 25px;
-    padding: 10px 20px;
+    padding: 15px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    gap: 5px;
     backdrop-filter: blur(5px);
+    width: 120px;
+    height: 120px;
+    text-align: center;
+    animation: lcarsStatusFlash 3s ease-in-out infinite;
 }
 
 .lcars-status-text {
@@ -540,13 +596,6 @@
     transform: translateX(-50%);
 }
 
-.lcars-status-bar {
-    width: 60px;
-    height: 12px;
-    border-radius: 6px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
-    animation: lcarsStatusPulse 3s ease-in-out infinite;
-}
 
 /* LCARS Status Colors */
 .lcars-red-alert { background: #cc4444; }
@@ -561,13 +610,29 @@
     50% { opacity: 0.7; }
 }
 
+@keyframes lcarsStatusFlash {
+    0%, 80% { 
+        opacity: 1; 
+        box-shadow: 0 0 10px rgba(255, 204, 153, 0.3);
+    }
+    90% { 
+        opacity: 0.7; 
+        box-shadow: 0 0 25px rgba(255, 204, 153, 0.8);
+    }
+    100% { 
+        opacity: 1; 
+        box-shadow: 0 0 10px rgba(255, 204, 153, 0.3);
+    }
+}
+
 .lcars-status-text {
-    color: #ff9900;
+    color: #ffcc99;
     font-family: 'Antonio', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    text-shadow: 0 0 6px rgba(255, 153, 0, 0.6);
+    font-size: 14px;
+    font-weight: 600;
+    text-shadow: 0 0 8px #ffcc99;
     letter-spacing: 0.1em;
+    white-space: nowrap;
 }
 
 /* LCARS Data Readouts */

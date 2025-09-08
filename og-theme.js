@@ -118,7 +118,7 @@ function createCompy386() {
                     </div>
                     <div class="og-clock-display" id="ogClockDisplay">
                         <div class="og-timezone-control">
-                            <label class="og-timezone-label">TIMEZONE:</label>
+                            <label class="og-timezone-label">TIMEZONE: <span id="ogTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
                             <input type="range" id="ogTimezoneSlider" class="og-timezone-slider" min="0" max="38" value="0" step="1">
                         </div>
                         <div class="og-clock-day" id="ogClockDay"></div>
@@ -152,43 +152,170 @@ function createCompy386() {
     // Add Compy 386 to document
     document.body.insertAdjacentHTML('beforeend', compyHTML);
     
-    // Add sbemail startup sequence
+    // Start the authentic terminal sequence
     setTimeout(() => {
-        const startup = document.querySelector('.og-terminal-startup');
-        if (startup) startup.style.opacity = '0.4';
+        startTerminalSequence();
+    }, 1000);
+}
+
+// Start authentic terminal sequence with blank screen, prompt, and scanlines
+function startTerminalSequence() {
+    // First, show the C:\ prompt with blinking cursor
+    const promptElement = document.querySelector('.og-startup-line:nth-child(1)');
+    if (promptElement) {
+        promptElement.textContent = 'C:\\COMPY386> ';
+        promptElement.style.opacity = '1';
+        promptElement.classList.add('ready-for-input');
         
-        const clockDisplay = document.getElementById('ogClockDisplay');
-        if (clockDisplay) {
-            clockDisplay.style.opacity = '1';
-            // Auto-scroll to show the clock
-            clockDisplay.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
+        // Let scanlines run for about 8-10 seconds (1-2 cycles at 4.2s each)
+        setTimeout(() => {
+            // Remove cursor and start typing just the command part
+            promptElement.classList.remove('ready-for-input');
+            typeCommandOnly(promptElement, 'sbemail_clock.exe', () => {
+                // After command is typed, show output lines one by one
+                showOutputLines();
             });
+        }, 8400); // About 2 scanner cycles
+    }
+}
+
+// Show program output lines one at a time with random delays
+function showOutputLines() {
+    const outputLines = [
+        { selector: '.og-startup-line:nth-child(2)', text: 'Loading Strong Bad\'s Temporal Interface...' },
+        { selector: '.og-startup-line:nth-child(3)', text: 'Scanning for The Cheat viruses... NONE FOUND' },
+        { selector: '.og-startup-line:nth-child(4)', text: 'Checking email... 0 new messages' },
+        { selector: '.og-startup-line:nth-child(5)', text: 'Time display ready. Holy crap on a cracker!' }
+    ];
+    
+    let currentLineIndex = 0;
+    
+    const showNextLine = () => {
+        if (currentLineIndex < outputLines.length) {
+            const line = outputLines[currentLineIndex];
+            const element = document.querySelector(line.selector);
+            if (element) {
+                // Show the entire line instantly (program output)
+                element.textContent = line.text;
+                element.style.opacity = '1';
+            }
             
-            // Wait additional time after clock panel is rendered to show weather tool
+            currentLineIndex++;
+            
+            // Short delay between output lines (300-800ms)
+            const randomDelay = 300 + Math.random() * 500;
+            setTimeout(showNextLine, randomDelay);
+        } else {
+            // All output lines shown, show clock display
             setTimeout(() => {
-                const weatherSearch = document.getElementById('ogWeatherSearch');
-                if (weatherSearch) {
-                    weatherSearch.style.display = 'block';
-                    weatherSearch.style.opacity = '0';
+                const startup = document.querySelector('.og-terminal-startup');
+                if (startup) startup.style.opacity = '0.4';
+                
+                const clockDisplay = document.getElementById('ogClockDisplay');
+                if (clockDisplay) {
+                    clockDisplay.style.opacity = '1';
+                    // Auto-scroll to show the clock
+                    clockDisplay.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    
+                    // Wait additional time after clock panel is rendered to show weather tool
                     setTimeout(() => {
-                        weatherSearch.style.opacity = '1';
-                        weatherSearch.style.transition = 'opacity 0.5s ease-in';
+                        const weatherSearch = document.getElementById('ogWeatherSearch');
+                        if (weatherSearch) {
+                            weatherSearch.style.display = 'block';
+                            weatherSearch.style.opacity = '0';
+                            setTimeout(() => {
+                                weatherSearch.style.opacity = '1';
+                                weatherSearch.style.transition = 'opacity 0.5s ease-in';
+                                
+                                // Auto-scroll to show the weather widget
+                                scrollToWeatherWidget();
+                            }, 100);
+                        }
                         
-                        // Auto-scroll to show the weather widget
-                        scrollToWeatherWidget();
-                    }, 100);
+                        // Initialize weather search functionality after displaying
+                        initOgWeatherSearch();
+                        
+                        // Initialize timezone slider functionality
+                        initOgTimezoneSlider();
+                    }, 1500); // Show weather tool 1.5 seconds after clock panel
                 }
-                
-                // Initialize weather search functionality after displaying
-                initOgWeatherSearch();
-                
-                // Initialize timezone slider functionality
-                initOgTimezoneSlider();
-            }, 1500); // Show weather tool 1.5 seconds after clock panel
+            }, 800); // Brief pause after final output line
         }
-    }, 4000);
+    };
+    
+    // Start showing output lines after a brief pause
+    setTimeout(showNextLine, 400);
+}
+
+// Type text character by character into an element
+function typeTextIntoElement(selector, text, onComplete) {
+    const element = document.querySelector(selector);
+    if (!element) {
+        if (onComplete) onComplete();
+        return;
+    }
+    
+    element.textContent = ''; // Clear any existing text
+    element.classList.add('typing');
+    
+    let currentIndex = 0;
+    
+    const typeNextCharacter = () => {
+        if (currentIndex < text.length) {
+            element.textContent += text[currentIndex];
+            currentIndex++;
+            
+            // Variable typing speed (50-150ms) to simulate human typing
+            const typingSpeed = 50 + Math.random() * 100;
+            setTimeout(typeNextCharacter, typingSpeed);
+        } else {
+            // Remove cursor when done typing this line
+            setTimeout(() => {
+                element.classList.remove('typing');
+                if (onComplete) onComplete();
+            }, 200);
+        }
+    };
+    
+    // Start typing after a brief pause
+    setTimeout(typeNextCharacter, 100);
+}
+
+// Type only the command part after the existing prompt
+function typeCommandOnly(element, command, onComplete) {
+    if (!element) {
+        if (onComplete) onComplete();
+        return;
+    }
+    
+    // Keep the existing prompt content
+    const promptText = element.textContent; // Should be 'C:\COMPY386> '
+    element.classList.add('typing');
+    
+    let currentIndex = 0;
+    
+    const typeNextCharacter = () => {
+        if (currentIndex < command.length) {
+            element.textContent = promptText + command.substring(0, currentIndex + 1);
+            currentIndex++;
+            
+            // Variable typing speed (50-150ms) to simulate human typing
+            const typingSpeed = 50 + Math.random() * 100;
+            setTimeout(typeNextCharacter, typingSpeed);
+        } else {
+            // Remove cursor when done typing command
+            setTimeout(() => {
+                element.classList.remove('typing');
+                if (onComplete) onComplete();
+            }, 200);
+        }
+    };
+    
+    // Start typing after a brief pause
+    setTimeout(typeNextCharacter, 100);
 }
 
 // Start the Compy 386 clock updates (mimics clocker-improved behavior)
@@ -706,8 +833,9 @@ function initOgTimezoneSlider() {
 // Update OG timezone display
 function updateOgTimezoneDisplay() {
     const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    const timezoneDescription = document.getElementById('ogTimezoneDescription');
     
-    if (timezoneSlider && typeof timezones !== 'undefined') {
+    if (timezoneSlider && timezoneDescription && typeof timezones !== 'undefined') {
         const index = parseInt(timezoneSlider.value);
         console.log('🕰️ OG: Updating timezone display for index:', index);
         
@@ -750,7 +878,24 @@ function updateOgTimezoneDisplay() {
                 }
             }
             
-            console.log('🕰️ OG: Using timezone:', `${displayOffset} ${tzInfo.location}`);
+            // Create the timezone description text with DST indication
+            let timezoneName = tzInfo.name || 'LOCAL TIME';
+            
+            // If DST is active and we have DST info, modify the name
+            if (isDstActive && tzInfo.daylightSaving && tzInfo.daylightSaving.dstAbbreviation) {
+                // Replace "Standard" with "Daylight" in the name if it exists
+                if (timezoneName.includes('Standard')) {
+                    timezoneName = timezoneName.replace('Standard', 'Daylight');
+                }
+            }
+            
+            // Abbreviate DAYLIGHT and STANDARD in timezone names
+            timezoneName = timezoneName.replace(/\bDaylight\b/g, 'DL').replace(/\bStandard\b/g, 'STD');
+            
+            const timezoneText = `${displayOffset} (${timezoneName})`.toUpperCase();
+            timezoneDescription.textContent = timezoneText;
+            
+            console.log('🕰️ OG: Updated timezone description to:', timezoneText);
             
             // Update global timezone offset for the clock
             // Parse the offset (e.g., "UTC-05:00" -> -5)
