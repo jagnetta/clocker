@@ -1,0 +1,546 @@
+/* ================================
+   LINUX THEME STYLES  
+   Linux X-Windows desktop environment simulation
+   ================================ */
+
+/* Linux Theme Body */
+.linux-theme body {
+    background: #d3d3d3; /* Classic X11 gray background */
+    color: #000000;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Hide other theme backgrounds when linux is active */
+.linux-theme .matrix-bg,
+.linux-theme .lcars-bg, 
+.linux-theme .thor-bg {
+    display: none !important;
+}
+
+/* Hide external interface panels when Linux theme is active */
+.linux-theme .timezone-container,
+.linux-theme .weather-container,
+.linux-theme .clock-container {
+    display: none !important;
+}
+
+/* Linux Terminal Windows */
+.linux-terminal {
+    background: #000000;
+    border: 2px outset #c0c0c0;
+    border-radius: 0;
+    position: absolute;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 14px;
+    overflow: hidden;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+    min-height: 150px;
+    z-index: 100;
+}
+
+.linux-terminal.dragging {
+    cursor: move;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.linux-terminal.resizing {
+    box-shadow: 5px 5px 15px rgba(0, 255, 0, 0.3);
+    z-index: 1000;
+}
+
+.linux-terminal:hover {
+    z-index: 200;
+}
+
+.linux-terminal.focused {
+    z-index: 300;
+    border: 2px outset #00ff00;
+}
+
+/* Terminal title bar */
+.xterm-titlebar {
+    background: linear-gradient(to bottom, #e0e0e0, #b0b0b0);
+    height: 20px;
+    border-bottom: 1px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000000;
+    cursor: move;
+    user-select: none;
+}
+
+/* Resize handles */
+.xterm-resize-handle {
+    position: absolute;
+    background: transparent;
+}
+
+.xterm-resize-handle.corner {
+    width: 20px;
+    height: 20px;
+}
+
+.xterm-resize-handle.edge-horizontal {
+    height: 8px;
+    left: 20px;
+    right: 20px;
+}
+
+.xterm-resize-handle.edge-vertical {
+    width: 8px;
+    top: 25px;
+    bottom: 20px;
+}
+
+.xterm-resize-handle.nw {
+    top: -10px;
+    left: -10px;
+    cursor: nw-resize;
+}
+
+.xterm-resize-handle.ne {
+    top: -10px;
+    right: -10px;
+    cursor: ne-resize;
+}
+
+.xterm-resize-handle.sw {
+    bottom: -10px;
+    left: -10px;
+    cursor: sw-resize;
+}
+
+.xterm-resize-handle.se {
+    bottom: -10px;
+    right: -10px;
+    cursor: se-resize;
+}
+
+.xterm-resize-handle.n {
+    top: -8px;
+    cursor: n-resize;
+}
+
+.xterm-resize-handle.s {
+    bottom: -8px;
+    cursor: s-resize;
+}
+
+.xterm-resize-handle.w {
+    left: -8px;
+    cursor: w-resize;
+}
+
+.xterm-resize-handle.e {
+    right: -8px;
+    cursor: e-resize;
+}
+
+.xterm-titlebar-buttons {
+    display: flex;
+    gap: 2px;
+}
+
+.xterm-titlebar-button {
+    width: 14px;
+    height: 14px;
+    border: 1px outset #c0c0c0;
+    background: #c0c0c0;
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.xterm-titlebar-button:hover {
+    background: #d0d0d0;
+}
+
+.xterm-titlebar-button.close-button {
+    background: #ff4444;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.xterm-titlebar-button.close-button:hover {
+    background: #cc0000;
+}
+
+/* Terminal content area */
+.xterm-content {
+    background: #000000;
+    color: #00ff00; /* Classic green terminal text */
+    padding: 8px;
+    height: calc(100% - 21px); /* Subtract titlebar height */
+    overflow: hidden;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+/* Bash prompt styling */
+.xterm-prompt {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.xterm-username {
+    color: #00ff00;
+}
+
+.xterm-hostname {
+    color: #00ff00;
+}
+
+.xterm-path {
+    color: #0080ff;
+}
+
+.linux-terminal .xterm-cursor,
+.xterm-cursor {
+    background: #00ff00 !important;
+    color: #000000 !important;
+    animation: xterm-blink 1s infinite;
+    font-weight: bold;
+    display: inline;
+}
+
+/* Vertical bar cursor for command prompts */
+.xterm-cursor-vertical {
+    background: transparent !important;
+    color: #00ff00 !important;
+    border-right: 2px solid #00ff00;
+    animation: xterm-cursor-blink 1s infinite;
+    font-weight: normal;
+    width: 0;
+    display: inline-block;
+}
+
+@keyframes xterm-cursor-blink {
+    0%, 50% { 
+        opacity: 1; 
+        border-right-color: #00ff00;
+    }
+    51%, 100% { 
+        opacity: 0.3; 
+        border-right-color: transparent;
+    }
+}
+
+@keyframes xterm-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Terminal 1 - 80x24 regular terminal */
+.xterm-terminal-1 {
+    top: 50px;
+    left: 50px;
+    width: 640px;  /* 80 chars * 8px */
+    height: 408px; /* 24 lines * 17px + titlebar */
+}
+
+/* Terminal 2 - Weather/clocker terminal */
+.xterm-terminal-2 {
+    top: 50px;
+    right: 50px;
+    width: 480px;  /* 60 chars * 8px */
+    height: 320px; /* 20 lines * 16px + titlebar */
+}
+
+/* Clocker output styling */
+.xterm-clocker {
+    text-align: center;
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.xterm-clocker-day {
+    font-size: 22px;
+    color: #ffff00;
+    margin-bottom: 4px;
+}
+
+.xterm-clocker-date {
+    font-size: 16px;
+    color: #00ffff;
+    margin-bottom: 4px;
+}
+
+.xterm-clocker-time {
+    font-size: 18px;
+    color: #00ff00;
+    margin-bottom: 8px;
+}
+
+/* Weather curses interface */
+.xterm-weather-interface {
+    border: 1px solid #00ff00;
+    padding: 4px;
+    margin: 4px 0;
+}
+
+.xterm-weather-title {
+    background: #00ff00;
+    color: #000000;
+    padding: 2px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.xterm-weather-input {
+    background: transparent;
+    border: none;
+    color: #00ff00;
+    outline: none;
+    width: 100%;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 14px;
+}
+
+.xterm-weather-result {
+    color: #ffff00;
+    margin-top: 4px;
+}
+
+/* Theme-specific panel styling removed - no interface panels in Linux theme */
+
+/* Theme selector styling for linux */
+.linux-theme .theme-selector {
+    background: rgba(192, 192, 192, 0.9);
+    border: 2px outset #c0c0c0;
+}
+
+.linux-theme .theme-option {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    color: #000000;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.linux-theme .theme-option:hover {
+    background: #d0d0d0;
+}
+
+.linux-theme .theme-option.active {
+    background: #a0a0a0;
+    border: 1px inset #c0c0c0;
+}
+
+/* Weather ticker styling removed - no weather data interface in Linux theme */
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .xterm-terminal-1 {
+        width: 90%;
+        left: 5%;
+        top: 80px;
+    }
+    
+    .xterm-terminal-2 {
+        width: 90%;
+        right: 5%;
+        top: 300px;
+    }
+    
+    .xterm-theme body {
+        padding: 10px;
+    }
+}
+
+/* Hide main clock display in linux theme (terminals will show their own) */
+.linux-theme .clock-container {
+    display: none;
+}
+
+/* Desktop Icons */
+.linux-desktop-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 50;
+}
+
+.xterm-desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 85px;
+    padding: 8px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+    background: rgba(192, 192, 192, 0.1);
+    transition: all 0.2s ease;
+}
+
+.xterm-desktop-icon:hover {
+    background: rgba(0, 0, 255, 0.2);
+    border: 1px solid #0000ff;
+}
+
+.xterm-desktop-icon.selected {
+    background: rgba(0, 0, 255, 0.4);
+    border: 1px dotted #000000;
+}
+
+.xterm-desktop-icon.double-clicked {
+    background: rgba(0, 255, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.xterm-icon-image {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(45deg, #c0c0c0, #808080);
+    border: 2px outset #c0c0c0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 4px;
+    position: relative;
+}
+
+.xterm-icon-image::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: linear-gradient(135deg, 
+        rgba(255,255,255,0.3) 0%, 
+        transparent 50%, 
+        rgba(0,0,0,0.1) 100%);
+    pointer-events: none;
+}
+
+.xterm-icon-weather {
+    color: #0080ff;
+}
+
+.xterm-icon-script {
+    color: #008000;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.xterm-icon-label {
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 11px;
+    color: #000000;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 85px;
+    word-wrap: break-word;
+    background: rgba(192, 192, 192, 0.8);
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+/* Desktop icon animations */
+@keyframes icon-launch {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.xterm-desktop-icon.launching {
+    animation: icon-launch 0.3s ease-in-out;
+}
+
+/* Terminal text animations */
+.xterm-line {
+    opacity: 0;
+    animation: xterm-type-in 0.5s ease-in-out forwards;
+}
+
+@keyframes xterm-type-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Scrollbar styling for terminals */
+.xterm-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.xterm-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.xterm-content::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 0;
+}
+
+.xterm-content::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+}
+
+/* Less viewer specific styling */
+.xterm-less-viewer {
+    background: #000000;
+    color: #00ff00;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-y: auto;
+    padding: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    height: 100%;
+    border: none;
+    outline: none;
+}
+
+.xterm-less-viewer::-webkit-scrollbar {
+    width: 16px;
+}
+
+.xterm-less-viewer::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border: 1px inset #666;
+}
+
+.xterm-less-viewer::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border: 1px outset #00ff00;
+    min-height: 20px;
+}
+
+.xterm-less-viewer::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+}
+
+.xterm-less-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #00ff00;
+    color: #000000;
+    padding: 2px 8px;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    border-top: 1px solid #008800;
+}

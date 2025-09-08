@@ -28,11 +28,11 @@
     background: transparent;
     border: none;
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     color: rgba(255, 255, 255, 0.7);
     font-family: 'Antonio', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 1.0rem;
+    font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -178,8 +178,8 @@ input, button, textarea, select {
 }
 
 .mobile-device .theme-option {
-    padding: 6px 10px;
-    font-size: 0.7rem;
+    padding: 8px 12px;
+    font-size: 0.9rem;
     margin: 1px;
 }
 
@@ -202,8 +202,8 @@ input, button, textarea, select {
 }
 
 .mobile-device.og-theme .theme-option {
-    font-size: 0.6rem;
-    padding: 4px 8px;
+    font-size: 0.8rem;
+    padding: 6px 10px;
     border-radius: 0;
 }
 

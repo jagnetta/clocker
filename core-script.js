@@ -6,7 +6,7 @@ let isMobileDevice = false;
 // Modular theme system
 let loadedThemes = new Set();
 let currentlyLoadedCss = null;
-const availableThemes = ['matrix', 'lcars', 'thor', 'og'];
+const availableThemes = ['matrix', 'lcars', 'thor', 'og', 'linux'];
 
 // Use timezone data from timezones.js - create compatibility layer
 let currentTimezoneIndex = 0;
@@ -375,7 +375,8 @@ function cleanupCurrentTheme() {
         'matrix': () => typeof cleanupMatrixTheme === 'function' && cleanupMatrixTheme(),
         'lcars': () => typeof cleanupLcarsTheme === 'function' && cleanupLcarsTheme(),
         'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects(),
-        'og': () => typeof cleanupOGTheme === 'function' && cleanupOGTheme()
+        'og': () => typeof cleanupOGTheme === 'function' && cleanupOGTheme(),
+        'linux': () => typeof cleanupLinuxTheme === 'function' && cleanupLinuxTheme()
     };
     
     if (cleanupFunctions[currentTheme]) {
@@ -510,7 +511,8 @@ async function switchToTheme(themeName) {
             'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
             'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
             'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
-            'og': () => typeof initOGTheme === 'function' && initOGTheme()
+            'og': () => typeof initOGTheme === 'function' && initOGTheme(),
+            'linux': () => typeof initLinuxTheme === 'function' && initLinuxTheme()
         };
         
         if (initFunctions[themeName]) {
@@ -1138,13 +1140,13 @@ function initKeyboardShortcuts() {
             }
         }
         
-        // Easter eggs for extra sass
-        if (event.key === 'ArrowUp') {
+        // Easter eggs for extra sass (disabled for Linux theme)
+        if (event.key === 'ArrowUp' && currentTheme !== 'linux') {
             document.body.style.transform = 'rotate(1deg)';
             setTimeout(() => document.body.style.transform = '', 500);
         }
         
-        if (event.key === 'ArrowDown') {
+        if (event.key === 'ArrowDown' && currentTheme !== 'linux') {
             document.body.style.transform = 'rotate(-1deg)';
             setTimeout(() => document.body.style.transform = '', 500);
         }
@@ -1709,7 +1711,8 @@ function handleGlobalClick(event) {
     const clickHandlers = {
         'matrix': () => typeof handleMatrixClick === 'function' && handleMatrixClick(event.clientX, event.clientY),
         'lcars': () => typeof handleLcarsClick === 'function' && handleLcarsClick(event.clientX, event.clientY),
-        'thor': () => typeof handleThorClick === 'function' && handleThorClick(event.clientX, event.clientY)
+        'thor': () => typeof handleThorClick === 'function' && handleThorClick(event.clientX, event.clientY),
+        'linux': () => typeof handleLinuxClick === 'function' && handleLinuxClick(event.clientX, event.clientY)
     };
     
     if (currentTheme && clickHandlers[currentTheme]) {
