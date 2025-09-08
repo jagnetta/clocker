@@ -23,7 +23,7 @@
     background: rgba(0, 20, 40, 0.3);
 }
 
-/* Hide all LCARS decorative elements on mobile */
+/* Hide all LCARS decorative elements on mobile only */
 .mobile-device.photon-torpedo-formation,
 .mobile-device .star-trek-flyby,
 .mobile-device .lcars-interface,
@@ -40,9 +40,69 @@
     display: none !important;
 }
 
+/* Ensure desktop LCARS decorations are visible */
+body:not(.mobile-device).lcars-theme .lcars-interface,
+body:not(.mobile-device).lcars-theme .lcars-bar,
+body:not(.mobile-device).lcars-theme .lcars-corner,
+body:not(.mobile-device).lcars-theme .lcars-panel,
+body:not(.mobile-device).lcars-theme .lcars-connector,
+body:not(.mobile-device).lcars-theme .lcars-side-panel,
+body:not(.mobile-device).lcars-theme .lcars-readout,
+body:not(.mobile-device).lcars-theme .lcars-frame,
+body:not(.mobile-device).lcars-theme .warp-stars,
+body:not(.mobile-device).lcars-theme #lcarsBg,
+body:not(.mobile-device).lcars-theme .lcars-bg {
+    display: block !important;
+    pointer-events: auto;
+}
+
+/* Ensure warp stars container is properly displayed */
+body:not(.mobile-device).lcars-theme .warp-stars {
+    display: block !important;
+}
+
+/* Enable LCARS click effects on desktop */
+body:not(.mobile-device).lcars-theme .photon-torpedo-formation {
+    display: block !important;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+body:not(.mobile-device).lcars-theme .star-trek-flyby {
+    display: block !important;
+    position: fixed;
+    font-size: 80px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
 /* Hide LCARS status bar on mobile for cleaner look */
 .mobile-device .lcars-status-bar {
     display: none !important;
+}
+
+/* Restore LCARS status bar on desktop */
+body:not(.mobile-device).lcars-theme .lcars-status-bar {
+    display: flex !important;
+    position: absolute;
+    bottom: 150px;
+    right: 40px;
+    transform: none;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(30, 30, 60, 0.9));
+    border: 2px solid #ffcc99;
+    border-radius: 25px;
+    padding: 15px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    backdrop-filter: blur(5px);
+    width: 120px;
+    height: 120px;
+    text-align: center;
+    animation: lcarsStatusFlash 3s ease-in-out infinite;
+    pointer-events: none;
 }
 
 /* LCARS Theme Switcher Styling */

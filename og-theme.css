@@ -1126,4 +1126,10 @@ body.og-theme .weather-container {
         height: 20px;
         font-size: 10px;
     }
+    
+    /* Hide weather search panel on mobile for cleaner OG experience */
+    .og-weather-search,
+    .og-weather-ticker {
+        display: none !important;
+    }
 }
