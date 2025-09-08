@@ -80,29 +80,7 @@
     position: relative;
 }
 
-.matrix-theme .clock-display::before {
-    content: '⚡';
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    font-size: 30px;
-    color: #00ff00;
-    text-shadow: 0 0 12px #00ff00;
-    animation: matrixIconPulse 4s ease-in-out infinite;
-}
 
-@keyframes matrixIconPulse {
-    0%, 100% { 
-        opacity: 0.6;
-        text-shadow: 0 0 8px #00ff00;
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 1;
-        text-shadow: 0 0 18px #00ff00, 0 0 25px #00ff00;
-        transform: scale(1.1);
-    }
-}
 
 /* Matrix Typography */
 .matrix-theme .day {

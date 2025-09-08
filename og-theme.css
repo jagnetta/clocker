@@ -259,6 +259,7 @@
     white-space: nowrap;
     overflow: hidden;
     position: relative;
+    font-size: 16px;
 }
 
 .og-startup-line.ready-for-input::after {
@@ -268,10 +269,9 @@
 }
 
 .og-startup-line:first-child {
-    color: #00ffff;
+    color: #00ff00;
     font-weight: normal;
     margin-bottom: 12px;
-    font-size: 16px;
 }
 
 .og-startup-line.typing::after {
@@ -336,8 +336,8 @@
 
 .og-clock-day {
     font-size: 20px;
-    color: #00ffff;
-    text-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+    color: #00ff00;
+    text-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
 }
 
 .og-clock-date {
@@ -347,10 +347,10 @@
 
 .og-clock-time {
     font-size: 18px;
-    color: #ffff00;
+    color: #00ff00;
     font-family: 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     letter-spacing: 2px;
-    text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+    text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
 }
 
 @keyframes compyGlow {

@@ -21,6 +21,35 @@ function scrollToWeatherWidget() {
     }
 }
 
+// Retro computer phrases for the fourth startup line
+const retroStartupPhrases = [
+    "Time display ready. Holy crap on a cracker!",
+    "Time display ready. Oh, seriously!",
+    "Time display ready. What the crap?",
+    "Time display ready. That's not a good prize!",
+    "Time display ready. The system is down!",
+    "Time display ready. Computer over!",
+    "Time display ready. Holy butter on a biscuit!",
+    "Time display ready. Great jorb!",
+    "Time display ready. Holy schnikes!",
+    "Time display ready. Da email loaded!",
+    "Time display ready. Flagrant system error... RESOLVED!",
+    "Time display ready. Matt, get me a danish!",
+    "Time display ready. Ow, my skin!",
+    "Time display ready. Here comes the clock!",
+    "Time display ready. Baleeted all errors!",
+    "Time display ready. Come on fhqwhgads!",
+    "Time display ready. The Cheat approved!",
+    "Time display ready. Arrowed successfully!",
+    "Time display ready. Buttdance complete!",
+    "Time display ready. Virus equals very no!"
+];
+
+// Get random startup phrase
+function getRandomStartupPhrase() {
+    return retroStartupPhrases[Math.floor(Math.random() * retroStartupPhrases.length)];
+}
+
 // Initialize Strong Bad's Compy 386 Theme
 function initOGTheme() {
     console.log('📧 Initializing Strong Bad\'s Compy 386 theme');
@@ -110,11 +139,12 @@ function createCompy386() {
             <div class="og-terminal-body">
                 <div class="og-terminal-content" id="ogTerminalContent">
                     <div class="og-terminal-startup">
-                        <div class="og-startup-line">C:\\COMPY386> sbemail_clock.exe</div>
-                        <div class="og-startup-line og-startup-delay-1">Loading Strong Bad's Temporal Interface...</div>
-                        <div class="og-startup-line og-startup-delay-2">Scanning for The Cheat viruses... NONE FOUND</div>
-                        <div class="og-startup-line og-startup-delay-3">Checking email... 0 new messages</div>
-                        <div class="og-startup-line og-startup-delay-4">Time display ready. Holy crap on a cracker!</div>
+                        <div class="og-startup-line" id="initialPrompt">A:\\></div>
+                        <div class="og-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK></div>
+                        <div class="og-startup-line og-startup-delay-1" id="loadingMsg" style="display: none;">Loading Strong Bad's Temporal Interface...</div>
+                        <div class="og-startup-line og-startup-delay-2" id="virusMsg" style="display: none;">Scanning for The Cheat viruses... NONE FOUND</div>
+                        <div class="og-startup-line og-startup-delay-3" id="emailMsg" style="display: none;">Checking email... 0 new messages</div>
+                        <div class="og-startup-line og-startup-delay-4" id="readyMsg" style="display: none;">${getRandomStartupPhrase()}</div>
                     </div>
                     <div class="og-clock-display" id="ogClockDisplay">
                         <div class="og-timezone-control">
@@ -158,52 +188,107 @@ function createCompy386() {
     }, 1000);
 }
 
-// Start authentic terminal sequence with blank screen, prompt, and scanlines
+// Start authentic terminal sequence with A:\ prompt and DOS navigation
 function startTerminalSequence() {
-    // First, show the C:\ prompt with blinking cursor
-    const promptElement = document.querySelector('.og-startup-line:nth-child(1)');
-    if (promptElement) {
-        promptElement.textContent = 'C:\\COMPY386> ';
-        promptElement.style.opacity = '1';
-        promptElement.classList.add('ready-for-input');
-        
-        // Let scanlines run for about 8-10 seconds (1-2 cycles at 4.2s each)
-        setTimeout(() => {
-            // Remove cursor and start typing just the command part
-            promptElement.classList.remove('ready-for-input');
-            typeCommandOnly(promptElement, 'sbemail_clock.exe', () => {
-                // After command is typed, show output lines one by one
-                showOutputLines();
-            });
-        }, 8400); // About 2 scanner cycles
+    // Show A:\> prompt immediately with blinking cursor
+    const initialPrompt = document.getElementById('initialPrompt');
+    if (initialPrompt) {
+        initialPrompt.style.opacity = '1';
+        initialPrompt.classList.add('ready-for-input');
     }
+    
+    // Let scanlines run for about 8-10 seconds (1-2 cycles at 4.2s each) while cursor blinks
+    setTimeout(() => {
+        // Remove cursor and start the DOS typing sequence
+        if (initialPrompt) {
+            initialPrompt.classList.remove('ready-for-input');
+        }
+        // Start the DOS startup sequence
+        showDOSStartup();
+    }, 8400); // About 2 scanner cycles
 }
 
-// Show program output lines one at a time with random delays
-function showOutputLines() {
-    const outputLines = [
-        { selector: '.og-startup-line:nth-child(2)', text: 'Loading Strong Bad\'s Temporal Interface...' },
-        { selector: '.og-startup-line:nth-child(3)', text: 'Scanning for The Cheat viruses... NONE FOUND' },
-        { selector: '.og-startup-line:nth-child(4)', text: 'Checking email... 0 new messages' },
-        { selector: '.og-startup-line:nth-child(5)', text: 'Time display ready. Holy crap on a cracker!' }
+// Simulate typing with realistic delays - append to existing prompt
+function typeText(element, text, callback, typingSpeed = 80) {
+    if (!element) {
+        if (callback) callback();
+        return;
+    }
+    
+    element.style.opacity = '1';
+    let i = 0;
+    const basePrompt = element.textContent; // Keep existing prompt content
+    
+    const typeNextChar = () => {
+        if (i < text.length) {
+            element.textContent = basePrompt + text.substring(0, i + 1);
+            i++;
+            // Vary typing speed slightly for human feel
+            const delay = typingSpeed + (Math.random() * 40 - 20);
+            setTimeout(typeNextChar, delay);
+        } else {
+            // Add brief pause at end, then call callback
+            setTimeout(() => {
+                if (callback) callback();
+            }, 200);
+        }
+    };
+    
+    typeNextChar();
+}
+
+// Simulate DOS startup sequence with typing
+function showDOSStartup() {
+    // Step 1: Type "cd sbemail_clock" command on the existing A:\> prompt
+    const initialPrompt = document.getElementById('initialPrompt');
+    
+    typeText(initialPrompt, 'cd sbemail_clock', () => {
+        // Step 2: Add new line and show new prompt A:\SBEMAIL_CLOCK>
+        setTimeout(() => {
+            const newPrompt = document.getElementById('newPrompt');
+            newPrompt.style.display = 'block';
+            newPrompt.style.opacity = '1';
+            newPrompt.classList.add('ready-for-input');
+            
+            // Step 3: After brief pause, type exe command on new prompt
+            setTimeout(() => {
+                newPrompt.classList.remove('ready-for-input');
+                
+                typeText(newPrompt, 'sbemail_clock.exe', () => {
+                    // Step 4: Start program output
+                    showProgramOutput();
+                }, 70);
+                
+            }, 1000); // 1 second pause at new prompt
+        }, 300); // Brief pause after cd command
+    }, 90); // Slightly slower typing for cd command
+}
+
+// Show program output lines one at a time
+function showProgramOutput() {
+    const outputElements = [
+        { id: 'loadingMsg', text: 'Loading Strong Bad\'s Temporal Interface...' },
+        { id: 'virusMsg', text: 'Scanning for The Cheat viruses... NONE FOUND' },
+        { id: 'emailMsg', text: 'Checking email... 0 new messages' },
+        { id: 'readyMsg', text: getRandomStartupPhrase() }
     ];
     
     let currentLineIndex = 0;
     
     const showNextLine = () => {
-        if (currentLineIndex < outputLines.length) {
-            const line = outputLines[currentLineIndex];
-            const element = document.querySelector(line.selector);
+        if (currentLineIndex < outputElements.length) {
+            const line = outputElements[currentLineIndex];
+            const element = document.getElementById(line.id);
             if (element) {
-                // Show the entire line instantly (program output)
+                element.style.display = 'block';
                 element.textContent = line.text;
                 element.style.opacity = '1';
             }
             
             currentLineIndex++;
             
-            // Short delay between output lines (300-800ms)
-            const randomDelay = 300 + Math.random() * 500;
+            // Short delay between output lines (400-700ms)
+            const randomDelay = 400 + Math.random() * 300;
             setTimeout(showNextLine, randomDelay);
         } else {
             // All output lines shown, show clock display
@@ -273,40 +358,6 @@ function typeTextIntoElement(selector, text, onComplete) {
             setTimeout(typeNextCharacter, typingSpeed);
         } else {
             // Remove cursor when done typing this line
-            setTimeout(() => {
-                element.classList.remove('typing');
-                if (onComplete) onComplete();
-            }, 200);
-        }
-    };
-    
-    // Start typing after a brief pause
-    setTimeout(typeNextCharacter, 100);
-}
-
-// Type only the command part after the existing prompt
-function typeCommandOnly(element, command, onComplete) {
-    if (!element) {
-        if (onComplete) onComplete();
-        return;
-    }
-    
-    // Keep the existing prompt content
-    const promptText = element.textContent; // Should be 'C:\COMPY386> '
-    element.classList.add('typing');
-    
-    let currentIndex = 0;
-    
-    const typeNextCharacter = () => {
-        if (currentIndex < command.length) {
-            element.textContent = promptText + command.substring(0, currentIndex + 1);
-            currentIndex++;
-            
-            // Variable typing speed (50-150ms) to simulate human typing
-            const typingSpeed = 50 + Math.random() * 100;
-            setTimeout(typeNextCharacter, typingSpeed);
-        } else {
-            // Remove cursor when done typing command
             setTimeout(() => {
                 element.classList.remove('typing');
                 if (onComplete) onComplete();

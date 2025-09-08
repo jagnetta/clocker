@@ -189,12 +189,18 @@ function restartMatrixColumn(triggerChar, columnIndex, columnWidth, matrixChars,
     createMatrixColumn(columnIndex, columnWidth, matrixChars, container);
 }
 
+// Matrix kanji variables
+let matrixClockKanjiInterval;
+
 /**
  * Matrix kanji rotation
  */
 function initMatrixKanjiRotation() {
     if (matrixKanjiInterval) {
         clearInterval(matrixKanjiInterval);
+    }
+    if (matrixClockKanjiInterval) {
+        clearInterval(matrixClockKanjiInterval);
     }
     
     const matrixKanji = [
@@ -204,6 +210,20 @@ function initMatrixKanjiRotation() {
         '百', '千', '万', '億', '兆'
     ];
     
+    // Set up clock display kanji cycling (changes kanji every 3 seconds to match CSS animation)
+    let clockKanjiIndex = 0;
+    const updateClockKanji = () => {
+        const randomKanji = matrixKanji[Math.floor(Math.random() * matrixKanji.length)];
+        document.documentElement.style.setProperty('--matrix-kanji', `"${randomKanji}"`);
+    };
+    
+    // Initialize with first kanji
+    updateClockKanji();
+    
+    // Change clock kanji every 3 seconds (matches CSS animation duration)
+    matrixClockKanjiInterval = registerInterval(setInterval(updateClockKanji, 3000));
+    
+    // Matrix column kanji rotation (for falling rain effect)
     matrixKanjiInterval = registerInterval(setInterval(() => {
         const kanjiElements = document.querySelectorAll('.matrix-column-char');
         kanjiElements.forEach(char => {
@@ -417,6 +437,12 @@ function cleanupMatrixTheme() {
         matrixKanjiInterval = null;
     }
     
+    // Clear clock kanji interval
+    if (matrixClockKanjiInterval) {
+        clearInterval(matrixClockKanjiInterval);
+        matrixClockKanjiInterval = null;
+    }
+    
     // Clear any Matrix particle creation loops
     if (typeof matrixParticleInterval !== 'undefined' && matrixParticleInterval) {
         clearInterval(matrixParticleInterval);
@@ -485,6 +511,7 @@ function cleanupMatrixTheme() {
         document.body.removeAttribute('style');
     }
     
+    
     // Remove Matrix theme class completely
     document.body.classList.remove('matrix-theme');
     
@@ -499,6 +526,9 @@ function cleanupMatrixTheme() {
         matrixBg.offsetHeight; // Force reflow
         matrixBg.style.animation = '';
     }
+    
+    // Reset kanji CSS custom property
+    document.documentElement.style.removeProperty('--matrix-kanji');
     
     // Force cleanup of any matrix-themed elements that might affect other themes
     const allElements = document.querySelectorAll('*');

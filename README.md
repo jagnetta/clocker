@@ -13,8 +13,8 @@ A sophisticated clock display project featuring both terminal and web implementa
 
 ### 🎨 **Advanced Theme System**
 - **Three Epic Themes**:
-  - **⚡ Matrix**: Green terminal aesthetic with Matrix rain effects
-  - **🖖 LCARS**: Star Trek orange interface with warp speed animations
+  - **⚡ Matrix**: Green terminal aesthetic with Matrix rain effects and rotating kanji in upper right corner
+  - **🖖 LCARS**: Star Trek orange interface with warp speed animations and Vulcan salute decoration
   - **🔨 Thor**: Norse gold theme with lightning effects and runes
 - **Modular Architecture**: Dynamic theme loading with proper resource management
 - **Random Initialization**: Randomly selects theme on startup
@@ -215,6 +215,13 @@ IFS='|' read -r day_name date_raw time_str <<< "$datetime_raw"
 - **Error Prevention**: Comprehensive null checks and defensive programming
 - **Performance Optimization**: Efficient resource usage with proper cleanup
 - **Cross-platform**: Works seamlessly in terminal and modern web browsers
+
+## 🔧 Recent Updates
+
+### Matrix Theme Kanji Fix
+- **Issue**: CSS override conflict between `base-style.css` and `matrix-theme.css` was preventing the rotating kanji from displaying
+- **Solution**: Removed conflicting CSS rule from `matrix-theme.css` to allow proper kanji rotation
+- **Result**: Matrix theme now properly displays rotating kanji (時, 空, 夢, etc.) in the upper right corner of the time/date panel with full 360° rotation animation
 
 ---
 

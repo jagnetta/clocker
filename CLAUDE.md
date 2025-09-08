@@ -40,8 +40,8 @@ Both implementations display formatted time with day of week, date with ordinal 
 - **Error Handling**: Comprehensive API failure management and user feedback
 
 ### Theme-Specific Features
-- **Matrix Theme**: Green terminal aesthetic with Matrix rain effects and kanji rotation
-- **LCARS Theme**: Star Trek orange interface with warp speed animations  
+- **Matrix Theme**: Green terminal aesthetic with Matrix rain effects and rotating kanji in upper right corner of time/date panel
+- **LCARS Theme**: Star Trek orange interface with warp speed animations and Vulcan salute decoration
 - **Thor Theme**: Norse gold theme with lightning effects and runes
 - **OG Theme**: Strong Bad's Compy 386 retro computer theme with nostalgic HomestarRunner aesthetics
 
@@ -95,6 +95,7 @@ python3 -m http.server 8000  # Optional local server
 ## Current Status
 
 - **Web Application**: Production-ready with comprehensive theme system and weather integration
+- **Matrix Theme**: Fixed rotating kanji display - now properly shows in upper right corner of time/date panel (resolved CSS override conflict between base-style.css and matrix-theme.css)
 - **Terminal Scripts**: Both original and enhanced versions available
 - **Documentation**: Complete technical documentation consolidated in README.md
 - **Testing**: All features tested across themes and platforms
