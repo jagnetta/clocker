@@ -314,7 +314,7 @@ input, button, textarea, select {
     width: 90vw;
     min-width: 300px;
     max-width: 500px;
-    min-height: 100px;
+    min-height: 140px;
     padding: 12px 20px;
     bottom: 3vh;
 }
