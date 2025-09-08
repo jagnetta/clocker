@@ -1,15 +1,15 @@
-// OG Theme - Strong Bad's Compy 386 from HomestarRunner.com
+// SBEMAIL Theme - Strong Bad's Compy 386 from HomestarRunner.com
 // Authentic sbemail experience with clocker-improved functionality
 
-let ogTerminalInterval = null;
-let ogStartTime = null;
-let ogStarsInterval = null;
-let ogClickHandler = null;
+let sbemailTerminalInterval = null;
+let sbemailStartTime = null;
+let sbemailStarsInterval = null;
+let sbemailClickHandler = null;
 
 // Auto-scroll to show weather widget in Compy 386 screen
 function scrollToWeatherWidget() {
-    const terminalContent = document.getElementById('ogTerminalContent');
-    const weatherSearch = document.getElementById('ogWeatherSearch');
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    const weatherSearch = document.getElementById('sbemailWeatherSearch');
     
     if (terminalContent && weatherSearch) {
         // Smooth scroll to show the weather widget
@@ -51,11 +51,11 @@ function getRandomStartupPhrase() {
 }
 
 // Initialize Strong Bad's Compy 386 Theme
-function initOGTheme() {
+function initSBEMAILTheme() {
     console.log('📧 Initializing Strong Bad\'s Compy 386 theme');
     
     // Record theme start time
-    ogStartTime = Date.now();
+    sbemailStartTime = Date.now();
     
     // Create Compy 386 computer
     createCompy386();
@@ -76,19 +76,19 @@ function initOGTheme() {
 }
 
 // Cleanup Strong Bad's Compy 386 Theme - Complete cleanup
-function cleanupOGTheme() {
+function cleanupSBEMAILTheme() {
     console.log('📧 Powering down Strong Bad\'s Compy 386...');
     
     // Clear Compy update interval
-    if (ogTerminalInterval) {
-        clearInterval(ogTerminalInterval);
-        ogTerminalInterval = null;
+    if (sbemailTerminalInterval) {
+        clearInterval(sbemailTerminalInterval);
+        sbemailTerminalInterval = null;
     }
     
     // Clear weather scrolling interval (no longer needed with CSS animation)
-    if (ogWeatherScrollInterval) {
-        clearInterval(ogWeatherScrollInterval);
-        ogWeatherScrollInterval = null;
+    if (sbemailWeatherScrollInterval) {
+        clearInterval(sbemailWeatherScrollInterval);
+        sbemailWeatherScrollInterval = null;
     }
     
     // Stop pulsing stars
@@ -98,26 +98,26 @@ function cleanupOGTheme() {
     removeBoxingGlovesHandler();
     
     // Remove Compy 386
-    const compyWindow = document.getElementById('ogTerminalWindow');
+    const compyWindow = document.getElementById('sbemailTerminalWindow');
     if (compyWindow) {
         compyWindow.remove();
     }
     
-    // Remove any lingering OG elements
-    const ogElements = document.querySelectorAll('.og-boxing-gloves, .og-boxing-gloves-pair, .og-trogdor, .og-trogdor-test, .og-pulsing-star');
-    ogElements.forEach(el => el.remove());
+    // Remove any lingering SBEMAIL elements
+    const sbemailElements = document.querySelectorAll('.sbemail-boxing-gloves, .sbemail-boxing-gloves-pair, .sbemail-trogdor, .sbemail-trogdor-test, .sbemail-pulsing-star');
+    sbemailElements.forEach(el => el.remove());
     
     // Remove sbemail-specific event listeners
     removeSbemailKeyboardHandlers();
     
-    // Remove OG-specific body classes
-    document.body.classList.remove('og-theme');
+    // Remove SBEMAIL-specific body classes
+    document.body.classList.remove('sbemail-theme');
     
     // Reset variables
-    ogStartTime = null;
-    ogTerminalInterval = null;
-    ogStarsInterval = null;
-    ogClickHandler = null;
+    sbemailStartTime = null;
+    sbemailTerminalInterval = null;
+    sbemailStarsInterval = null;
+    sbemailClickHandler = null;
     
     console.log('✅ Strong Bad\'s Compy 386 powered down completely');
 }
@@ -125,55 +125,55 @@ function cleanupOGTheme() {
 // Create Strong Bad's Compy 386
 function createCompy386() {
     const compyHTML = `
-        <div id="ogTerminalWindow" class="og-terminal-window">
-            <div class="og-terminal-header">
-                <div class="og-header-text">
-                    <span class="og-terminal-title">COMPY 386</span>
+        <div id="sbemailTerminalWindow" class="sbemail-terminal-window">
+            <div class="sbemail-terminal-header">
+                <div class="sbemail-header-text">
+                    <span class="sbemail-terminal-title">COMPY 386</span>
                 </div>
-                <div class="og-terminal-buttons">
-                    <span class="og-btn og-btn-close"></span>
-                    <span class="og-btn og-btn-minimize"></span>
-                    <span class="og-btn og-btn-maximize"></span>
+                <div class="sbemail-terminal-buttons">
+                    <span class="sbemail-btn sbemail-btn-close"></span>
+                    <span class="sbemail-btn sbemail-btn-minimize"></span>
+                    <span class="sbemail-btn sbemail-btn-maximize"></span>
                 </div>
             </div>
-            <div class="og-terminal-body">
-                <div class="og-terminal-content" id="ogTerminalContent">
-                    <div class="og-terminal-startup">
-                        <div class="og-startup-line" id="initialPrompt">A:\\> </div>
-                        <div class="og-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK> </div>
-                        <div class="og-startup-line og-startup-delay-1" id="loadingMsg" style="display: none;">Loading Strong Bad's Temporal Interface...</div>
-                        <div class="og-startup-line og-startup-delay-2" id="virusMsg" style="display: none;">Scanning for The Cheat viruses... NONE FOUND</div>
-                        <div class="og-startup-line og-startup-delay-3" id="emailMsg" style="display: none;">Checking email... 0 new messages</div>
-                        <div class="og-startup-line og-startup-delay-4" id="readyMsg" style="display: none;">${getRandomStartupPhrase()}</div>
+            <div class="sbemail-terminal-body">
+                <div class="sbemail-terminal-content" id="sbemailTerminalContent">
+                    <div class="sbemail-terminal-startup">
+                        <div class="sbemail-startup-line" id="initialPrompt">A:\\> </div>
+                        <div class="sbemail-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK> </div>
+                        <div class="sbemail-startup-line sbemail-startup-delay-1" id="loadingMsg" style="display: none;">Loading Strong Bad's Temporal Interface...</div>
+                        <div class="sbemail-startup-line sbemail-startup-delay-2" id="virusMsg" style="display: none;">Scanning for The Cheat viruses... NONE FOUND</div>
+                        <div class="sbemail-startup-line sbemail-startup-delay-3" id="emailMsg" style="display: none;">Checking email... 0 new messages</div>
+                        <div class="sbemail-startup-line sbemail-startup-delay-4" id="readyMsg" style="display: none;">${getRandomStartupPhrase()}</div>
                     </div>
-                    <div class="og-clock-display" id="ogClockDisplay">
-                        <div class="og-timezone-control">
-                            <label class="og-timezone-label">TIMEZONE: <span id="ogTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
-                            <input type="range" id="ogTimezoneSlider" class="og-timezone-slider" min="0" max="38" value="0" step="1">
+                    <div class="sbemail-clock-display" id="sbemailClockDisplay">
+                        <div class="sbemail-timezone-control">
+                            <label class="sbemail-timezone-label">TIMEZONE: <span id="sbemailTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
+                            <input type="range" id="sbemailTimezoneSlider" class="sbemail-timezone-slider" min="0" max="38" value="0" step="1">
                         </div>
-                        <div class="og-clock-day" id="ogClockDay"></div>
-                        <div class="og-clock-date" id="ogClockDate"></div>
-                        <div class="og-clock-time" id="ogClockTime"></div>
+                        <div class="sbemail-clock-day" id="sbemailClockDay"></div>
+                        <div class="sbemail-clock-date" id="sbemailClockDate"></div>
+                        <div class="sbemail-clock-time" id="sbemailClockTime"></div>
                     </div>
-                    <div class="og-weather-search" id="ogWeatherSearch" style="display: none;">
-                        <div class="og-input-container">
-                            <span class="og-search-prompt">WEATHER SEARCH:</span>
-                            <input type="text" class="og-search-input" id="ogSearchInput" placeholder="ENTER CITY NAME">
-                            <button class="og-search-button" id="ogSearchButton">SEARCH</button>
+                    <div class="sbemail-weather-search" id="sbemailWeatherSearch" style="display: none;">
+                        <div class="sbemail-input-container">
+                            <span class="sbemail-search-prompt">WEATHER SEARCH:</span>
+                            <input type="text" class="sbemail-search-input" id="sbemailSearchInput" placeholder="ENTER CITY NAME">
+                            <button class="sbemail-search-button" id="sbemailSearchButton">SEARCH</button>
                         </div>
-                        <div class="og-weather-ticker" id="ogWeatherTicker" style="display: none;">
-                            <div class="og-ticker-container">
-                                <span class="og-ticker-label">WEATHER DATA:</span>
-                                <div class="og-ticker-content" id="ogTickerContent">NO DATA LOADED</div>
+                        <div class="sbemail-weather-ticker" id="sbemailWeatherTicker" style="display: none;">
+                            <div class="sbemail-ticker-container">
+                                <span class="sbemail-ticker-label">WEATHER DATA:</span>
+                                <div class="sbemail-ticker-content" id="sbemailTickerContent">NO DATA LOADED</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="og-terminal-scrollbar">
-                    <div class="og-scrollbar-thumb"></div>
+                <div class="sbemail-terminal-scrollbar">
+                    <div class="sbemail-scrollbar-thumb"></div>
                 </div>
             </div>
-            <div class="og-terminal-footer">
+            <div class="sbemail-terminal-footer">
                 <!-- Footer area -->
             </div>
         </div>
@@ -255,7 +255,7 @@ function showDOSStartup() {
                 newPrompt.classList.remove('ready-for-input');
                 
                 typeText(newPrompt, 'sbemail_clock.exe', () => {
-                    // Step 4: Start program output
+                    // Step 4: Start prsbemailram output
                     showProgramOutput();
                 }, 70);
                 
@@ -264,7 +264,7 @@ function showDOSStartup() {
     }, 90); // Slightly slower typing for cd command
 }
 
-// Show program output lines one at a time
+// Show prsbemailram output lines one at a time
 function showProgramOutput() {
     const outputElements = [
         { id: 'loadingMsg', text: 'Loading Strong Bad\'s Temporal Interface...' },
@@ -293,10 +293,10 @@ function showProgramOutput() {
         } else {
             // All output lines shown, show clock display
             setTimeout(() => {
-                const startup = document.querySelector('.og-terminal-startup');
+                const startup = document.querySelector('.sbemail-terminal-startup');
                 if (startup) startup.style.opacity = '0.4';
                 
-                const clockDisplay = document.getElementById('ogClockDisplay');
+                const clockDisplay = document.getElementById('sbemailClockDisplay');
                 if (clockDisplay) {
                     clockDisplay.style.opacity = '1';
                     // Auto-scroll to show the clock
@@ -307,7 +307,7 @@ function showProgramOutput() {
                     
                     // Wait additional time after clock panel is rendered to show weather tool
                     setTimeout(() => {
-                        const weatherSearch = document.getElementById('ogWeatherSearch');
+                        const weatherSearch = document.getElementById('sbemailWeatherSearch');
                         if (weatherSearch) {
                             weatherSearch.style.display = 'block';
                             weatherSearch.style.opacity = '0';
@@ -375,7 +375,7 @@ function startCompyClock() {
     updateCompyClock();
     
     // Then update every second (like checking emails)
-    ogTerminalInterval = setInterval(() => {
+    sbemailTerminalInterval = setInterval(() => {
         updateCompyClock();
     }, 1000);
 }
@@ -399,12 +399,12 @@ function updateCompyClock() {
     // Format day (same as clocker-improved)
     const dayStr = targetTime.toLocaleDateString('en-US', { weekday: 'long' });
     
-    // Format date with ordinal suffix (same logic as clocker-improved)
+    // Format date with ordinal suffix (same lsbemailic as clocker-improved)
     const month = targetTime.toLocaleDateString('en-US', { month: 'short' }).replace('May', 'May');
     const day = targetTime.getDate();
     const year = targetTime.getFullYear();
     
-    // Apply ordinal suffix logic from clocker-improved
+    // Apply ordinal suffix lsbemailic from clocker-improved
     let ordinalSuffix;
     if (day >= 11 && day <= 13) {
         ordinalSuffix = 'th';
@@ -430,13 +430,13 @@ function updateCompyClock() {
     
     // Get the current timezone info for display with DST consideration
     let timezoneAbbr = '';
-    const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    const timezoneSlider = document.getElementById('sbemailTimezoneSlider');
     if (timezoneSlider && typeof timezones !== 'undefined') {
         const index = parseInt(timezoneSlider.value);
         if (timezones[index]) {
             const tzInfo = timezones[index];
             
-            // Check if DST is currently active using the main system's logic
+            // Check if DST is currently active using the main system's lsbemailic
             const now = new Date();
             let isDstActive = false;
             
@@ -477,9 +477,9 @@ function updateCompyClock() {
     const fullTimeStr = timezoneAbbr ? `${timeStr} ${timezoneAbbr}` : timeStr;
     
     // Update Compy 386 display
-    const dayElement = document.getElementById('ogClockDay');
-    const dateElement = document.getElementById('ogClockDate');
-    const timeElement = document.getElementById('ogClockTime');
+    const dayElement = document.getElementById('sbemailClockDay');
+    const dateElement = document.getElementById('sbemailClockDate');
+    const timeElement = document.getElementById('sbemailClockTime');
     
     if (dayElement) dayElement.textContent = dayStr.toUpperCase();
     if (dateElement) dateElement.textContent = dateStr.toUpperCase();
@@ -487,29 +487,29 @@ function updateCompyClock() {
 }
 
 
-// OG Weather Ticker System (in weather search area)
-let ogWeatherScrollInterval = null;
-let ogWeatherText = '';
-let ogWeatherScrollPosition = 0;
+// SBEMAIL Weather Ticker System (in weather search area)
+let sbemailWeatherScrollInterval = null;
+let sbemailWeatherText = '';
+let sbemailWeatherScrollPosition = 0;
 
 // Update weather ticker in the search tool area
 function updateOgWeatherTicker() {
-    console.log('🔧 OG: updateOgWeatherTicker called');
-    const tickerContent = document.getElementById('ogTickerContent');
+    console.log('🔧 SBEMAIL: updateOgWeatherTicker called');
+    const tickerContent = document.getElementById('sbemailTickerContent');
     if (!tickerContent) {
-        console.log('❌ OG: tickerContent element not found');
+        console.log('❌ SBEMAIL: tickerContent element not found');
         return;
     }
     
     // Try to get weather data from main weather system
     const weatherScroll = document.getElementById('weatherScroll');
-    console.log('🔧 OG: weatherScroll element:', weatherScroll);
-    console.log('🔧 OG: weatherScroll children:', weatherScroll ? weatherScroll.children.length : 'null');
+    console.log('🔧 SBEMAIL: weatherScroll element:', weatherScroll);
+    console.log('🔧 SBEMAIL: weatherScroll children:', weatherScroll ? weatherScroll.children.length : 'null');
     let newWeatherText = '';
     
     // Extract weather data more efficiently from the main weather system
     if (weatherScroll && weatherScroll.children.length > 0) {
-        console.log('🔧 OG: Found weather data in hidden scroll element');
+        console.log('🔧 SBEMAIL: Found weather data in hidden scroll element');
         
         // Get basic info
         const citySeparator = weatherScroll.querySelector('.city-separator');
@@ -518,7 +518,7 @@ function updateOgWeatherTicker() {
         // Get only the first content block to avoid massive duplication
         const firstBlock = weatherScroll.children[0];
         if (firstBlock) {
-            console.log('🔧 OG: Processing first weather block only');
+            console.log('🔧 SBEMAIL: Processing first weather block only');
             
             // Extract current weather
             const currentItems = firstBlock.querySelectorAll('.weather-item');
@@ -561,46 +561,46 @@ function updateOgWeatherTicker() {
             }
             
             newWeatherText = weatherParts.join(' • ') + ' • ';
-            console.log('🔧 OG: Built optimized weather text:', newWeatherText);
+            console.log('🔧 SBEMAIL: Built optimized weather text:', newWeatherText);
         } else {
             newWeatherText = 'WEATHER: NO DATA AVAILABLE • ';
         }
     } else {
         newWeatherText = 'WEATHER: LOADING DATA... • ';
-        console.log('🔧 OG: No weatherScroll or no children');
+        console.log('🔧 SBEMAIL: No weatherScroll or no children');
     }
     
     // Update weather text if changed and start/restart scrolling
-    if (newWeatherText !== ogWeatherText) {
-        ogWeatherText = newWeatherText;
-        ogWeatherScrollPosition = 0;
+    if (newWeatherText !== sbemailWeatherText) {
+        sbemailWeatherText = newWeatherText;
+        sbemailWeatherScrollPosition = 0;
         startOgWeatherTickerScrolling();
     }
 }
 
 // Start smooth CSS-based scrolling animation for weather ticker
 function startOgWeatherTickerScrolling() {
-    const tickerContent = document.getElementById('ogTickerContent');
-    if (!tickerContent || !ogWeatherText) return;
+    const tickerContent = document.getElementById('sbemailTickerContent');
+    if (!tickerContent || !sbemailWeatherText) return;
     
     // Clear existing interval if any
-    if (ogWeatherScrollInterval) {
-        clearInterval(ogWeatherScrollInterval);
-        ogWeatherScrollInterval = null;
+    if (sbemailWeatherScrollInterval) {
+        clearInterval(sbemailWeatherScrollInterval);
+        sbemailWeatherScrollInterval = null;
     }
     
-    console.log('🔧 OG: Starting smooth CSS scrolling');
+    console.log('🔧 SBEMAIL: Starting smooth CSS scrolling');
     
     // Create scrolling container with CSS animation
     const scrollContainer = document.createElement('div');
-    scrollContainer.className = 'og-ticker-scroll';
-    scrollContainer.textContent = ogWeatherText;
+    scrollContainer.className = 'sbemail-ticker-scroll';
+    scrollContainer.textContent = sbemailWeatherText;
     
     // Clear and add the scrolling element
     tickerContent.innerHTML = '';
     tickerContent.appendChild(scrollContainer);
     
-    console.log('🔧 OG: Smooth scrolling started with text:', ogWeatherText);
+    console.log('🔧 SBEMAIL: Smooth scrolling started with text:', sbemailWeatherText);
 }
 
 // Strong Bad's sbemail-specific keyboard handlers
@@ -629,11 +629,11 @@ function handleSbemailKeydown(event) {
         const exitDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
         const exitDate = formatDateWithOrdinal(new Date());
         
-        alert(`Strong Bad's Compy 386 - SYSTEM SHUTDOWN\n\n"Oh, The Cheat! You deleted my emails again!"\n\nLogged off at ${exitTime} on ${exitDay}, ${exitDate}.\n\nSwitching to next theme... Email me at strongbad@homestarrunner.com`);
+        alert(`Strong Bad's Compy 386 - SYSTEM SHUTDOWN\n\n"Oh, The Cheat! You deleted my emails again!"\n\nLsbemailged off at ${exitTime} on ${exitDay}, ${exitDate}.\n\nSwitching to next theme... Email me at strongbad@homestarrunner.com`);
         
         // Switch to random theme
         if (typeof switchToRandomTheme === 'function') {
-            switchToRandomTheme('og');
+            switchToRandomTheme('sbemail');
         }
     }
 }
@@ -665,29 +665,29 @@ function startPulsingStars() {
     // Create stars immediately and then at random intervals
     createPulsingStar();
     
-    ogStarsInterval = setInterval(() => {
+    sbemailStarsInterval = setInterval(() => {
         createPulsingStar();
     }, 2000 + Math.random() * 3000); // Random interval between 2-5 seconds
 }
 
 function stopPulsingStars() {
-    if (ogStarsInterval) {
-        clearInterval(ogStarsInterval);
-        ogStarsInterval = null;
+    if (sbemailStarsInterval) {
+        clearInterval(sbemailStarsInterval);
+        sbemailStarsInterval = null;
     }
     
     // Remove any existing stars
-    const existingStars = document.querySelectorAll('.og-pulsing-star');
+    const existingStars = document.querySelectorAll('.sbemail-pulsing-star');
     existingStars.forEach(star => star.remove());
 }
 
 function createPulsingStar() {
     // Only create if there are fewer than 3 stars visible (increased frequency in blue field)
-    const existingStars = document.querySelectorAll('.og-pulsing-star');
+    const existingStars = document.querySelectorAll('.sbemail-pulsing-star');
     if (existingStars.length >= 3) return;
     
     const star = document.createElement('div');
-    star.className = 'og-pulsing-star';
+    star.className = 'sbemail-pulsing-star';
     star.innerHTML = '★'; // White 5-pointed star
     
     // Avoid the Compy 386 center area (800x600) and prefer edges/corners
@@ -732,33 +732,33 @@ function createPulsingStar() {
 
 // Boxing Gloves Click System
 function addBoxingGlovesHandler() {
-    ogClickHandler = handleBoxingGlovesClick;
-    document.addEventListener('click', ogClickHandler);
+    sbemailClickHandler = handleBoxingGlovesClick;
+    document.addEventListener('click', sbemailClickHandler);
 }
 
 function removeBoxingGlovesHandler() {
-    if (ogClickHandler) {
-        document.removeEventListener('click', ogClickHandler);
-        ogClickHandler = null;
+    if (sbemailClickHandler) {
+        document.removeEventListener('click', sbemailClickHandler);
+        sbemailClickHandler = null;
     }
     
-    // Remove any existing gloves and Trogdors
-    const existingGloves = document.querySelectorAll('.og-boxing-gloves');
-    const existingGlovesPairs = document.querySelectorAll('.og-boxing-gloves-pair');
-    const existingTrogdors = document.querySelectorAll('.og-trogdor, .og-trogdor-test');
+    // Remove any existing gloves and Trsbemaildors
+    const existingGloves = document.querySelectorAll('.sbemail-boxing-gloves');
+    const existingGlovesPairs = document.querySelectorAll('.sbemail-boxing-gloves-pair');
+    const existingTrsbemaildors = document.querySelectorAll('.sbemail-trogdor, .sbemail-trogdor-test');
     existingGloves.forEach(gloves => gloves.remove());
     existingGlovesPairs.forEach(glovesPair => glovesPair.remove());
-    existingTrogdors.forEach(trogdor => trogdor.remove());
+    existingTrsbemaildors.forEach(trogdor => trogdor.remove());
 }
 
 function handleBoxingGlovesClick(event) {
     // Don't trigger if clicking on the Compy 386 window
-    if (event.target.closest('.og-terminal-window')) return;
+    if (event.target.closest('.sbemail-terminal-window')) return;
     
-    // 10% chance for Trogdor, 90% chance for boxing gloves
-    const isTrogdor = Math.random() < 0.1;
+    // 10% chance for Trsbemaildor, 90% chance for boxing gloves
+    const isTrsbemaildor = Math.random() < 0.1;
     
-    if (isTrogdor) {
+    if (isTrsbemaildor) {
         createTrogdor(event.clientX, event.clientY);
     } else {
         createBoxingGloves(event.clientX, event.clientY);
@@ -767,16 +767,16 @@ function handleBoxingGlovesClick(event) {
 
 function createBoxingGloves(x, y) {
     const glovesContainer = document.createElement('div');
-    glovesContainer.className = 'og-boxing-gloves-pair';
+    glovesContainer.className = 'sbemail-boxing-gloves-pair';
     
     // Create left glove
     const leftGlove = document.createElement('div');
-    leftGlove.className = 'og-boxing-gloves-left';
+    leftGlove.className = 'sbemail-boxing-gloves-left';
     leftGlove.innerHTML = '🥊'; // Boxing glove emoji
     
     // Create right glove
     const rightGlove = document.createElement('div');
-    rightGlove.className = 'og-boxing-gloves-right';
+    rightGlove.className = 'sbemail-boxing-gloves-right';
     rightGlove.innerHTML = '🥊'; // Boxing glove emoji
     
     glovesContainer.appendChild(leftGlove);
@@ -792,7 +792,7 @@ function createBoxingGloves(x, y) {
     const endX = Math.random() * (window.innerWidth - 240);
     const endY = Math.random() * (window.innerHeight - 120);
     
-    // Apply random movement during animation - gloves move together
+    // Apply random movement during animation - gloves move tsbemailether
     setTimeout(() => {
         glovesContainer.style.left = endX + 'px';
         glovesContainer.style.top = endY + 'px';
@@ -809,7 +809,7 @@ function createBoxingGloves(x, y) {
 
 function createTrogdor(x, y) {
     const trogdor = document.createElement('div');
-    trogdor.className = 'og-trogdor-test';
+    trogdor.className = 'sbemail-trogdor-test';
     trogdor.innerHTML = '🐉'; // Oriental dragon emoji representing Trogdor the Burninator
     
     // Start at click position
@@ -818,18 +818,18 @@ function createTrogdor(x, y) {
     
     document.body.appendChild(trogdor);
     
-    // Trogdor burninates across the screen more dramatically
+    // Trsbemaildor burninates across the screen more dramatically
     const endX = Math.random() * (window.innerWidth - 300);
     const endY = Math.random() * (window.innerHeight - 250);
     
-    // Apply random movement during animation - Trogdor moves more wildly
+    // Apply random movement during animation - Trsbemaildor moves more wildly
     setTimeout(() => {
         trogdor.style.left = endX + 'px';
         trogdor.style.top = endY + 'px';
         trogdor.style.transition = 'left 6s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     }, 100);
     
-    // Remove Trogdor after burninating completes
+    // Remove Trsbemaildor after burninating completes
     setTimeout(() => {
         if (trogdor.parentNode) {
             trogdor.remove();
@@ -837,18 +837,18 @@ function createTrogdor(x, y) {
     }, 6000);
 }
 
-// Initialize OG timezone slider functionality
+// Initialize SBEMAIL timezone slider functionality
 function initOgTimezoneSlider() {
-    const timezoneSlider = document.getElementById('ogTimezoneSlider');
+    const timezoneSlider = document.getElementById('sbemailTimezoneSlider');
     
     if (timezoneSlider) {
-        console.log('🕰️ OG: Initializing timezone slider');
+        console.log('🕰️ SBEMAIL: Initializing timezone slider');
         
         // Sync with main timezone system
         const mainSlider = document.getElementById('timezoneSlider');
         if (mainSlider) {
             timezoneSlider.value = mainSlider.value;
-            console.log('🕰️ OG: Synced slider value from main system:', mainSlider.value);
+            console.log('🕰️ SBEMAIL: Synced slider value from main system:', mainSlider.value);
         }
         
         // Initial display update
@@ -858,7 +858,7 @@ function initOgTimezoneSlider() {
         updateCompyClock();
         
         timezoneSlider.addEventListener('input', () => {
-            console.log('🕰️ OG: Timezone slider changed to:', timezoneSlider.value);
+            console.log('🕰️ SBEMAIL: Timezone slider changed to:', timezoneSlider.value);
             
             // Update main timezone system
             if (mainSlider) {
@@ -881,20 +881,20 @@ function initOgTimezoneSlider() {
     }
 }
 
-// Update OG timezone display
+// Update SBEMAIL timezone display
 function updateOgTimezoneDisplay() {
-    const timezoneSlider = document.getElementById('ogTimezoneSlider');
-    const timezoneDescription = document.getElementById('ogTimezoneDescription');
+    const timezoneSlider = document.getElementById('sbemailTimezoneSlider');
+    const timezoneDescription = document.getElementById('sbemailTimezoneDescription');
     
     if (timezoneSlider && timezoneDescription && typeof timezones !== 'undefined') {
         const index = parseInt(timezoneSlider.value);
-        console.log('🕰️ OG: Updating timezone display for index:', index);
+        console.log('🕰️ SBEMAIL: Updating timezone display for index:', index);
         
         if (timezones[index]) {
             const tzInfo = timezones[index];
-            console.log('🕰️ OG: Timezone info:', tzInfo);
+            console.log('🕰️ SBEMAIL: Timezone info:', tzInfo);
             
-            // Check if DST is currently active using the main system's logic
+            // Check if DST is currently active using the main system's lsbemailic
             const now = new Date();
             let isDstActive = false;
             let displayOffset = tzInfo.offset;
@@ -946,7 +946,7 @@ function updateOgTimezoneDisplay() {
             const timezoneText = `${displayOffset} (${timezoneName})`.toUpperCase();
             timezoneDescription.textContent = timezoneText;
             
-            console.log('🕰️ OG: Updated timezone description to:', timezoneText);
+            console.log('🕰️ SBEMAIL: Updated timezone description to:', timezoneText);
             
             // Update global timezone offset for the clock
             // Parse the offset (e.g., "UTC-05:00" -> -5)
@@ -961,15 +961,15 @@ function updateOgTimezoneDisplay() {
             }
             
             window.currentTimezoneOffset = offset;
-            console.log('🕰️ OG: Set timezone offset to:', offset, '(DST active:', isDstActive + ')');
+            console.log('🕰️ SBEMAIL: Set timezone offset to:', offset, '(DST active:', isDstActive + ')');
         }
     }
 }
 
-// Initialize OG weather search functionality
+// Initialize SBEMAIL weather search functionality
 function initOgWeatherSearch() {
-    const searchButton = document.getElementById('ogSearchButton');
-    const searchInput = document.getElementById('ogSearchInput');
+    const searchButton = document.getElementById('sbemailSearchButton');
+    const searchInput = document.getElementById('sbemailSearchInput');
     
     if (searchButton && searchInput) {
         searchButton.addEventListener('click', handleOgWeatherSearch);
@@ -981,9 +981,9 @@ function initOgWeatherSearch() {
     }
 }
 
-// Handle weather search from OG theme
+// Handle weather search from SBEMAIL theme
 async function handleOgWeatherSearch() {
-    const searchInput = document.getElementById('ogSearchInput');
+    const searchInput = document.getElementById('sbemailSearchInput');
     if (!searchInput || !searchInput.value.trim()) return;
     
     const city = searchInput.value.trim();
@@ -1000,10 +1000,10 @@ async function handleOgWeatherSearch() {
                 
                 // Show the weather ticker after successful search
                 setTimeout(() => {
-                    console.log('🔧 OG: Attempting to show weather ticker');
-                    const weatherTicker = document.getElementById('ogWeatherTicker');
+                    console.log('🔧 SBEMAIL: Attempting to show weather ticker');
+                    const weatherTicker = document.getElementById('sbemailWeatherTicker');
                     if (weatherTicker) {
-                        console.log('🔧 OG: Weather ticker found, showing it');
+                        console.log('🔧 SBEMAIL: Weather ticker found, showing it');
                         weatherTicker.style.display = 'block';
                         updateOgWeatherTicker(); // Start the ticker
                         
@@ -1012,7 +1012,7 @@ async function handleOgWeatherSearch() {
                             scrollToWeatherWidget();
                         }, 500); // Small delay to let ticker render
                     } else {
-                        console.log('❌ OG: Weather ticker element not found');
+                        console.log('❌ SBEMAIL: Weather ticker element not found');
                     }
                 }, 1000); // Wait a second for weather data to load
                 
@@ -1022,7 +1022,7 @@ async function handleOgWeatherSearch() {
         }
     }
     
-    // Clear both OG and main inputs for consistency
+    // Clear both SBEMAIL and main inputs for consistency
     searchInput.value = '';
     if (mainCityInput) {
         mainCityInput.value = '';
@@ -1031,6 +1031,6 @@ async function handleOgWeatherSearch() {
 
 // Export functions for modular theme system
 if (typeof window !== 'undefined') {
-    window.initOGTheme = initOGTheme;
-    window.cleanupOGTheme = cleanupOGTheme;
+    window.initSBEMAILTheme = initSBEMAILTheme;
+    window.cleanupSBEMAILTheme = cleanupSBEMAILTheme;
 }

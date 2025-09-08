@@ -6,7 +6,7 @@ let isMobileDevice = false;
 // Modular theme system
 let loadedThemes = new Set();
 let currentlyLoadedCss = null;
-const availableThemes = ['matrix', 'lcars', 'thor', 'og', 'linux'];
+const availableThemes = ['matrix', 'lcars', 'thor', 'sbemail', 'linux'];
 
 // Use timezone data from timezones.js - create compatibility layer
 let currentTimezoneIndex = 0;
@@ -301,8 +301,8 @@ function clearThemeDOM() {
         '.matrix-particle', '.matrix-column-char', '.matrix-white-rabbit', '.matrix-red-pill', '.matrix-blue-pill',
         '.warp-star', '.star-trek-flyby', '.photon-torpedo-formation', '.lcars-indicator',
         '.lightning-flash', '.mjolnir-strike', '.loki-illusion', '.loki-shapeshift', '.thor-lightning',
-        '.og-boxing-gloves', '.og-boxing-gloves-pair', '.og-trogdor', '.og-trogdor-test', '.og-pulsing-star',
-        '.og-terminal-window', '.theme-overlay', '.theme-dynamic'
+        '.sbemail-boxing-gloves', '.sbemail-boxing-gloves-pair', '.sbemail-trsbemaildor', '.sbemail-trsbemaildor-test', '.sbemail-pulsing-star',
+        '.sbemail-terminal-window', '.theme-overlay', '.theme-dynamic'
     ];
     
     allThemeSelectors.forEach(selector => {
@@ -375,7 +375,7 @@ function cleanupCurrentTheme() {
         'matrix': () => typeof cleanupMatrixTheme === 'function' && cleanupMatrixTheme(),
         'lcars': () => typeof cleanupLcarsTheme === 'function' && cleanupLcarsTheme(),
         'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects(),
-        'og': () => typeof cleanupOGTheme === 'function' && cleanupOGTheme(),
+        'sbemail': () => typeof cleanupSBEMAILTheme === 'function' && cleanupSBEMAILTheme(),
         'linux': () => typeof cleanupLinuxTheme === 'function' && cleanupLinuxTheme()
     };
     
@@ -511,7 +511,7 @@ async function switchToTheme(themeName) {
             'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
             'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
             'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
-            'og': () => typeof initOGTheme === 'function' && initOGTheme(),
+            'sbemail': () => typeof initSBEMAILTheme === 'function' && initSBEMAILTheme(),
             'linux': () => typeof initLinuxTheme === 'function' && initLinuxTheme()
         };
         
@@ -1195,7 +1195,7 @@ const weatherIcons = {
     'snow': '🌨️',
     'sleet': '🌨️',
     'thunderstorm': '⛈️',
-    'fog': '🌫️',
+    'fsbemail': '🌫️',
     'mist': '🌫️',
     'haze': '🌫️',
     'wind': '💨',
@@ -1216,7 +1216,7 @@ function getWeatherIcon(description) {
     if (desc.includes('snow') || desc.includes('blizzard')) return weatherIcons.snow;
     if (desc.includes('sleet')) return weatherIcons.sleet;
     if (desc.includes('thunder') || desc.includes('storm')) return weatherIcons.thunderstorm;
-    if (desc.includes('fog') || desc.includes('mist')) return weatherIcons.fog;
+    if (desc.includes('fsbemail') || desc.includes('mist')) return weatherIcons.fsbemail;
     if (desc.includes('wind')) return weatherIcons.wind;
     
     return weatherIcons.default;
@@ -1603,11 +1603,11 @@ async function handleWeatherRequest() {
         return;
     }
     
-    // Synchronize search term with OG input if OG theme is active
-    if (currentTheme === 'og') {
-        const ogSearchInput = document.getElementById('ogSearchInput');
-        if (ogSearchInput) {
-            ogSearchInput.value = cityName;
+    // Synchronize search term with SBEMAIL input if SBEMAIL theme is active
+    if (currentTheme === 'sbemail') {
+        const sbemailSearchInput = document.getElementById('sbemailSearchInput');
+        if (sbemailSearchInput) {
+            sbemailSearchInput.value = cityName;
         }
     }
     
@@ -1631,13 +1631,13 @@ async function handleWeatherRequest() {
             
             // Weather ticker is already visible, just populated with data
             
-            // Synchronize with OG theme if it's active
-            if (currentTheme === 'og') {
+            // Synchronize with SBEMAIL theme if it's active
+            if (currentTheme === 'sbemail') {
                 setTimeout(() => {
-                    const ogWeatherTicker = document.getElementById('ogWeatherTicker');
-                    if (ogWeatherTicker && typeof updateOgWeatherTicker === 'function') {
-                        ogWeatherTicker.style.display = 'block';
-                        updateOgWeatherTicker(); // Update OG ticker with new data
+                    const sbemailWeatherTicker = document.getElementById('sbemailWeatherTicker');
+                    if (sbemailWeatherTicker && typeof updateOgWeatherTicker === 'function') {
+                        sbemailWeatherTicker.style.display = 'block';
+                        updateOgWeatherTicker(); // Update SBEMAIL ticker with new data
                         
                         // Auto-scroll to show the weather widget
                         setTimeout(() => {
@@ -1651,10 +1651,10 @@ async function handleWeatherRequest() {
             
             cityInput.value = ''; // Clear main input only on success
             
-            // Clear OG input if it exists for consistency
-            const ogSearchInput = document.getElementById('ogSearchInput');
-            if (ogSearchInput) {
-                ogSearchInput.value = '';
+            // Clear SBEMAIL input if it exists for consistency
+            const sbemailSearchInput = document.getElementById('sbemailSearchInput');
+            if (sbemailSearchInput) {
+                sbemailSearchInput.value = '';
             }
         } else {
             if (weatherScroll) {
@@ -1758,7 +1758,7 @@ function init() {
     ⏰ Temporal Offset: UTC${detectedOffset >= 0 ? '+' : ''}${detectedOffset}
     
     🔋 SYSTEM CAPABILITIES:
-    🤖 Automatic geographical temporal detection
+    🤖 Automatic gesbemailraphical temporal detection
     🌞 Full seasonal time adjustment algorithms
     🔄 Real-time temporal zone calculations
     🌏 35+ global temporal regions supported

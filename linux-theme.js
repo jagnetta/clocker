@@ -230,7 +230,7 @@ function launchWeatherApplication(terminalId, x, y) {
         
         // Show the command being typed
         setTimeout(() => {
-            initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ weather`;
+            initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ ./weather`;
             
             // Add new line and show the weather prompt
             setTimeout(() => {
@@ -242,7 +242,7 @@ function launchWeatherApplication(terminalId, x, y) {
                 // Create input for weather location
                 const inputLine = document.createElement('div');
                 inputLine.className = 'xterm-line';
-                inputLine.innerHTML = `<input type="text" id="weatherInput${terminalId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name..." maxlength="50">`;
+                inputLine.innerHTML = `<input type="text" id="weatherInput${terminalId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
                 content.appendChild(inputLine);
                 
                 // Set up weather input handling
@@ -945,6 +945,15 @@ function setupWeatherInput(terminal, terminalId) {
     const content = terminal.querySelector('.xterm-content');
     
     if (weatherInput) {
+        // Handle 'q' key for immediate quit
+        registerEventListener(weatherInput, 'keydown', (event) => {
+            if (event.key === 'q' || event.key === 'Q') {
+                event.preventDefault();
+                closeTerminal(terminal);
+                return;
+            }
+        });
+        
         registerEventListener(weatherInput, 'keypress', async (event) => {
             if (event.key === 'Enter') {
                 const location = weatherInput.value.trim();
@@ -1005,19 +1014,22 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     
     // Create weather ticker content - similar to other themes but in ncurses style
     const weatherContent = document.createElement('div');
-    const boxWidth = 52; // Total width including borders
-    const innerWidth = boxWidth - 4; // Width for content (excluding "│ " and " │")
+    
+    // Calculate box width dynamically based on the header line
+    const headerLine = "┌─ WEATHER FORECAST ───────────────────────────────┐";
+    const totalWidth = headerLine.length;
+    const innerWidth = totalWidth - 4; // Width for content (excluding "│ " and " │")
     
     weatherContent.innerHTML = `
-        <div class="xterm-line">┌─ WEATHER FORECAST ─────────────────────────────────┐</div>
+        <div class="xterm-line">${headerLine}</div>
         <div class="xterm-line">│ LOCATION: ${weatherData.name.padEnd(innerWidth - 10)} │</div>
-        <div class="xterm-line">│ COORDS:   ${coords.padEnd(innerWidth - 10)} │</div>
+        <div class="xterm-line">│ COORDS:   ${coords.padEnd(innerWidth - 9)} │</div>
         <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
-        <div class="xterm-line">│ CURRENT CONDITIONS:${' '.repeat(innerWidth - 20)} │</div>
-        <div class="xterm-line">│   Temperature: ${(currentTemp + '°F').padEnd(innerWidth - 15)} │</div>
-        <div class="xterm-line">│   Humidity:    ${(weatherData.current.humidity + '%').padEnd(innerWidth - 15)} │</div>
-        <div class="xterm-line">│   Description: ${weatherData.current.description.padEnd(innerWidth - 15)} │</div>
-        <div class="xterm-line">│   Wind Speed:  ${(windSpeed + ' mph').padEnd(innerWidth - 15)} │</div>
+        <div class="xterm-line">│ CURRENT CONDITIONS:${' '.repeat(innerWidth - 19)} │</div>
+        <div class="xterm-line">│   Temperature: ${(currentTemp + '°F').padEnd(innerWidth - 14)} │</div>
+        <div class="xterm-line">│   Humidity:    ${(weatherData.current.humidity + '%').padEnd(innerWidth - 14)} │</div>
+        <div class="xterm-line">│   Description: ${weatherData.current.description.padEnd(innerWidth - 14)} │</div>
+        <div class="xterm-line">│   Wind Speed:  ${(windSpeed + ' mph').padEnd(innerWidth - 14)} │</div>
         <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
         <div class="xterm-line">│ FORECAST:${' '.repeat(innerWidth - 9)} │</div>
     `;
@@ -1042,7 +1054,7 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     
     const closingLine = document.createElement('div');
     closingLine.className = 'xterm-line';
-    closingLine.innerHTML = `└${'─'.repeat(innerWidth + 2)}┘`;
+    closingLine.innerHTML = `└${'─'.repeat(totalWidth - 2)}┘`;
     weatherContent.appendChild(closingLine);
     
     weatherDisplay.appendChild(weatherContent);
@@ -1086,6 +1098,15 @@ function setupWeatherRestartInput(terminal, inputId) {
     const content = terminal.querySelector('.xterm-content');
     
     if (weatherInput) {
+        // Handle 'q' key for immediate quit
+        registerEventListener(weatherInput, 'keydown', (event) => {
+            if (event.key === 'q' || event.key === 'Q') {
+                event.preventDefault();
+                closeTerminal(terminal);
+                return;
+            }
+        });
+        
         registerEventListener(weatherInput, 'keypress', async (event) => {
             if (event.key === 'Enter') {
                 const location = weatherInput.value.trim();
@@ -1111,7 +1132,7 @@ function setupWeatherRestartInput(terminal, inputId) {
                         const restartInputLine = document.createElement('div');
                         restartInputLine.className = 'xterm-line';
                         const newInputId = `weatherInput${terminal.dataset.terminalId}_${Date.now()}`;
-                        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name..." maxlength="50">`;
+                        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
                         content.appendChild(restartInputLine);
                         
                         // Set up weather input handling with the new input id
@@ -1605,7 +1626,7 @@ function recreateWeatherInterface(terminal) {
     // Create initial weather prompt
     const initialPrompt = document.createElement('div');
     initialPrompt.className = 'xterm-line';
-    initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ weather`;
+    initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ ./weather`;
     content.appendChild(initialPrompt);
     
     // Start the weather application simulation
@@ -2339,7 +2360,18 @@ function setupWindowFocus(terminal) {
         bringToFront(terminal);
     };
     
+    // Maintain focus when clicking anywhere in the terminal
     registerEventListener(terminal, 'mousedown', handleFocus);
+    registerEventListener(terminal, 'click', handleFocus);
+    
+    // Prevent losing focus when clicking on terminal content
+    const content = terminal.querySelector('.xterm-content');
+    if (content) {
+        registerEventListener(content, 'click', (e) => {
+            e.stopPropagation();
+            bringToFront(terminal);
+        });
+    }
 }
 
 /**

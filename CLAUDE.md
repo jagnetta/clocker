@@ -22,7 +22,7 @@ Both implementations display formatted time with day of week, date with ordinal 
 - **`index.html`**: Main HTML structure with theme selector and weather integration
 - **`base-style.css`**: Core styling and layout foundation
 - **`core-script.js`**: Main application logic with modular theme management
-- **Theme Modules**: Separate JS/CSS files for Matrix, LCARS, Thor, and OG themes
+- **Theme Modules**: Separate JS/CSS files for Matrix, LCARS, Thor, SBEMAIL, and Linux themes
 - **`timezones.js`**: Comprehensive timezone data with DST calculations
 
 ## Key Technical Systems
@@ -43,7 +43,8 @@ Both implementations display formatted time with day of week, date with ordinal 
 - **Matrix Theme**: Green terminal aesthetic with Matrix rain effects and rotating kanji in upper right corner of time/date panel
 - **LCARS Theme**: Star Trek orange interface with warp speed animations and Vulcan salute decoration
 - **Thor Theme**: Norse gold theme with lightning effects and runes
-- **OG Theme**: Strong Bad's Compy 386 retro computer theme with nostalgic HomestarRunner aesthetics
+- **SBEMAIL Theme**: Strong Bad's Compy 386 retro computer theme with nostalgic HomestarRunner aesthetics
+- **Linux Theme**: X-Windows desktop simulation with draggable/resizable terminal windows, weather and clocker applications, desktop icons, and timezone management
 
 ## Common Commands
 
@@ -78,6 +79,14 @@ python3 -m http.server 8000  # Optional local server
 - **Resource Tracking**: Global arrays track intervals and event listeners for cleanup
 - **Error Prevention**: Comprehensive null checks and defensive programming
 
+### Linux Theme Architecture
+- **X-Windows Simulation**: Authentic Linux desktop environment with gray background and retro aesthetics
+- **Terminal Windows**: Draggable, resizable xterm-style windows with proper focus management
+- **Desktop Icons**: Click-to-launch weather and clocker applications with visual feedback
+- **Window Management**: Cascading placement, proper z-index handling, and focus retention
+- **Application Integration**: Weather app with curses-style interface and clocker with timezone selection
+- **Mobile Optimization**: Shows only clocker terminal and theme selector on mobile devices
+
 ## Development Guidelines
 
 ### Adding New Themes
@@ -92,10 +101,32 @@ python3 -m http.server 8000  # Optional local server
 - **Performance Focus**: Efficient resource usage with proper cleanup
 - **User Experience**: Smooth, professional transitions and interactions
 
+## Linux Theme Functionality
+
+### Terminal Applications
+- **Weather Application**: Interactive curses-style interface with location search, current conditions, and 5-day forecast
+  - Immediate 'q' quit functionality (no Enter key required)
+  - Dynamic box sizing based on content width
+  - Properly aligned weather forecast display
+  - Restart capabilities with command history (./weather, up arrow, !!)
+
+- **Clocker Application**: Enhanced timezone-aware clock display
+  - Arrow key navigation through worldwide timezones
+  - DST-aware timezone descriptions with GMT offsets
+  - Status bar with keyboard shortcuts
+  - Immediate 'q' quit with graceful exit messages
+
+### Window Management Features  
+- **Dragging**: Move windows via titlebar with visual feedback
+- **Resizing**: Edge and corner resize handles for all directions
+- **Focus Management**: Click anywhere in terminal to maintain input focus
+- **Cascading Placement**: Automatic window positioning to avoid overlaps
+
 ## Current Status
 
 - **Web Application**: Production-ready with comprehensive theme system and weather integration
 - **Matrix Theme**: Fixed rotating kanji display - now properly shows in upper right corner of time/date panel (resolved CSS override conflict between base-style.css and matrix-theme.css)
+- **Linux Theme**: Full X-Windows simulation with terminal applications, desktop icons, and window management
 - **Terminal Scripts**: Both original and enhanced versions available
-- **Documentation**: Complete technical documentation consolidated in README.md
+- **Documentation**: Complete technical documentation consolidated in README.md and CLAUDE.md
 - **Testing**: All features tested across themes and platforms

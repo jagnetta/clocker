@@ -1,15 +1,15 @@
-/* OG Theme - Strong Bad's Compy 386 Styling */
+/* SBEMAIL Theme - Strong Bad's Compy 386 Styling */
 /* Authentic HomestarRunner.com sbemail experience */
 
 /* Import authentic 1970s chunky robot computer fonts */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700;900&family=VT323&display=swap');
+@import url('https://fonts.gosbemailleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700;900&family=VT323&display=swap');
 
 /* Note: Removed problematic external fonts that were causing 404 errors.
-   Theme will use Google Fonts (Press Start 2P, Orbitron, VT323) and fallback fonts.
+   Theme will use Gosbemaille Fonts (Press Start 2P, Orbitron, VT323) and fallback fonts.
    This provides authentic retro computer appearance without loading errors. */
 
 /* Compy 386 Computer Container */
-.og-terminal-window {
+.sbemail-terminal-window {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -50,7 +50,7 @@
 }
 
 /* Compy 386 Header (Monitor Bezel) */
-.og-terminal-header {
+.sbemail-terminal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,7 +63,7 @@
 }
 
 /* Header Text Section - Horizontal Layout */
-.og-header-text {
+.sbemail-header-text {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -71,7 +71,7 @@
     justify-content: flex-start;
 }
 
-.og-terminal-title {
+.sbemail-terminal-title {
     color: #2a2a2a;
     font-size: 16px;
     font-weight: bold;
@@ -80,14 +80,14 @@
     letter-spacing: 2px;
 }
 
-.og-status-text {
+.sbemail-status-text {
     color: #2a2a2a;
     font-weight: bold;
     font-size: 12px;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
 }
 
-.og-runtime {
+.sbemail-runtime {
     color: #000000;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     font-weight: normal;
@@ -100,13 +100,13 @@
 }
 
 /* Compy 386 Power Indicator */
-.og-terminal-buttons {
+.sbemail-terminal-buttons {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.og-btn {
+.sbemail-btn {
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -115,15 +115,15 @@
     transition: all 0.3s ease;
 }
 
-.og-btn-close {
+.sbemail-btn-close {
     display: none;
 }
 
-.og-btn-minimize {
+.sbemail-btn-minimize {
     display: none;
 }
 
-.og-btn-maximize {
+.sbemail-btn-maximize {
     display: none;
 }
 
@@ -132,7 +132,7 @@
     85%, 100% { opacity: 0.3; }
 }
 
-.og-terminal-title {
+.sbemail-terminal-title {
     color: #2a2a2a;
     font-size: 16px;
     font-weight: bold;
@@ -142,7 +142,7 @@
 }
 
 /* Compy 386 Screen */
-.og-terminal-body {
+.sbemail-terminal-body {
     display: flex;
     height: calc(100% - 40px - 30px);
     background: #000000;
@@ -156,7 +156,7 @@
 }
 
 /* Continuous scan lines across full terminal */
-.og-terminal-content::before {
+.sbemail-terminal-content::before {
     content: '';
     position: absolute;
     top: -200px;
@@ -179,12 +179,12 @@
     animation: continuousScanStream 4s infinite linear;
 }
 
-.og-terminal-content {
+.sbemail-terminal-content {
     position: relative;
     overflow: hidden;
 }
 
-.og-terminal-content {
+.sbemail-terminal-content {
     flex: 1;
     padding: 12px;
     color: #00ff00;
@@ -214,7 +214,7 @@
 /* Removed all scan line overlays - keeping only full-screen sweep */
 
 /* Ensure content is above scan lines */
-.og-terminal-content > * {
+.sbemail-terminal-content > * {
     position: relative;
     z-index: 5;
 }
@@ -244,7 +244,7 @@
 }
 
 /* SBEmail Startup */
-.og-terminal-startup {
+.sbemail-terminal-startup {
     margin-bottom: 20px;
     opacity: 1;
     transition: opacity 1s ease;
@@ -252,7 +252,7 @@
     z-index: 10;
 }
 
-.og-startup-line {
+.sbemail-startup-line {
     opacity: 0;
     margin-bottom: 6px;
     color: #00ff00;
@@ -262,25 +262,25 @@
     font-size: 20px;
 }
 
-.og-startup-line.ready-for-input::after {
+.sbemail-startup-line.ready-for-input::after {
     content: '█';
     color: #00ff00;
     animation: blinkCursor 1s infinite;
 }
 
-.og-startup-line:first-child {
+.sbemail-startup-line:first-child {
     color: #00ff00;
     font-weight: normal;
     margin-bottom: 12px;
 }
 
-.og-startup-line.typing::after {
+.sbemail-startup-line.typing::after {
     content: '█';
     color: #00ff00;
     animation: blinkCursor 1s infinite;
 }
 
-.og-startup-line:nth-child(5).typing::after {
+.sbemail-startup-line:nth-child(5).typing::after {
     color: #ffff00;
 }
 
@@ -307,7 +307,7 @@
 }
 
 /* Compy 386 Clock Display */
-.og-clock-display {
+.sbemail-clock-display {
     text-align: center;
     margin: 30px 0;
     opacity: 0;
@@ -323,9 +323,9 @@
     z-index: 10;
 }
 
-.og-clock-day,
-.og-clock-date,
-.og-clock-time {
+.sbemail-clock-day,
+.sbemail-clock-date,
+.sbemail-clock-time {
     color: #00ff00;
     font-weight: normal;
     margin: 12px 0;
@@ -334,18 +334,18 @@
     animation: compyGlow 3s ease-in-out infinite alternate;
 }
 
-.og-clock-day {
+.sbemail-clock-day {
     font-size: 28px;
     color: #00ff00;
     text-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
 }
 
-.og-clock-date {
+.sbemail-clock-date {
     font-size: 22px;
     color: #00ff00;
 }
 
-.og-clock-time {
+.sbemail-clock-time {
     font-size: 24px;
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
@@ -358,8 +358,8 @@
     100% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
 }
 
-/* OG Weather Search Interface */
-.og-weather-search {
+/* SBEMAIL Weather Search Interface */
+.sbemail-weather-search {
     margin: 20px 0;
     padding: 15px;
     border: 2px solid #00ff00;
@@ -369,14 +369,14 @@
     z-index: 10;
 }
 
-.og-input-container {
+.sbemail-input-container {
     display: flex;
     align-items: center;
     margin: 10px 0;
     gap: 10px;
 }
 
-.og-input-prefix {
+.sbemail-input-prefix {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.2rem;
@@ -384,7 +384,7 @@
     text-shadow: 1px 1px 0 #004400;
 }
 
-.og-search-input {
+.sbemail-search-input {
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid #00ff00;
     color: #00ff00;
@@ -397,21 +397,21 @@
     max-width: 160px;
 }
 
-.og-blinking-cursor {
+.sbemail-blinking-cursor {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.4rem;
-    animation: og-blink 1s infinite;
+    animation: sbemail-blink 1s infinite;
     text-shadow: 1px 1px 0 #004400;
     margin-left: 2px;
 }
 
-@keyframes og-blink {
+@keyframes sbemail-blink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
 }
 
-.og-search-prompt {
+.sbemail-search-prompt {
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     font-size: 1.1rem;
@@ -420,7 +420,7 @@
     text-shadow: 1px 1px 0 #004400, 0 0 8px rgba(0, 255, 0, 0.8);
 }
 
-.og-search-input {
+.sbemail-search-input {
     width: 70%;
     padding: 8px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
@@ -434,17 +434,17 @@
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
 }
 
-.og-search-input:focus {
+.sbemail-search-input:focus {
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     border-color: #00ffff;
 }
 
-.og-search-input::placeholder {
+.sbemail-search-input::placeholder {
     color: #006600;
     opacity: 0.7;
 }
 
-.og-search-button {
+.sbemail-search-button {
     padding: 6px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     font-size: 1.1rem;
@@ -458,18 +458,18 @@
     transition: all 0.3s ease;
 }
 
-.og-search-button:hover {
+.sbemail-search-button:hover {
     background: #008800;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
 }
 
-.og-search-button:active {
+.sbemail-search-button:active {
     background: #00aa00;
     transform: scale(0.95);
 }
 
-/* OG Weather Ticker */
-.og-weather-ticker {
+/* SBEMAIL Weather Ticker */
+.sbemail-weather-ticker {
     margin-top: 10px;
     padding: 10px;
     border: 2px solid #00ff00;
@@ -479,13 +479,13 @@
     box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
-.og-ticker-container {
+.sbemail-ticker-container {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.og-ticker-label {
+.sbemail-ticker-label {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.1rem;
@@ -494,7 +494,7 @@
     flex-shrink: 0;
 }
 
-.og-ticker-content {
+.sbemail-ticker-content {
     font-family: 'Westminster', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.5rem;
@@ -515,21 +515,21 @@
     position: relative;
 }
 
-.og-ticker-scroll {
+.sbemail-ticker-scroll {
     display: flex;
     align-items: center;
     height: 100%;
-    animation: og-smooth-scroll 90s linear infinite;
+    animation: sbemail-smooth-scroll 90s linear infinite;
     white-space: nowrap;
 }
 
-@keyframes og-smooth-scroll {
+@keyframes sbemail-smooth-scroll {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-100%); }
 }
 
-/* OG Timezone Control */
-.og-timezone-control {
+/* SBEMAIL Timezone Control */
+.sbemail-timezone-control {
     margin-bottom: 15px;
     padding: 8px;
     border: 1px solid #004400;
@@ -537,7 +537,7 @@
     text-align: center;
 }
 
-.og-timezone-label {
+.sbemail-timezone-label {
     display: block;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
@@ -546,7 +546,7 @@
     text-shadow: 1px 1px 0 #004400;
 }
 
-.og-timezone-slider {
+.sbemail-timezone-slider {
     width: 80%;
     height: 4px;
     background: #002200;
@@ -555,7 +555,7 @@
     margin: 5px 0;
 }
 
-.og-timezone-slider::-webkit-slider-thumb {
+.sbemail-timezone-slider::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
     height: 12px;
@@ -565,7 +565,7 @@
     box-shadow: 0 0 4px rgba(0, 90, 0, 0.5);
 }
 
-.og-timezone-slider::-moz-range-thumb {
+.sbemail-timezone-slider::-moz-range-thumb {
     width: 12px;
     height: 12px;
     background: #005a00;
@@ -574,7 +574,7 @@
     box-shadow: 0 0 4px rgba(0, 90, 0, 0.5);
 }
 
-.og-timezone-display {
+.sbemail-timezone-display {
     font-family: 'VT323', monospace;
     color: #00ff00;
     font-size: 1.2rem;
@@ -583,7 +583,7 @@
 }
 
 /* Compy 386 Cursor */
-.og-terminal-cursor {
+.sbemail-terminal-cursor {
     color: #00ff00;
     font-size: 20px;
     font-weight: bold;
@@ -599,22 +599,22 @@
 }
 
 /* Hide scrollbars for authentic terminal look */
-.og-terminal-content::-webkit-scrollbar {
+.sbemail-terminal-content::-webkit-scrollbar {
     display: none;
 }
 
-.og-terminal-content {
+.sbemail-terminal-content {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
 
 /* Hide the fake scrollbar element */
-.og-terminal-scrollbar {
+.sbemail-terminal-scrollbar {
     display: none;
 }
 
 /* Compy 386 Footer */
-.og-terminal-footer {
+.sbemail-terminal-footer {
     height: 30px;
     background: linear-gradient(180deg, #a8a888 0%, #8b8b6b 100%);
     border-top: 2px solid #6b6b4b;
@@ -625,13 +625,13 @@
     font-size: 16px;
 }
 
-.og-status-text {
+.sbemail-status-text {
     color: #2a2a2a;
     font-weight: bold;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
 }
 
-.og-runtime {
+.sbemail-runtime {
     color: #000000;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     font-weight: normal;
@@ -647,7 +647,7 @@
 }
 
 /* HomestarRunner.com Background */
-body.og-theme {
+body.sbemail-theme {
     background: 
         radial-gradient(circle at center, #1a4d80 0%, #0d2340 100%),
         url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="1" cy="1" r="0.5" fill="%23ffffff" opacity="0.1"/></svg>');
@@ -655,7 +655,7 @@ body.og-theme {
     font-family: Arial, sans-serif;
 }
 
-body.og-theme::before {
+body.sbemail-theme::before {
     content: '';
     position: fixed;
     top: 0;
@@ -670,7 +670,7 @@ body.og-theme::before {
 }
 
 /* Pulsing Stars Background */
-body.og-theme::after {
+body.sbemail-theme::after {
     content: '';
     position: fixed;
     top: 0;
@@ -681,7 +681,7 @@ body.og-theme::after {
     z-index: 2;
 }
 
-.og-pulsing-star {
+.sbemail-pulsing-star {
     position: fixed;
     color: #ffffff;
     font-size: 36px;
@@ -720,7 +720,7 @@ body.og-theme::after {
 }
 
 /* Boxing Gloves Click Animation */
-.og-boxing-gloves {
+.sbemail-boxing-gloves {
     position: fixed;
     font-size: 40px;
     pointer-events: none;
@@ -730,7 +730,7 @@ body.og-theme::after {
     filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-.og-boxing-gloves-pair {
+.sbemail-boxing-gloves-pair {
     position: fixed;
     pointer-events: none;
     z-index: 500;
@@ -738,31 +738,31 @@ body.og-theme::after {
     animation: boxingGlovesPairMove 4s ease-out forwards;
 }
 
-.og-boxing-gloves-left,
-.og-boxing-gloves-right {
+.sbemail-boxing-gloves-left,
+.sbemail-boxing-gloves-right {
     position: absolute;
     font-size: 60px;
     filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4));
 }
 
-.og-boxing-gloves-left {
+.sbemail-boxing-gloves-left {
     left: -60px;
     animation: leftGloveBob 1s ease-in-out infinite alternate;
 }
 
-.og-boxing-gloves-right {
+.sbemail-boxing-gloves-right {
     right: -60px;
     animation: rightGloveBob 1s ease-in-out infinite alternate 0.3s;
 }
 
-/* Trogdor the Burninator Animation */
-.og-trogdor-test {
+/* Trsbemaildor the Burninator Animation */
+.sbemail-trsbemaildor-test {
     position: fixed;
     font-size: 200px;
     pointer-events: none;
     z-index: 500;
     opacity: 0;
-    animation: trogdorBurninateGreen 6s ease-in-out forwards;
+    animation: trsbemaildorBurninateGreen 6s ease-in-out forwards;
     filter: 
         drop-shadow(6px 6px 12px rgba(0, 0, 0, 0.6))
         drop-shadow(0 0 30px rgba(0, 255, 0, 0.9))
@@ -770,7 +770,7 @@ body.og-theme::after {
         drop-shadow(0 0 90px rgba(0, 150, 0, 0.5));
 }
 
-@keyframes trogdorBurninateGreen {
+@keyframes trsbemaildorBurninateGreen {
     0% {
         opacity: 1;
         transform: scale(0.5) rotate(-20deg);
@@ -877,7 +877,7 @@ body.og-theme::after {
     }
 }
 
-@keyframes trogdorBurninate {
+@keyframes trsbemaildorBurninate {
     0% {
         opacity: 1;
         transform: scale(0.5) rotate(-20deg);
@@ -943,12 +943,12 @@ body.og-theme::after {
     }
 }
 
-body.og-theme .og-terminal-window {
+body.sbemail-theme .sbemail-terminal-window {
     z-index: 1001;
 }
 
-/* OG Theme Weather Styling */
-.og-theme .weather-day {
+/* SBEMAIL Theme Weather Styling */
+.sbemail-theme .weather-day {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.2rem;
@@ -957,7 +957,7 @@ body.og-theme .og-terminal-window {
         2px 2px 2px rgba(0, 0, 0, 0.8);
 }
 
-.og-theme .weather-temp {
+.sbemail-theme .weather-temp {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     font-size: 1.3rem;
@@ -967,22 +967,22 @@ body.og-theme .og-terminal-window {
         2px 2px 2px rgba(0, 0, 0, 0.8);
 }
 
-.og-theme .weather-desc,
-.og-theme .weather-wind,
-.og-theme .weather-humidity {
+.sbemail-theme .weather-desc,
+.sbemail-theme .weather-wind,
+.sbemail-theme .weather-humidity {
     font-family: 'VT323', monospace;
     color: #00ff00;
     text-shadow: 1px 1px 0 #004400;
 }
 
-.og-theme .weather-separator,
-.og-theme .city-separator {
+.sbemail-theme .weather-separator,
+.sbemail-theme .city-separator {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
     text-shadow: 1px 1px 0 #004400;
 }
 
-.og-theme .weather-container {
+.sbemail-theme .weather-container {
     background: 
         linear-gradient(135deg, #002200 0%, #004400 50%, #002200 100%);
     border: 3px solid #00ff00;
@@ -992,7 +992,7 @@ body.og-theme .og-terminal-window {
         0 0 20px rgba(0, 255, 0, 0.2);
 }
 
-.og-theme .weather-reset-btn {
+.sbemail-theme .weather-reset-btn {
     font-family: 'Westminster', 'Press Start 2P', monospace;
     background: #00ff00;
     color: #000000;
@@ -1000,7 +1000,7 @@ body.og-theme .og-terminal-window {
     border-radius: 0;
 }
 
-.og-theme .weather-input {
+.sbemail-theme .weather-input {
     font-family: 'VT323', monospace;
     background: #000000;
     color: #00ff00;
@@ -1009,7 +1009,7 @@ body.og-theme .og-terminal-window {
     font-size: 1.2rem;
 }
 
-.og-theme .weather-button {
+.sbemail-theme .weather-button {
     font-family: 'Westminster', 'Press Start 2P', monospace;
     background: #00ff00;
     color: #000000;
@@ -1018,8 +1018,8 @@ body.og-theme .og-terminal-window {
     text-transform: uppercase;
 }
 
-/* OG Theme Switcher Styling */
-.og-theme .theme-switch {
+/* SBEMAIL Theme Switcher Styling */
+.sbemail-theme .theme-switch {
     background: 
         linear-gradient(145deg, #d4d4aa, #b8b894);
     border: 3px solid #8b8b6b;
@@ -1032,7 +1032,7 @@ body.og-theme .og-terminal-window {
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
 }
 
-.og-theme .theme-option {
+.sbemail-theme .theme-option {
     color: #2a2a2a;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     border: 1px solid #6b6b4b;
@@ -1044,7 +1044,7 @@ body.og-theme .og-terminal-window {
     padding: 6px 10px;
 }
 
-.og-theme .theme-option:hover {
+.sbemail-theme .theme-option:hover {
     color: #1a1a1a;
     background: 
         linear-gradient(145deg, #e4e4ca, #c8c8a8);
@@ -1054,7 +1054,7 @@ body.og-theme .og-terminal-window {
     transform: translateY(-1px);
 }
 
-.og-theme .theme-option.active {
+.sbemail-theme .theme-option.active {
     background: 
         linear-gradient(145deg, #00ff00, #00cc00);
     color: #000000;
@@ -1066,14 +1066,14 @@ body.og-theme .og-terminal-window {
     border: 1px solid #006600;
 }
 
-/* Hide other theme elements when OG is active */
-body.og-theme .clock-container,
-body.og-theme .timezone-container {
+/* Hide other theme elements when SBEMAIL is active */
+body.sbemail-theme .clock-container,
+body.sbemail-theme .timezone-container {
     display: none !important;
 }
 
 /* Keep weather container functional but invisible for data access */
-body.og-theme .weather-container {
+body.sbemail-theme .weather-container {
     visibility: hidden !important;
     position: absolute !important;
     top: -9999px !important;
@@ -1085,51 +1085,51 @@ body.og-theme .weather-container {
 
 /* Responsive Design */
 @media (max-width: 900px) {
-    .og-terminal-window {
+    .sbemail-terminal-window {
         width: 90vw;
         height: 70vh;
         max-width: 600px;
         max-height: 400px;
     }
     
-    .og-clock-day { font-size: 20px; }
-    .og-clock-date { font-size: 16px; }
-    .og-clock-time { font-size: 18px; }
+    .sbemail-clock-day { font-size: 20px; }
+    .sbemail-clock-date { font-size: 16px; }
+    .sbemail-clock-time { font-size: 18px; }
     
-    .og-terminal-content {
+    .sbemail-terminal-content {
         padding: 10px;
         font-size: 16px;
     }
 }
 
 @media (max-width: 600px) {
-    .og-terminal-window {
+    .sbemail-terminal-window {
         width: 95vw;
         height: 80vh;
     }
     
-    .og-terminal-header {
+    .sbemail-terminal-header {
         height: 30px;
         padding: 0 10px;
     }
     
-    .og-terminal-title {
+    .sbemail-terminal-title {
         font-size: 11px;
     }
     
-    .og-btn {
+    .sbemail-btn {
         width: 10px;
         height: 10px;
     }
     
-    .og-terminal-footer {
+    .sbemail-terminal-footer {
         height: 20px;
         font-size: 10px;
     }
     
-    /* Hide weather search panel on mobile for cleaner OG experience */
-    .og-weather-search,
-    .og-weather-ticker {
+    /* Hide weather search panel on mobile for cleaner SBEMAIL experience */
+    .sbemail-weather-search,
+    .sbemail-weather-ticker {
         display: none !important;
     }
 }
