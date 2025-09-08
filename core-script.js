@@ -1250,6 +1250,11 @@ function celsiusToFahrenheit(celsius) {
     return Math.round((celsius * 9/5) + 32);
 }
 
+// Convert m/s to mph
+function msToMph(ms) {
+    return Math.round(ms * 2.237);
+}
+
 // Create weather ticker display
 function createWeatherTicker(weatherData, locationName) {
     console.log('🎯 createWeatherTicker called - starting immediately');
@@ -1281,7 +1286,7 @@ function createWeatherTicker(weatherData, locationName) {
         // Current weather
         const currentIcon = getWeatherIcon(weatherData.current.description);
         const currentTempF = celsiusToFahrenheit(weatherData.current.temp);
-        const currentWindSpeed = weatherData.wind?.speed ? `${weatherData.wind.speed.toFixed(1)} m/s` : 'N/A';
+        const currentWindSpeed = weatherData.wind?.speed ? `${msToMph(weatherData.wind.speed)} mph` : 'N/A';
         
         // Add location separator at the start
         const startSeparator = document.createElement('div');

@@ -524,7 +524,7 @@ function updateOgWeatherTicker() {
             const currentItems = firstBlock.querySelectorAll('.weather-item');
             const coords = firstBlock.querySelector('.weather-coords')?.textContent || '';
             
-            let weatherParts = [`🌐 ${city.toUpperCase()}`];
+            let weatherParts = [`🌐 ${city}`];
             
             // Process only unique weather items (avoid duplicates)
             const processedDays = new Set();
@@ -541,7 +541,7 @@ function updateOgWeatherTicker() {
                     const day = dayElement.textContent.trim();
                     const temp = tempElement.textContent.trim();
                     const icon = iconElement ? iconElement.textContent.trim() : '';
-                    const desc = descElement ? descElement.textContent.trim().toUpperCase() : '';
+                    const desc = descElement ? descElement.textContent.trim() : '';
                     const humidity = humidityElement ? humidityElement.textContent.trim() : '';
                     const wind = windElement ? windElement.textContent.trim() : '';
                     
@@ -557,7 +557,7 @@ function updateOgWeatherTicker() {
             });
             
             if (coords) {
-                weatherParts.push(coords.toUpperCase());
+                weatherParts.push(coords);
             }
             
             newWeatherText = weatherParts.join(' • ') + ' • ';
