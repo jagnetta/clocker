@@ -23,17 +23,26 @@
     background: rgba(0, 20, 40, 0.3);
 }
 
+/* Hide all LCARS decorative elements on mobile */
 .mobile-device.photon-torpedo-formation,
-.mobile-device .star-trek-flyby {
+.mobile-device .star-trek-flyby,
+.mobile-device .lcars-interface,
+.mobile-device .lcars-bar,
+.mobile-device .lcars-corner,
+.mobile-device .lcars-panel,
+.mobile-device .lcars-connector,
+.mobile-device .lcars-side-panel,
+.mobile-device .lcars-readout,
+.mobile-device .lcars-frame,
+.mobile-device .warp-stars,
+.mobile-device #lcarsBg,
+.mobile-device .lcars-bg {
     display: none !important;
 }
 
-/* LCARS Mobile Status Bar Adjustment */
+/* Hide LCARS status bar on mobile for cleaner look */
 .mobile-device .lcars-status-bar {
-    bottom: 80px;
-    right: 20px;
-    padding: 8px 15px;
-    font-size: 0.8rem;
+    display: none !important;
 }
 
 /* LCARS Theme Switcher Styling */
