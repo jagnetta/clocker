@@ -177,6 +177,127 @@ function createCompy386() {
                 <!-- Footer area -->
             </div>
         </div>
+        <div class="sbemail-keyboard" id="sbemailKeyboard">
+            <div class="sbemail-keyboard-body">
+                <div class="sbemail-keyboard-main">
+                    <div class="sbemail-keyboard-row sbemail-row-1">
+                        <div class="sbemail-key">ESC</div>
+                        <div class="sbemail-key-gap"></div>
+                        <div class="sbemail-key">F1</div>
+                        <div class="sbemail-key">F2</div>
+                        <div class="sbemail-key">F3</div>
+                        <div class="sbemail-key">F4</div>
+                        <div class="sbemail-key-gap"></div>
+                        <div class="sbemail-key">F5</div>
+                        <div class="sbemail-key">F6</div>
+                        <div class="sbemail-key">F7</div>
+                        <div class="sbemail-key">F8</div>
+                        <div class="sbemail-key-gap"></div>
+                        <div class="sbemail-key">F9</div>
+                        <div class="sbemail-key">F10</div>
+                        <div class="sbemail-key">F11</div>
+                        <div class="sbemail-key">F12</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-row-2">
+                        <div class="sbemail-key">\`</div>
+                        <div class="sbemail-key">1</div>
+                        <div class="sbemail-key">2</div>
+                        <div class="sbemail-key">3</div>
+                        <div class="sbemail-key">4</div>
+                        <div class="sbemail-key">5</div>
+                        <div class="sbemail-key">6</div>
+                        <div class="sbemail-key">7</div>
+                        <div class="sbemail-key">8</div>
+                        <div class="sbemail-key">9</div>
+                        <div class="sbemail-key">0</div>
+                        <div class="sbemail-key">-</div>
+                        <div class="sbemail-key">=</div>
+                        <div class="sbemail-key sbemail-key-backspace">BACKSPACE</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-row-3">
+                        <div class="sbemail-key sbemail-key-tab">TAB</div>
+                        <div class="sbemail-key">Q</div>
+                        <div class="sbemail-key">W</div>
+                        <div class="sbemail-key">E</div>
+                        <div class="sbemail-key">R</div>
+                        <div class="sbemail-key">T</div>
+                        <div class="sbemail-key">Y</div>
+                        <div class="sbemail-key">U</div>
+                        <div class="sbemail-key">I</div>
+                        <div class="sbemail-key">O</div>
+                        <div class="sbemail-key">P</div>
+                        <div class="sbemail-key">[</div>
+                        <div class="sbemail-key">]</div>
+                        <div class="sbemail-key sbemail-key-backslash">\\</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-row-4">
+                        <div class="sbemail-key sbemail-key-caps">CAPS</div>
+                        <div class="sbemail-key">A</div>
+                        <div class="sbemail-key">S</div>
+                        <div class="sbemail-key">D</div>
+                        <div class="sbemail-key">F</div>
+                        <div class="sbemail-key">G</div>
+                        <div class="sbemail-key">H</div>
+                        <div class="sbemail-key">J</div>
+                        <div class="sbemail-key">K</div>
+                        <div class="sbemail-key">L</div>
+                        <div class="sbemail-key">;</div>
+                        <div class="sbemail-key">'</div>
+                        <div class="sbemail-key sbemail-key-enter">ENTER</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-row-5">
+                        <div class="sbemail-key sbemail-key-shift-left">SHIFT</div>
+                        <div class="sbemail-key">Z</div>
+                        <div class="sbemail-key">X</div>
+                        <div class="sbemail-key">C</div>
+                        <div class="sbemail-key">V</div>
+                        <div class="sbemail-key">B</div>
+                        <div class="sbemail-key">N</div>
+                        <div class="sbemail-key">M</div>
+                        <div class="sbemail-key">,</div>
+                        <div class="sbemail-key">.</div>
+                        <div class="sbemail-key">/</div>
+                        <div class="sbemail-key sbemail-key-shift-right">SHIFT</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-row-6">
+                        <div class="sbemail-key sbemail-key-ctrl">CTRL</div>
+                        <div class="sbemail-key sbemail-key-alt">ALT</div>
+                        <div class="sbemail-key sbemail-key-space">SPACE</div>
+                        <div class="sbemail-key sbemail-key-alt">ALT</div>
+                        <div class="sbemail-key sbemail-key-ctrl">CTRL</div>
+                    </div>
+                </div>
+                <div class="sbemail-keyboard-numpad">
+                    <div class="sbemail-keyboard-row sbemail-numpad-row-1">
+                        <div class="sbemail-key">NUM</div>
+                        <div class="sbemail-key">/</div>
+                        <div class="sbemail-key">*</div>
+                        <div class="sbemail-key">-</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-numpad-row-2">
+                        <div class="sbemail-key">7</div>
+                        <div class="sbemail-key">8</div>
+                        <div class="sbemail-key">9</div>
+                        <div class="sbemail-key sbemail-key-plus">+</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-numpad-row-3">
+                        <div class="sbemail-key">4</div>
+                        <div class="sbemail-key">5</div>
+                        <div class="sbemail-key">6</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-numpad-row-4">
+                        <div class="sbemail-key">1</div>
+                        <div class="sbemail-key">2</div>
+                        <div class="sbemail-key">3</div>
+                        <div class="sbemail-key sbemail-key-enter-num">ENT</div>
+                    </div>
+                    <div class="sbemail-keyboard-row sbemail-numpad-row-5">
+                        <div class="sbemail-key sbemail-key-zero">0</div>
+                        <div class="sbemail-key">.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     `;
     
     // Add Compy 386 to document

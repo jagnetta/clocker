@@ -11,7 +11,7 @@
 /* Compy 386 Computer Container */
 .sbemail-terminal-window {
     position: fixed;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 800px;
@@ -60,6 +60,53 @@
     padding: 0 15px;
     user-select: none;
     position: relative;
+}
+
+.sbemail-terminal-header::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(
+        135deg,
+        #ff0000 0%,   /* Red */
+        #ff8800 14%,  /* Orange */
+        #ffff00 28%,  /* Yellow */
+        #88ff00 42%,  /* Light Green */
+        #00ff00 57%,  /* Green */
+        #00ffff 71%,  /* Cyan */
+        #0088ff 85%,  /* Blue */
+        #8800ff 100%  /* Purple */
+    );
+    clip-path: polygon(
+        50% 0%,
+        61% 35%,
+        98% 35%,
+        68% 57%,
+        79% 91%,
+        50% 70%,
+        21% 91%,
+        32% 57%,
+        2% 35%,
+        39% 35%
+    );
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.sbemail-terminal-header::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    right: 22px;
+    width: 7px;
+    height: 7px;
+    background: #a8a888;
+    border-radius: 50% 0 50% 50%;
+    transform: rotate(-45deg);
+    box-shadow: inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 /* Header Text Section - Horizontal Layout */
@@ -1131,5 +1178,426 @@ body.sbemail-theme .weather-container {
     .sbemail-weather-search,
     .sbemail-weather-ticker {
         display: none !important;
+    }
+    
+    /* Hide keyboard on mobile to save space */
+    .sbemail-keyboard {
+        display: none !important;
+    }
+}
+
+/* ================================
+   RAINBOW STAR LOGO (Compy 386 Brand Mark)
+   Classic rainbow star with bite - homage to vintage computer logos
+   ================================ */
+
+.sbemail-rainbow-star {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(
+        135deg,
+        #ff0000 0%,   /* Red */
+        #ff8800 14%,  /* Orange */
+        #ffff00 28%,  /* Yellow */
+        #88ff00 42%,  /* Light Green */
+        #00ff00 57%,  /* Green */
+        #00ffff 71%,  /* Cyan */
+        #0088ff 85%,  /* Blue */
+        #8800ff 100%  /* Purple */
+    );
+    clip-path: polygon(
+        50% 0%,
+        61% 35%,
+        98% 35%,
+        68% 57%,
+        79% 91%,
+        50% 70%,
+        21% 91%,
+        32% 57%,
+        2% 35%,
+        39% 35%
+    );
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.sbemail-rainbow-star::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: 15%;
+    width: 12px;
+    height: 12px;
+    background: #d4d4aa;
+    border-radius: 50% 0 50% 50%;
+    transform: rotate(-45deg);
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sbemail-rainbow-star-small {
+    width: 24px;
+    height: 24px;
+}
+
+.sbemail-rainbow-star-small::after {
+    width: 7px;
+    height: 7px;
+}
+
+/* ================================
+   FULL-SIZE BEIGE MECHANICAL KEYBOARD
+   Classic 1990s computer peripheral with 3D perspective
+   ================================ */
+
+.sbemail-keyboard {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) perspective(800px) rotateX(25deg) scale(1.1);
+    transform-origin: center bottom;
+    background: linear-gradient(145deg, #d4d4aa 0%, #b8b894 30%, #9c9c82 100%);
+    border: 8px solid #8b8b6b;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 
+        inset -3px -3px 6px rgba(0, 0, 0, 0.2),
+        inset 3px 3px 6px rgba(255, 255, 255, 0.8),
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        0 16px 40px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    opacity: 1;
+}
+
+.sbemail-keyboard::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 25px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(
+        135deg,
+        #ff0000 0%,   /* Red */
+        #ff8800 14%,  /* Orange */
+        #ffff00 28%,  /* Yellow */
+        #88ff00 42%,  /* Light Green */
+        #00ff00 57%,  /* Green */
+        #00ffff 71%,  /* Cyan */
+        #0088ff 85%,  /* Blue */
+        #8800ff 100%  /* Purple */
+    );
+    clip-path: polygon(
+        50% 0%,
+        61% 35%,
+        98% 35%,
+        68% 57%,
+        79% 91%,
+        50% 70%,
+        21% 91%,
+        32% 57%,
+        2% 35%,
+        39% 35%
+    );
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.sbemail-keyboard::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 32px;
+    width: 7px;
+    height: 7px;
+    background: #d4d4aa;
+    border-radius: 50% 0 50% 50%;
+    transform: rotate(-45deg);
+    box-shadow: inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.sbemail-keyboard-body {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.sbemail-keyboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sbemail-keyboard-numpad {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sbemail-keyboard-row {
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+}
+
+.sbemail-key-gap {
+    width: 12px;
+}
+
+.sbemail-key {
+    background: linear-gradient(145deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%);
+    border: 3px solid #8b8b6b;
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 32px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', 'Orbitron', 'VT323', monospace;
+    font-size: 9px;
+    font-weight: bold;
+    color: #2a2a2a;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+    box-shadow: 
+        inset -3px -3px 6px rgba(0, 0, 0, 0.2),
+        inset 3px 3px 6px rgba(255, 255, 255, 1),
+        0 6px 12px rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    transform-style: preserve-3d;
+    transform: translateZ(4px);
+}
+
+.sbemail-key:hover {
+    background: linear-gradient(145deg, #dcdcb2 0%, #c0c09c 50%, #a4a48a 100%);
+    border-color: #939373;
+    transform: translateY(-2px) translateZ(6px);
+    box-shadow: 
+        inset -3px -3px 6px rgba(0, 0, 0, 0.15),
+        inset 3px 3px 6px rgba(255, 255, 255, 1),
+        0 8px 16px rgba(0, 0, 0, 0.35),
+        0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.sbemail-key:active {
+    transform: translateY(4px) translateZ(0px);
+    box-shadow: 
+        inset -4px -4px 8px rgba(0, 0, 0, 0.3),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.6),
+        0 2px 6px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(145deg, #b8b894 0%, #9c9c82 50%, #808070 100%);
+}
+
+/* Lighter brown colored special keys */
+.sbemail-key:first-child, /* ESC */
+.sbemail-row-1 .sbemail-key:nth-child(6), /* F5 */
+.sbemail-row-1 .sbemail-key:nth-child(7), /* F6 */
+.sbemail-row-1 .sbemail-key:nth-child(8), /* F7 */
+.sbemail-row-1 .sbemail-key:nth-child(9), /* F8 */
+.sbemail-key-backspace,
+.sbemail-key-tab,
+.sbemail-key-caps,
+.sbemail-key-enter,
+.sbemail-key-shift-left,
+.sbemail-key-shift-right,
+.sbemail-key-ctrl,
+.sbemail-key-alt,
+.sbemail-key-plus,
+.sbemail-key-enter-num,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(2), /* / in numpad row 1 */
+.sbemail-keyboard-numpad .sbemail-key:nth-child(3), /* * in numpad row 1 */
+.sbemail-keyboard-numpad .sbemail-key:nth-child(4), /* - in numpad row 1 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-1 .sbemail-key:nth-child(1) /* NUM */ {
+    background: linear-gradient(145deg, #B8860B 0%, #A0751A 50%, #8B6419 100%);
+    border-color: #6B4E14;
+}
+
+.sbemail-key:first-child:hover,
+.sbemail-row-1 .sbemail-key:nth-child(6):hover,
+.sbemail-row-1 .sbemail-key:nth-child(7):hover,
+.sbemail-row-1 .sbemail-key:nth-child(8):hover,
+.sbemail-row-1 .sbemail-key:nth-child(9):hover,
+.sbemail-key-backspace:hover,
+.sbemail-key-tab:hover,
+.sbemail-key-caps:hover,
+.sbemail-key-enter:hover,
+.sbemail-key-shift-left:hover,
+.sbemail-key-shift-right:hover,
+.sbemail-key-ctrl:hover,
+.sbemail-key-alt:hover,
+.sbemail-key-plus:hover,
+.sbemail-key-enter-num:hover,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(2):hover,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(3):hover,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(4):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-1 .sbemail-key:nth-child(1):hover {
+    background: linear-gradient(145deg, #CD9B1D 0%, #B5851F 50%, #9E7421 100%);
+    border-color: #7A5B18;
+}
+
+.sbemail-key:first-child:active,
+.sbemail-row-1 .sbemail-key:nth-child(6):active,
+.sbemail-row-1 .sbemail-key:nth-child(7):active,
+.sbemail-row-1 .sbemail-key:nth-child(8):active,
+.sbemail-row-1 .sbemail-key:nth-child(9):active,
+.sbemail-key-backspace:active,
+.sbemail-key-tab:active,
+.sbemail-key-caps:active,
+.sbemail-key-enter:active,
+.sbemail-key-shift-left:active,
+.sbemail-key-shift-right:active,
+.sbemail-key-ctrl:active,
+.sbemail-key-alt:active,
+.sbemail-key-plus:active,
+.sbemail-key-enter-num:active,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(2):active,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(3):active,
+.sbemail-keyboard-numpad .sbemail-key:nth-child(4):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-1 .sbemail-key:nth-child(1):active {
+    background: linear-gradient(145deg, #A0751A 0%, #8B6419 50%, #765318 100%);
+    border-color: #5C4013;
+}
+
+/* Ensure numpad numbers and decimal point are light beige, not tan */
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(1), /* 7 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(2), /* 8 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(3), /* 9 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(1), /* 4 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(2), /* 5 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(3), /* 6 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(1), /* 1 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(2), /* 2 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(3), /* 3 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(1), /* 0 */
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(2)  /* . */ {
+    background: linear-gradient(145deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%) !important;
+    border-color: #8b8b6b !important;
+}
+
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(1):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(2):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(3):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(1):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(2):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(3):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(1):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(2):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(3):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(1):hover,
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(2):hover {
+    background: linear-gradient(145deg, #dcdcb2 0%, #c0c09c 50%, #a4a48a 100%) !important;
+    border-color: #939373 !important;
+}
+
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(1):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(2):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-2 .sbemail-key:nth-child(3):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(1):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(2):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-3 .sbemail-key:nth-child(3):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(1):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(2):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-4 .sbemail-key:nth-child(3):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(1):active,
+.sbemail-keyboard-numpad .sbemail-numpad-row-5 .sbemail-key:nth-child(2):active {
+    background: linear-gradient(145deg, #b8b894 0%, #9c9c82 50%, #808070 100%) !important;
+    border-color: #6e6e5e !important;
+}
+
+/* Specific key sizes */
+.sbemail-key-backspace { min-width: 80px; }
+.sbemail-key-tab { min-width: 60px; }
+.sbemail-key-backslash { min-width: 60px; }
+.sbemail-key-caps { min-width: 70px; }
+.sbemail-key-enter { min-width: 85px; }
+.sbemail-key-shift-left { min-width: 90px; }
+.sbemail-key-shift-right { min-width: 90px; }
+.sbemail-key-ctrl { min-width: 55px; }
+.sbemail-key-alt { min-width: 50px; }
+.sbemail-key-space { min-width: 240px; }
+
+/* Numpad specific styling */
+.sbemail-key-plus {
+    height: 92px; /* Spans two rows - updated for taller keys */
+    align-self: stretch;
+}
+
+.sbemail-key-enter-num {
+    height: 92px; /* Spans two rows - updated for taller keys */
+    align-self: stretch;
+}
+
+.sbemail-key-zero {
+    min-width: 72px; /* Double width */
+}
+
+/* Numpad row positioning */
+.sbemail-numpad-row-2 {
+    position: relative;
+}
+
+.sbemail-numpad-row-3 {
+    position: relative;
+}
+
+.sbemail-numpad-row-4 {
+    position: relative;
+}
+
+/* Position the tall keys properly */
+.sbemail-numpad-row-2 .sbemail-key-plus {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: calc(92px + 4px); /* Account for gap - updated for taller keys */
+}
+
+.sbemail-numpad-row-4 .sbemail-key-enter-num {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: calc(92px + 4px); /* Account for gap - updated for taller keys */
+}
+
+/* Responsive keyboard adjustments */
+@media (max-width: 1200px) {
+    .sbemail-keyboard {
+        bottom: 70px;
+        padding: 15px;
+        transform: translateX(-50%) perspective(600px) rotateX(20deg) scale(0.95);
+    }
+    
+    .sbemail-key {
+        padding: 8px;
+        min-width: 28px;
+        height: 32px;
+        font-size: 8px;
+    }
+    
+    .sbemail-key-backspace { min-width: 65px; }
+    .sbemail-key-tab { min-width: 50px; }
+    .sbemail-key-backslash { min-width: 50px; }
+    .sbemail-key-caps { min-width: 60px; }
+    .sbemail-key-enter { min-width: 70px; }
+    .sbemail-key-shift-left,
+    .sbemail-key-shift-right { min-width: 75px; }
+    .sbemail-key-ctrl { min-width: 45px; }
+    .sbemail-key-alt { min-width: 40px; }
+    .sbemail-key-space { min-width: 180px; }
+    .sbemail-key-zero { min-width: 60px; }
+}
+
+@media (max-width: 1000px) {
+    .sbemail-keyboard {
+        transform: translateX(-50%) perspective(500px) rotateX(15deg) scale(0.85);
+        bottom: 60px;
+        padding: 12px;
+    }
+    
+    .sbemail-keyboard-body {
+        gap: 15px;
     }
 }
