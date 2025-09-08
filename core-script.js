@@ -8,6 +8,16 @@ let loadedThemes = new Set();
 let currentlyLoadedCss = null;
 const availableThemes = ['matrix', 'lcars', 'thor', 'sbemail', 'linux'];
 
+// Get themes appropriate for current device
+function getMobileAppropriateThemes() {
+    if (isMobileDevice) {
+        // Mobile devices only get Matrix, LCARS, and Thor
+        return ['matrix', 'lcars', 'thor'];
+    }
+    // Desktop gets all themes
+    return availableThemes;
+}
+
 // Use timezone data from timezones.js - create compatibility layer
 let currentTimezoneIndex = 0;
 
@@ -191,6 +201,13 @@ function getLastSundayOfMonth(year, month) {
 async function loadTheme(themeName) {
     if (!availableThemes.includes(themeName)) {
         console.error(`Unknown theme: ${themeName}`);
+        return false;
+    }
+    
+    // Check if theme is appropriate for mobile device
+    const appropriateThemes = getMobileAppropriateThemes();
+    if (!appropriateThemes.includes(themeName)) {
+        console.warn(`📱 Theme "${themeName}" is not available on mobile devices. Available mobile themes:`, appropriateThemes);
         return false;
     }
     
@@ -525,8 +542,24 @@ async function switchToTheme(themeName) {
 
 // Initialize random theme on load
 function initRandomTheme() {
-    const randomTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
-    console.log(`🎲 Randomly selected theme: ${randomTheme.toUpperCase()}`);
+    const appropriateThemes = getMobileAppropriateThemes();
+    const randomTheme = appropriateThemes[Math.floor(Math.random() * appropriateThemes.length)];
+    console.log(`🎲 Randomly selected theme: ${randomTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
+    switchToTheme(randomTheme);
+}
+
+// Switch to a random theme excluding the current one (mobile-filtered)
+function switchToRandomTheme(excludeTheme = null) {
+    const appropriateThemes = getMobileAppropriateThemes();
+    const availableOptions = appropriateThemes.filter(theme => theme !== (excludeTheme || currentTheme));
+    
+    if (availableOptions.length === 0) {
+        console.log('🎲 No other themes available for random selection');
+        return;
+    }
+    
+    const randomTheme = availableOptions[Math.floor(Math.random() * availableOptions.length)];
+    console.log(`🎲 Randomly switching to: ${randomTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
     switchToTheme(randomTheme);
 }
 
@@ -1132,10 +1165,11 @@ function initKeyboardShortcuts() {
             
             // Show themed exit message and switch to random theme on OK
             if (confirm(currentMessage.title + '\n\n' + currentMessage.message + '\n\nClick OK to journey to a new realm!')) {
-                // Switch to a different random theme
-                const otherThemes = availableThemes.filter(theme => theme !== currentTheme);
+                // Switch to a different random theme (mobile-filtered)
+                const appropriateThemes = getMobileAppropriateThemes();
+                const otherThemes = appropriateThemes.filter(theme => theme !== currentTheme);
                 const nextTheme = otherThemes[Math.floor(Math.random() * otherThemes.length)];
-                console.log(`🎭 Switching from ${currentTheme.toUpperCase()} to ${nextTheme.toUpperCase()}`);
+                console.log(`🎭 Switching from ${currentTheme.toUpperCase()} to ${nextTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
                 switchToTheme(nextTheme);
             }
         }

@@ -110,6 +110,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             const themeOptions = document.querySelectorAll('.theme-option');
             
+            // Filter theme options for mobile devices
+            if (typeof isMobileDevice !== 'undefined' && isMobileDevice) {
+                console.log('📱 Mobile device detected - filtering theme options');
+                const mobileRestrictedThemes = ['sbemail', 'linux'];
+                
+                themeOptions.forEach(option => {
+                    const themeData = option.getAttribute('data-theme');
+                    if (mobileRestrictedThemes.includes(themeData)) {
+                        option.style.display = 'none';
+                        console.log(`📱 Hidden ${themeData} theme button on mobile`);
+                    }
+                });
+            }
+            
             themeOptions.forEach(option => {
                 option.addEventListener('click', async function() {
                     const selectedTheme = this.getAttribute('data-theme');
