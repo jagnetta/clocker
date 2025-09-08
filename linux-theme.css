@@ -342,20 +342,36 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+    /* Hide desktop icons on mobile */
+    .linux-desktop-icons {
+        display: none;
+    }
+    
+    /* Hide all terminals except clocker (terminal-2) on mobile */
     .xterm-terminal-1 {
-        width: 90%;
-        left: 5%;
-        top: 80px;
+        display: none !important;
     }
     
+    /* Show only clocker terminal, centered and full width */
     .xterm-terminal-2 {
-        width: 90%;
-        right: 5%;
-        top: 300px;
+        width: 95%;
+        left: 2.5%;
+        right: auto;
+        top: 80px;
+        height: calc(100vh - 120px);
+        max-height: none;
     }
     
-    .xterm-theme body {
+    .linux-theme body {
         padding: 10px;
+    }
+    
+    /* Ensure theme selector remains visible */
+    .linux-theme .theme-selector {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1001;
     }
 }
 
