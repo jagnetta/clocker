@@ -591,7 +591,6 @@
     animation: compyCursorBlink 0.8s infinite;
     text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
     margin: 10px 15px;
-    margin-left: 25px;
 }
 
 @keyframes compyCursorBlink {

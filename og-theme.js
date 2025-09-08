@@ -139,8 +139,8 @@ function createCompy386() {
             <div class="og-terminal-body">
                 <div class="og-terminal-content" id="ogTerminalContent">
                     <div class="og-terminal-startup">
-                        <div class="og-startup-line" id="initialPrompt">A:\\></div>
-                        <div class="og-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK></div>
+                        <div class="og-startup-line" id="initialPrompt">A:\\> </div>
+                        <div class="og-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK> </div>
                         <div class="og-startup-line og-startup-delay-1" id="loadingMsg" style="display: none;">Loading Strong Bad's Temporal Interface...</div>
                         <div class="og-startup-line og-startup-delay-2" id="virusMsg" style="display: none;">Scanning for The Cheat viruses... NONE FOUND</div>
                         <div class="og-startup-line og-startup-delay-3" id="emailMsg" style="display: none;">Checking email... 0 new messages</div>
