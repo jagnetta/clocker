@@ -14,8 +14,8 @@
     top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 680px;
-    height: 510px;
+    width: 800px;
+    height: 600px;
     background: linear-gradient(135deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%);
     border-radius: 0;
     border: 8px solid #8b8b6b;
@@ -1253,7 +1253,7 @@ body.sbemail-theme .weather-container {
     position: fixed;
     bottom: 100px;
     left: 50%;
-    transform: translateX(-50%) perspective(800px) rotateX(25deg) scale(0.580);
+    transform: translateX(-50%) perspective(800px) rotateX(25deg) scale(1.305);
     transform-origin: center bottom;
     background: linear-gradient(145deg, #d4d4aa 0%, #b8b894 30%, #9c9c82 100%);
     border: 8px solid #8b8b6b;
@@ -1565,7 +1565,7 @@ body.sbemail-theme .weather-container {
     .sbemail-keyboard {
         bottom: 70px;
         padding: 15px;
-        transform: translateX(-50%) perspective(600px) rotateX(20deg) scale(0.500);
+        transform: translateX(-50%) perspective(600px) rotateX(20deg) scale(1.125);
     }
     
     .sbemail-key {
@@ -1590,7 +1590,7 @@ body.sbemail-theme .weather-container {
 
 @media (max-width: 1000px) {
     .sbemail-keyboard {
-        transform: translateX(-50%) perspective(500px) rotateX(15deg) scale(0.448);
+        transform: translateX(-50%) perspective(500px) rotateX(15deg) scale(1.008);
         bottom: 60px;
         padding: 12px;
     }
