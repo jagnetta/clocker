@@ -234,18 +234,22 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
                     line.style.color = i === shutdownMessages.length - 1 ? '#ff0000' : '#00ff00';
                     line.style.fontSize = '18px';
                     line.style.marginBottom = '6px';
-                    line.textContent = message;
+                    line.textContent = ''; // Start empty for character-by-character typing
                     
                     // Add directly to cleared terminal content (no bouncing since screen is cleared)
                     terminalContent.appendChild(line);
                     
-                    // Keep content at top - don't auto-scroll to prevent bouncing
-                    terminalContent.scrollTop = 0;
+                    // Use character-by-character typing for consistency with theme
+                    typeCompyResponse(line, message, () => {
+                        // Keep content at top - don't auto-scroll to prevent bouncing
+                        terminalContent.scrollTop = 0;
+                    });
                     
                 }, currentDelay);
                 
-                // Increment delay for next message
-                currentDelay += 400 + Math.random() * 300; // 400-700ms between messages
+                // Increment delay for next message - longer delay to account for character-by-character typing
+                const typingTime = message.length * 6; // Estimate typing time (6ms per character)
+                currentDelay += typingTime + 500 + Math.random() * 300; // Typing time + 500-800ms pause
             });
             
             // Step 4: Add CRT shutdown effect after all messages are done
@@ -314,10 +318,10 @@ function createCRTShutdownEffect() {
         staticDot.className = 'sbemail-static-dot';
         crtShutdown.appendChild(staticDot);
         
-        // Remove the entire CRT effect after dot fades
+        // Remove the entire CRT effect after dot fades - extended pause for authentic feel
         setTimeout(() => {
             crtShutdown.remove();
-        }, 1000); // Wait for dot fade animation
+        }, 3000); // Wait for dot fade animation + 2 second pause like real CRT TVs
         
     }, 2000); // Wait for raster collapse animation
 }

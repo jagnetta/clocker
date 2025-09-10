@@ -93,6 +93,8 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    /* Prevent skeleton flash during theme switching */
+    transition: none;
 }
 
 /* Matrix Theme Body Styles (Applied only when .matrix-theme class is present) */
@@ -1277,11 +1279,44 @@ body.matrix-theme .city-separator {
 }
 
 /* ========================================
-   UTILITY CLASSES
+   UTILITY CLASSES & THEME SWITCHING
    ======================================== */
 
 .hidden {
     display: none !important;
+}
+
+/* Prevent skeleton flash during theme switching */
+.bg-decoration {
+    transition: opacity 0.1s ease;
+}
+
+.bg-decoration.hidden {
+    opacity: 0 !important;
+    display: none !important;
+}
+
+/* Ensure theme backgrounds start invisible and only show when theme is active */
+#matrixBg, #lcarsBg, #thorBg {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+body.matrix-theme #matrixBg {
+    opacity: 1;
+}
+
+body.lcars-theme #lcarsBg {
+    opacity: 1;
+}
+
+body.thor-theme #thorBg {
+    opacity: 1;
+}
+
+/* Prevent clock display from flashing during theme switch */
+.clock-display {
+    transition: background 0.1s ease, border 0.1s ease, box-shadow 0.1s ease;
 }
 
 

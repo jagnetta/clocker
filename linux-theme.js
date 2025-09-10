@@ -98,6 +98,12 @@ function createDesktopIcons() {
             </div>
             <div class="xterm-icon-label">less clocker</div>
         </div>
+        <div class="xterm-desktop-icon" data-app="readme" title="Linux Theme Documentation">
+            <div class="xterm-icon-image">
+                <span class="xterm-icon-help" style="font-size: 32px;">📖</span>
+            </div>
+            <div class="xterm-icon-label">README.1st</div>
+        </div>
     `;
     
     body.appendChild(iconsContainer);
@@ -203,6 +209,8 @@ function launchApplication(appType) {
         launchXTermApplication(terminalId, x, y);
     } else if (appType === 'clocker-orig') {
         launchClockerOrigApplication(terminalId, x, y);
+    } else if (appType === 'readme') {
+        launchReadmeApplication(terminalId, x, y);
     }
 }
 
@@ -423,6 +431,38 @@ function launchClockerOrigApplication(terminalId, x, y) {
                 // Get the content of the original clocker script
                 const scriptContent = getOriginalClockerScript();
                 createLessViewer(terminal, scriptContent, 'clocker');
+            }, 1000);
+        }, 500);
+        
+    }, 100);
+}
+
+/**
+ * Launch the README.1st documentation viewer
+ */
+function launchReadmeApplication(terminalId, x, y) {
+    const terminal = createDraggableTerminal(terminalId, 'README.1st', x, y, 700, 500);
+    document.body.appendChild(terminal);
+    linuxTerminals.push(terminal);
+    openWindows.set('readme', terminal); // Track this window
+    
+    // Focus the new terminal
+    setTimeout(() => {
+        bringToFront(terminal);
+        
+        // Simulate typing the command
+        const content = terminal.querySelector('.xterm-content');
+        const initialPrompt = content.querySelector('.xterm-line');
+        
+        // Show the command being typed
+        setTimeout(() => {
+            initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ less README.1st`;
+            
+            // Start the less viewer
+            setTimeout(() => {
+                // Get the README documentation content
+                const readmeContent = getReadmeHelpContent();
+                createLessViewer(terminal, readmeContent, 'README.1st');
             }, 1000);
         }, 500);
         
@@ -704,6 +744,204 @@ main() {
 
 # Execute main function
 main "$@"`;
+}
+
+/**
+ * Get the README.1st documentation content
+ */
+function getReadmeHelpContent() {
+    return `README.1st(1)                    CLOCKER LINUX THEME                    README.1st(1)
+
+NAME
+       Clocker Linux Theme - X-Windows desktop simulation with terminal applications
+
+SYNOPSIS
+       The Linux theme provides a full desktop environment simulation featuring:
+       • Draggable and resizable xterm windows
+       • Desktop icons for launching applications  
+       • Terminal applications with authentic Unix behavior
+       • Window management system with focus control
+       • Interactive command-line interfaces
+
+DESCRIPTION
+       The Clocker Linux Theme simulates a classic X-Windows desktop environment, 
+       complete with terminal applications, window management, and desktop icons.
+       This theme recreates the authentic Unix/Linux desktop experience within
+       the web browser.
+
+DESKTOP ENVIRONMENT
+   Desktop Icons
+       The desktop contains clickable icons that launch terminal applications:
+
+       🌦️  Weather      - Interactive weather forecast application
+       🕐  clocker.sh   - Enhanced clocker script with timezone controls  
+       📋  less clocker-improved - View the improved clocker source code
+       📋  less clocker - View the original clocker script source
+       📖  README.1st   - This documentation (you are here!)
+
+   Window Management
+       All terminal windows feature:
+       • Draggable titlebar for repositioning
+       • Resize handles on all edges and corners
+       • Close button (×) in upper right corner
+       • Focus management - click to bring window to front
+       • Cascading placement to prevent overlap
+
+TERMINAL APPLICATIONS
+   Weather Application (weather)
+       Interactive weather forecasting terminal with ncurses-style interface:
+       
+       Commands:
+       • Enter city name, ZIP code, or coordinates for forecast
+       • 'q' or 'quit' - Exit weather application immediately
+       • Up/Down arrows - Access command history
+       • './weather' or Enter - Restart weather application
+       
+       Features:
+       • Real-time weather data from OpenWeatherMap API
+       • Current conditions with temperature, humidity, wind
+       • 5-day forecast with detailed weather information  
+       • Location search supporting cities, ZIP codes, coordinates
+       • Graceful error handling for invalid locations
+       • Command history for repeated searches
+
+   Clocker Application (clocker.sh)
+       Enhanced clocker script with timezone management:
+       
+       Controls:
+       • Left/Right Arrow Keys - Navigate through world timezones
+       • 'q' - Quit clocker application
+       • './clocker' or Enter - Restart clocker
+       
+       Features:
+       • Real-time clock display with seconds precision
+       • Full day, date with ordinal suffixes, time with AM/PM
+       • 39 worldwide timezones with DST calculation
+       • Automatic DST detection for applicable regions
+       • Timezone abbreviations (EST/EDT, PST/PDT, etc.)
+       • GMT offset display with current local time indicator
+       • Centered display with automatic terminal resize handling
+
+   Script Viewers (less clocker, less clocker-improved)
+       Interactive file viewers using less-style interface:
+       
+       Navigation:
+       • Arrow Keys, Page Up/Down - Scroll through content
+       • Home/End - Jump to beginning/end of file
+       • 'q' - Quit viewer and return to command prompt
+       • 's' - Save script to local computer
+       
+       Features:
+       • Syntax highlighting for shell scripts
+       • Line-by-line scrolling with smooth animation
+       • Status bar showing current position and filename
+       • Full source code of both clocker implementations
+       • Download functionality for script files
+
+   General Terminal Features
+       All terminal windows support:
+       • Command history with Up/Down arrow navigation
+       • './appname' command to restart applications
+       • 'q' or 'quit' for immediate application exit
+       • Ctrl+C handling for graceful process termination
+       • Automatic focus management and cursor display
+       • Resizable content areas with scroll support
+
+KEYBOARD SHORTCUTS
+   Global Shortcuts
+       These work when Linux theme is active:
+       • Ctrl+C - Show themed exit dialog and switch to random theme
+       
+   Window Management
+       • Click titlebar and drag - Move window
+       • Click any content area - Focus window (bring to front)
+       • Click × button - Close window
+       • Drag resize handles - Resize window in any direction
+       
+   Terminal Navigation
+       • Up/Down Arrows - Command history in application prompts
+       • Left/Right Arrows - Timezone navigation (clocker only)
+       • Enter - Execute command or restart application
+       • 'q' - Universal quit command for all applications
+       • Page Up/Down - Scroll in less viewers
+
+TECHNICAL IMPLEMENTATION
+   Window System
+       • Z-index management for proper window stacking
+       • Event listener cleanup to prevent memory leaks
+       • ResizeObserver for responsive content layouts
+       • Mouse event handling for drag and resize operations
+       • Touch device compatibility for mobile browsers
+       
+   Applications
+       • Modular architecture with separate launch functions
+       • Process simulation with authentic Unix command behavior  
+       • Real API integration for live weather data
+       • Accurate timezone calculations with DST support
+       • Command history persistence per terminal instance
+       
+   Performance
+       • Efficient DOM manipulation with minimal reflows
+       • Event delegation for optimal browser performance
+       • Memory cleanup on window close and theme switch
+       • Responsive design adapting to various screen sizes
+
+THEME INTEGRATION
+       The Linux theme integrates with the main Clocker application:
+       • Timezone synchronization with main interface
+       • Weather data sharing with other themes
+       • Consistent visual styling across all components
+       • Mobile device detection and optimization
+       • Seamless theme switching capabilities
+
+COMPATIBILITY
+   Supported Browsers
+       • Chrome/Chromium 70+
+       • Firefox 65+  
+       • Safari 12+
+       • Edge 79+
+       
+   Screen Resolutions
+       • Minimum: 1024×768 (desktop icons may overlay)
+       • Recommended: 1280×720 or higher
+       • Responsive design scales to available space
+       • Mobile browsers supported with touch interactions
+
+TROUBLESHOOTING
+   Common Issues
+       • Terminal not responding - Click content area to focus
+       • Weather data not loading - Check internet connection
+       • Window dragging issues - Ensure clicking on titlebar
+       • Keyboard shortcuts not working - Click terminal to focus
+       • Resize handles not visible - Hover over window edges
+       
+   Performance Tips
+       • Close unused terminal windows to improve performance
+       • Avoid opening too many applications simultaneously
+       • Use 'q' command for clean application shutdown
+       • Refresh browser if memory usage becomes excessive
+
+FILES
+       linux-theme.js         Main theme implementation
+       linux-theme.css        Window styling and animations
+       timezones.js          Timezone data with DST rules
+       core-script.js        Theme switching and integration
+
+AUTHORS
+       Created as part of the Clocker Web application suite.
+       Weather data provided by OpenWeatherMap API.
+       Timezone calculations based on IANA timezone database.
+
+SEE ALSO
+       clocker(1), weather(1), less(1), xterm(1)
+
+VERSION
+       Linux Theme v2.0 - Enhanced desktop environment simulation
+       
+       For more information about Clocker themes, press Ctrl+C to switch themes
+       or visit the project documentation.
+
+                                  $(date '+%B %Y')                           README.1st(1)`;
 }
 
 /**
@@ -1011,14 +1249,14 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     
     weatherContent.innerHTML = `
         <div class="xterm-line">${headerLine}</div>
-        <div class="xterm-line">│ LOCATION: ${weatherData.name.padEnd(innerWidth - 10)} │</div>
-        <div class="xterm-line">│ COORDS:   ${coords.padEnd(innerWidth - 9)} │</div>
+        <div class="xterm-line">│ LOCATION: ${weatherData.name.padEnd(innerWidth - 10)} ##########│</div>
+        <div class="xterm-line">│ COORDS:   ${coords.padEnd(innerWidth - 9)} ##########│</div>
         <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
         <div class="xterm-line">│ CURRENT CONDITIONS:${' '.repeat(innerWidth - 19)} │</div>
-        <div class="xterm-line">│   Temperature: ${(currentTemp + '°F').padEnd(innerWidth - 14)} │</div>
-        <div class="xterm-line">│   Humidity:    ${(weatherData.current.humidity + '%').padEnd(innerWidth - 14)} │</div>
-        <div class="xterm-line">│   Description: ${weatherData.current.description.padEnd(innerWidth - 14)} │</div>
-        <div class="xterm-line">│   Wind Speed:  ${(windSpeed + ' mph').padEnd(innerWidth - 14)} │</div>
+        <div class="xterm-line">│   Temperature: ${(currentTemp + '°F').padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Humidity:    ${(weatherData.current.humidity + '%').padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Description: ${weatherData.current.description.padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Wind Speed:  ${(windSpeed + ' mph').padEnd(innerWidth - 14)} ##########│</div>
         <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
         <div class="xterm-line">│ FORECAST:${' '.repeat(innerWidth - 9)} │</div>
     `;
@@ -1037,7 +1275,7 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
         const forecastLine = document.createElement('div');
         forecastLine.className = 'xterm-line';
         const forecastText = `${dayName}: ${forecastTemp}°F ${forecast.description}`;
-        forecastLine.innerHTML = `│   ${forecastText.padEnd(innerWidth - 4)} │`;
+        forecastLine.innerHTML = `│   ${forecastText.padEnd(innerWidth - 4)} ##########│`;
         weatherContent.appendChild(forecastLine);
     });
     

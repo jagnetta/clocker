@@ -195,7 +195,7 @@ function getLastSundayOfMonth(year, month) {
     return lastSunday;
 }
 
-// Modular theme loading system
+// Optimized modular theme loading system with proper CSS loading
 async function loadTheme(themeName) {
     if (!availableThemes.includes(themeName)) {
         return false;
@@ -208,7 +208,7 @@ async function loadTheme(themeName) {
     }
     
     try {
-        // Load CSS first if not already loaded
+        // Remove old CSS immediately to prevent conflicts
         if (currentlyLoadedCss && currentlyLoadedCss !== themeName) {
             const oldLink = document.querySelector(`link[href="${currentlyLoadedCss}-theme.css"]`);
             if (oldLink) {
@@ -217,30 +217,33 @@ async function loadTheme(themeName) {
         }
         
         if (!loadedThemes.has(themeName)) {
-            // Load theme CSS
-            const cssLink = document.createElement('link');
-            cssLink.rel = 'stylesheet';
-            cssLink.href = `${themeName}-theme.css`;
-            cssLink.onerror = () => {};
-            document.head.appendChild(cssLink);
-            currentlyLoadedCss = themeName;
+            // Load CSS and JS in parallel for faster loading
+            const cssPromise = new Promise((resolve, reject) => {
+                const cssLink = document.createElement('link');
+                cssLink.rel = 'stylesheet';
+                cssLink.href = `${themeName}-theme.css`;
+                cssLink.onload = resolve;
+                cssLink.onerror = reject;
+                document.head.appendChild(cssLink);
+            });
             
-            // Load JavaScript module
-            const script = document.createElement('script');
-            script.src = `${themeName}-theme.js`;
-            script.onerror = () => {};
-            
-            await new Promise((resolve, reject) => {
+            const jsPromise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = `${themeName}-theme.js`;
                 script.onload = resolve;
                 script.onerror = reject;
                 document.head.appendChild(script);
             });
             
+            // Wait for both CSS and JS to load
+            await Promise.all([cssPromise, jsPromise]);
+            
+            currentlyLoadedCss = themeName;
             loadedThemes.add(themeName);
         }
         
-        // Minimal delay to ensure CSS is applied (reduced for faster Matrix startup)
-        await new Promise(resolve => setTimeout(resolve, 20));
+        // Wait for CSS to fully apply - crucial for preventing skeleton flash
+        await new Promise(resolve => setTimeout(resolve, 50));
         
         return true;
         
@@ -272,43 +275,10 @@ function removeThemeEventListeners() {
     themeEventListeners = [];
 }
 
-// Helper function to clear theme-specific DOM modifications
+// Optimized theme-specific DOM cleanup - faster and less intrusive
 function clearThemeDOM() {
-    // Remove all theme-specific classes
-    const elementsWithThemeClasses = document.querySelectorAll('[class*="-effect"], [class*="-particle"], [class*="-animation"]');
-    elementsWithThemeClasses.forEach(el => {
-        // Remove classes that contain effect, particle, or animation
-        el.className = el.className.split(' ').filter(cls => 
-            !cls.includes('-effect') && 
-            !cls.includes('-particle') && 
-            !cls.includes('-animation') &&
-            !cls.includes('glow') &&
-            !cls.includes('flicker')
-        ).join(' ');
-    });
-    
-    // Clear ALL theme background containers more comprehensively
-    const allContainers = [
-        '#particles', '.floating-particles', '#warpStars', '#lightningEffects',
-        '#thorParticles', '#asgardRunes', '#compyWindow'
-    ];
-    
-    allContainers.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(container => {
-            if (container) {
-                container.innerHTML = '';
-                container.removeAttribute('style');
-                // Force stop any animations
-                container.style.animation = 'none';
-                container.offsetHeight; // Force reflow
-                container.style.animation = '';
-            }
-        });
-    });
-    
-    // Remove ALL dynamically created theme elements - comprehensive cleanup
-    const allThemeSelectors = [
+    // Remove dynamically created theme elements only - more targeted
+    const themeElementSelectors = [
         '.matrix-particle', '.matrix-column-char', '.matrix-white-rabbit', '.matrix-red-pill', '.matrix-blue-pill',
         '.warp-star', '.star-trek-flyby', '.photon-torpedo-formation', '.lcars-indicator',
         '.lightning-flash', '.mjolnir-strike', '.loki-illusion', '.loki-shapeshift', '.thor-lightning',
@@ -316,42 +286,25 @@ function clearThemeDOM() {
         '.sbemail-terminal-window', '.theme-overlay', '.theme-dynamic'
     ];
     
-    allThemeSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            if (el && el.parentNode) {
-                el.parentNode.removeChild(el);
-            }
-        });
-    });
-    
-    // FORCE hide and completely reset all theme backgrounds
-    const backgroundElements = ['matrixBg', 'lcarsBg', 'thorBg'];
-    backgroundElements.forEach(bgId => {
-        const bgElement = document.getElementById(bgId);
-        if (bgElement) {
-            bgElement.classList.add('hidden');
-            bgElement.removeAttribute('style');
-            // Force stop any background animations
-            bgElement.style.animation = 'none';
-            bgElement.style.transition = 'none';
-            bgElement.offsetHeight; // Force reflow
-            bgElement.style.animation = '';
-            bgElement.style.transition = '';
+    // Use single query for better performance
+    const elementsToRemove = document.querySelectorAll(themeElementSelectors.join(', '));
+    elementsToRemove.forEach(el => {
+        if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
         }
     });
     
-    // Clear any inline styles added by themes
-    const styledElements = document.querySelectorAll('[style*="animation"], [style*="transform"], [style*="opacity"]');
-    styledElements.forEach(el => {
-        // Only clear style properties that themes might have added
-        const style = el.style;
-        style.animation = '';
-        style.transform = '';
-        if (style.opacity !== '' && !el.hasAttribute('data-original-opacity')) {
-            style.opacity = '';
+    // Clear theme background containers content only
+    const containerSelectors = ['#particles', '#warpStars', '#lightningEffects', '#thorParticles', '#asgardRunes', '#compyWindow'];
+    containerSelectors.forEach(selector => {
+        const container = document.querySelector(selector);
+        if (container) {
+            container.innerHTML = '';
         }
     });
+    
+    // Reset body transform from easter egg effects
+    document.body.style.transform = '';
 }
 
 // Register interval for cleanup
@@ -369,7 +322,6 @@ function registerEventListener(element, event, handler) {
 // Clean up current theme before switching
 function cleanupCurrentTheme() {
     if (!currentTheme) return;
-    
     
     // Clear all intervals and timeouts
     clearAllIntervals();
@@ -398,16 +350,25 @@ function cleanupCurrentTheme() {
     }, 100);
 }
 
-// Switch to a specific theme with proper hygiene
+// Optimized theme switching with minimal flashing
 async function switchToTheme(themeName) {
     if (currentTheme === themeName) return;
     
+    // Immediately hide all background elements to prevent flash
+    const allBackgroundElements = ['matrixBg', 'lcarsBg', 'thorBg'];
+    allBackgroundElements.forEach(bgId => {
+        const bgElement = document.getElementById(bgId);
+        if (bgElement) {
+            bgElement.classList.add('hidden');
+            bgElement.style.opacity = '0';
+        }
+    });
     
     // Step 1: Clean up current theme completely
     cleanupCurrentTheme();
     
-    // Step 2: Wait for cleanup to complete - extra time for Matrix theme animations
-    const cleanupDelay = currentTheme === 'matrix' ? 300 : 150;
+    // Step 2: Wait for cleanup to complete - extra time for SBEMAIL theme CRT shutdown effect
+    const cleanupDelay = currentTheme === 'sbemail' ? 12000 : 150;
     await new Promise(resolve => setTimeout(resolve, cleanupDelay));
     
     // Step 3: Remove all theme-specific CSS classes from body
@@ -416,36 +377,15 @@ async function switchToTheme(themeName) {
     // Step 3.3: Clear any inline styles from body that might cause theme bleeding
     document.body.removeAttribute('style');
     
-    // Step 3.4: Force remove Matrix contamination and animations from all elements
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(el => {
-        // Force stop ALL animations and transitions that could cause movement
-        if (el.style) {
-            if (el.style.animation && el.style.animation !== 'none') {
-                el.style.animation = 'none';
-            }
-            if (el.style.transition && el.style.transition !== 'none') {
-                el.style.transition = 'none';
-            }
-            if (el.style.transform && el.style.transform.includes('translate')) {
-                el.style.transform = '';
-            }
-            if (el.style.animationPlayState) {
-                el.style.animationPlayState = 'paused';
-            }
+    // Step 3.4: Quick reset of common inline styles that themes might have added
+    const styledElements = document.querySelectorAll('[style*="animation"], [style*="transform"], [style*="color: rgb(0, 255, 0)"]');
+    styledElements.forEach(el => {
+        // Only clear problematic inline styles, don't touch everything
+        if (el.style.animation && el.style.animation.includes('matrix')) {
+            el.style.animation = '';
         }
-        
-        // Remove Matrix green color contamination
-        if (el.style && (el.style.color === 'rgb(0, 255, 0)' || el.style.color === '#00ff00')) {
-            if (!el.closest('.matrix-theme')) {
-                el.style.color = '';
-            }
-        }
-        // Remove Matrix text-shadow contamination
-        if (el.style && el.style.textShadow && el.style.textShadow.includes('0 0')) {
-            if (!el.closest('.matrix-theme')) {
-                el.style.textShadow = '';
-            }
+        if (el.style.transform && el.style.transform.includes('translate')) {
+            el.style.transform = '';
         }
     });
     
@@ -474,59 +414,38 @@ async function switchToTheme(themeName) {
     // Step 7: Apply new theme CSS class
     document.body.classList.add(`${themeName}-theme`);
     
-    // Step 7.5: Manage background elements properly with COMPLETE reset
+    // Step 7.5: Optimized background element management
     const backgroundElements = {
         'matrix': 'matrixBg',
         'lcars': 'lcarsBg', 
         'thor': 'thorBg'
     };
     
-    // FORCE hide and completely reset ALL background elements first
-    Object.values(backgroundElements).forEach(bgId => {
-        const bgElement = document.getElementById(bgId);
-        if (bgElement) {
-            bgElement.classList.add('hidden');
-            bgElement.removeAttribute('style');
-            bgElement.style.animation = 'none';
-            bgElement.style.transition = 'none';
-            bgElement.offsetHeight; // Force reflow
+    // Show the correct background immediately after CSS class is applied
+    const newBgId = backgroundElements[themeName];
+    if (newBgId) {
+        const newBgElement = document.getElementById(newBgId);
+        if (newBgElement) {
+            // Remove all inline styles and hidden class
+            newBgElement.removeAttribute('style');
+            newBgElement.classList.remove('hidden');
+            // Force immediate reflow
+            newBgElement.offsetHeight;
         }
-    });
+    }
     
-    // Wait for complete cleanup before showing new background
-    setTimeout(() => {
-        // Show and properly initialize the correct background for the new theme
-        const newBgId = backgroundElements[themeName];
-        if (newBgId) {
-            const newBgElement = document.getElementById(newBgId);
-            if (newBgElement) {
-                // Reset styles completely before showing
-                newBgElement.removeAttribute('style');
-                newBgElement.style.animation = '';
-                newBgElement.style.transition = '';
-                newBgElement.classList.remove('hidden');
-                
-                // Force reflow to ensure clean display
-                newBgElement.offsetHeight;
-            }
-        }
-    }, 50);
+    // Step 8: Initialize the new theme immediately after CSS is loaded
+    const initFunctions = {
+        'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
+        'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
+        'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
+        'sbemail': () => typeof initSBEMAILTheme === 'function' && initSBEMAILTheme(),
+        'linux': () => typeof initLinuxTheme === 'function' && initLinuxTheme()
+    };
     
-    // Step 8: Initialize the new theme with proper delay to prevent bleeding
-    setTimeout(() => {
-        const initFunctions = {
-            'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
-            'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
-            'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
-            'sbemail': () => typeof initSBEMAILTheme === 'function' && initSBEMAILTheme(),
-            'linux': () => typeof initLinuxTheme === 'function' && initLinuxTheme()
-        };
-        
-        if (initFunctions[themeName]) {
-            initFunctions[themeName]();
-        }
-        
-    }, 100);
+    if (initFunctions[themeName]) {
+        initFunctions[themeName]();
+    }
 }
 
 // Initialize random theme on load
