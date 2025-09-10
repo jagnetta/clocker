@@ -967,19 +967,11 @@ function createLessViewer(terminal, content, filename = 'file') {
     const lessViewer = document.createElement('div');
     lessViewer.className = 'xterm-less-viewer';
     lessViewer.textContent = content;
-    // Add bottom padding to prevent green bar from covering content
-    lessViewer.style.paddingBottom = '25px';
     
     // Create status bar
     const statusBar = document.createElement('div');
     statusBar.className = 'xterm-less-status';
-    
-    // Different status text for README.1st (no save option)
-    if (filename === 'README.1st') {
-        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, q to quit`;
-    } else {
-        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, s to save, q to quit`;
-    }
+    statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, s to save, q to quit`;
     
     lessContainer.appendChild(lessViewer);
     lessContainer.appendChild(statusBar);
@@ -1232,10 +1224,6 @@ function setupWeatherInput(terminal, terminalId) {
 function createWeatherNcursesDisplay(terminal, weatherData) {
     const content = terminal.querySelector('.xterm-content');
     
-    // Remove any existing weather displays first
-    const existingWeather = content.querySelectorAll('.xterm-weather-ncurses');
-    existingWeather.forEach(display => display.remove());
-    
     // Create weather display container
     const weatherDisplay = document.createElement('div');
     weatherDisplay.className = 'xterm-weather-ncurses';
@@ -1259,45 +1247,18 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     const totalWidth = headerLine.length;
     const innerWidth = totalWidth - 4; // Width for content (excluding "│ " and " │")
     
-    // Helper function to pad content to exact innerWidth using &nbsp;
-    const padContent = (content) => {
-        // Convert all spaces in content to &nbsp; first to prevent HTML collapse
-        const contentWithNbsp = content.replace(/ /g, '&nbsp;');
-        
-        // Calculate length based on visual characters (each &nbsp; = 1 visual char)
-        const visualLength = content.length; // Original string length = visual length
-        
-        if (visualLength > innerWidth) {
-            // Truncate content if too long (work with original string, then convert)
-            const truncated = content.substring(0, innerWidth - 3) + '...';
-            return truncated.replace(/ /g, '&nbsp;');
-        }
-        
-        const paddingCount = Math.max(0, innerWidth - visualLength);
-        const padding = '&nbsp;'.repeat(paddingCount);
-        
-        return `${contentWithNbsp}${padding}`;
-    };
-    
-    const locationLine = `LOCATION: ${weatherData.name}`;
-    const coordsLine = `COORDS:   ${coords}`;
-    const currentTempLine = `  Temperature: ${currentTemp}°F`;
-    const humidityLine = `  Humidity:    ${weatherData.current.humidity}%`;
-    const descriptionLine = `  Description: ${weatherData.current.description}`;
-    const windSpeedLine = `  Wind Speed:  ${windSpeed} mph`;
-
     weatherContent.innerHTML = `
         <div class="xterm-line">${headerLine}</div>
-        <div class="xterm-line">│ ${padContent(locationLine)} │</div>
-        <div class="xterm-line">│ ${padContent(coordsLine)} │</div>
-        <div class="xterm-line">│${'─'.repeat(innerWidth + 2)}│</div>
-        <div class="xterm-line">│ CURRENT CONDITIONS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │</div>
-        <div class="xterm-line">│ ${padContent(currentTempLine)} │</div>
-        <div class="xterm-line">│ ${padContent(humidityLine)} │</div>
-        <div class="xterm-line">│ ${padContent(descriptionLine)} │</div>
-        <div class="xterm-line">│ ${padContent(windSpeedLine)} │</div>
-        <div class="xterm-line">│${'─'.repeat(innerWidth + 2)}│</div>
-        <div class="xterm-line">│ FORECAST:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │</div>
+        <div class="xterm-line">│ LOCATION: ${weatherData.name.padEnd(innerWidth - 10)} ##########│</div>
+        <div class="xterm-line">│ COORDS:   ${coords.padEnd(innerWidth - 9)} ##########│</div>
+        <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
+        <div class="xterm-line">│ CURRENT CONDITIONS:${' '.repeat(innerWidth - 19)} │</div>
+        <div class="xterm-line">│   Temperature: ${(currentTemp + '°F').padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Humidity:    ${(weatherData.current.humidity + '%').padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Description: ${weatherData.current.description.padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│   Wind Speed:  ${(windSpeed + ' mph').padEnd(innerWidth - 14)} ##########│</div>
+        <div class="xterm-line">│ ${'─'.repeat(innerWidth)} │</div>
+        <div class="xterm-line">│ FORECAST:${' '.repeat(innerWidth - 9)} │</div>
     `;
     
     // Add 5-day forecast
@@ -1313,9 +1274,8 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
         
         const forecastLine = document.createElement('div');
         forecastLine.className = 'xterm-line';
-        
-        const forecastText = `  ${dayName}: ${forecastTemp}°F ${forecast.description}`;
-        forecastLine.innerHTML = `│ ${padContent(forecastText)} │`;
+        const forecastText = `${dayName}: ${forecastTemp}°F ${forecast.description}`;
+        forecastLine.innerHTML = `│   ${forecastText.padEnd(innerWidth - 4)} ##########│`;
         weatherContent.appendChild(forecastLine);
     });
     

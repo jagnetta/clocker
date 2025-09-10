@@ -354,6 +354,11 @@ function cleanupCurrentTheme() {
 async function switchToTheme(themeName) {
     if (currentTheme === themeName) return;
     
+    // IMMEDIATELY interrupt SBEMAIL processes if switching from SBEMAIL
+    if (currentTheme === 'sbemail' && typeof interruptSbemailProcesses === 'function') {
+        interruptSbemailProcesses();
+    }
+    
     // Immediately hide all background elements to prevent flash
     const allBackgroundElements = ['matrixBg', 'lcarsBg', 'thorBg'];
     allBackgroundElements.forEach(bgId => {

@@ -7,6 +7,52 @@ let sbemailStarsInterval = null;
 let sbemailClickHandler = null;
 let sbemailRestartHandler = null;
 let sbemailTickerProtected = false; // Flag to protect the precious weather ticker
+let sbemailInterrupted = false; // Flag to interrupt any ongoing processes
+let sbemailActiveTimeouts = []; // Track all active timeouts for cleanup
+
+// Helper function to wrap setTimeout with interrupt capability
+function sbemailSetTimeout(callback, delay) {
+    if (sbemailInterrupted) return null;
+    
+    const timeoutId = setTimeout(() => {
+        if (!sbemailInterrupted) {
+            // Remove from active timeouts when executed
+            const index = sbemailActiveTimeouts.indexOf(timeoutId);
+            if (index > -1) sbemailActiveTimeouts.splice(index, 1);
+            callback();
+        }
+    }, delay);
+    
+    sbemailActiveTimeouts.push(timeoutId);
+    return timeoutId;
+}
+
+// Helper function to check if processes should be interrupted
+function shouldContinue() {
+    return !sbemailInterrupted;
+}
+
+// Function to immediately interrupt all ongoing processes
+function interruptSbemailProcesses() {
+    sbemailInterrupted = true;
+    
+    // Clear all active timeouts
+    sbemailActiveTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    sbemailActiveTimeouts = [];
+    
+    // Clear intervals
+    if (sbemailTerminalInterval) {
+        clearInterval(sbemailTerminalInterval);
+        sbemailTerminalInterval = null;
+    }
+    
+    // Clear the terminal screen immediately
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (terminalContent) {
+        terminalContent.innerHTML = '';
+        terminalContent.style.background = '#000000';
+    }
+}
 
 // Simple terminal scroll - just scroll to bottom like any terminal
 function smoothScrollTerminal() {
@@ -55,6 +101,10 @@ function getRandomStartupPhrase() {
 // Initialize Strong Bad's Compy 386 Theme
 function initSBEMAILTheme() {
     
+    // Reset interrupt flag for new theme session
+    sbemailInterrupted = false;
+    sbemailActiveTimeouts = [];
+    
     // Record theme start time
     sbemailStartTime = Date.now();
     
@@ -74,6 +124,9 @@ function initSBEMAILTheme() {
 
 // Cleanup Strong Bad's Compy 386 Theme - Complete cleanup
 function cleanupSBEMAILTheme() {
+    
+    // FIRST: Interrupt all ongoing processes immediately
+    interruptSbemailProcesses();
     
     // Clear Compy update interval
     if (sbemailTerminalInterval) {
@@ -114,6 +167,8 @@ function cleanupSBEMAILTheme() {
     sbemailTerminalInterval = null;
     sbemailStarsInterval = null;
     sbemailClickHandler = null;
+    sbemailInterrupted = false;
+    sbemailActiveTimeouts = [];
     
 }
 
@@ -166,8 +221,8 @@ function createCompy386() {
     addThemeControlListeners();
     
     // Start the authentic terminal sequence
-    setTimeout(() => {
-        startTerminalSequence();
+    sbemailSetTimeout(() => {
+        if (shouldContinue()) startTerminalSequence();
     }, 1000);
 }
 
@@ -379,6 +434,8 @@ function getSystemShutdownMessages(targetTheme) {
 
 // Start authentic terminal sequence with A:\ prompt and DOS navigation
 function startTerminalSequence() {
+    if (!shouldContinue()) return;
+    
     const terminalContent = document.getElementById('sbemailTerminalContent');
     
     if (!terminalContent) {
@@ -400,7 +457,8 @@ function startTerminalSequence() {
     terminalContent.appendChild(promptLine);
     
     // Let cursor blink for a few seconds before typing command
-    setTimeout(() => {
+    sbemailSetTimeout(() => {
+        if (!shouldContinue()) return;
         // Remove cursor and start the DOS typing sequence
         promptLine.classList.remove('ready-for-input');
         // Start the DOS startup sequence
