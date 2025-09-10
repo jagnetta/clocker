@@ -100,7 +100,7 @@ function cleanupSBEMAILTheme() {
     }
     
     // Remove any lingering SBEMAIL elements
-    const sbemailElements = document.querySelectorAll('.sbemail-boxing-gloves, .sbemail-boxing-gloves-pair, .sbemail-trogdor, .sbemail-trogdor-test, .sbemail-pulsing-star');
+    const sbemailElements = document.querySelectorAll('.sbemail-boxing-gloves, .sbemail-boxing-gloves-pair, .sbemail-trogdor, .sbemail-trogdor-test, .sbemail-pulsing-star, .sbemail-crt-shutdown');
     sbemailElements.forEach(el => el.remove());
     
     // Remove sbemail-specific event listeners
@@ -207,40 +207,63 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
         }
     });
     
-    // Step 2: Display system shutdown messages naturally like any other terminal output
-    const shutdownMessages = getSystemShutdownMessages(targetTheme);
-    
-    // Add shutdown messages line by line to existing terminal content - let them flow naturally
-    for (let i = 0; i < shutdownMessages.length; i++) {
-        await new Promise(resolve => {
+    // Step 2: Clear the terminal screen first (like a real terminal shutdown)
+    setTimeout(() => {
+        terminalContent.innerHTML = ''; // Clear all existing content
+        terminalContent.style.background = '#000000'; // Ensure black background
+        
+        // Add a subtle clearing effect
+        terminalContent.style.transition = 'opacity 0.3s ease-out';
+        terminalContent.style.opacity = '0.3';
+        
+        setTimeout(() => {
+            terminalContent.style.opacity = '1';
+            
+            // Step 3: Display system shutdown messages directly to cleared terminal
+            const shutdownMessages = getSystemShutdownMessages(targetTheme);
+            
+            // Add shutdown messages line by line using sequential timeouts to prevent slipping
+            let currentDelay = 0;
+            
+            shutdownMessages.forEach((message, i) => {
+                setTimeout(() => {
+                    // Create shutdown line directly in terminal content
+                    const line = document.createElement('div');
+                    line.className = 'sbemail-startup-line';
+                    line.style.opacity = '1';
+                    line.style.color = i === shutdownMessages.length - 1 ? '#ff0000' : '#00ff00';
+                    line.style.fontSize = '18px';
+                    line.style.marginBottom = '6px';
+                    line.textContent = message;
+                    
+                    // Add directly to cleared terminal content (no bouncing since screen is cleared)
+                    terminalContent.appendChild(line);
+                    
+                    // Keep content at top - don't auto-scroll to prevent bouncing
+                    terminalContent.scrollTop = 0;
+                    
+                }, currentDelay);
+                
+                // Increment delay for next message
+                currentDelay += 400 + Math.random() * 300; // 400-700ms between messages
+            });
+            
+            // Step 4: Add CRT shutdown effect after all messages are done
             setTimeout(() => {
-                // Create shutdown line that flows naturally with existing content
-                const line = document.createElement('div');
-                line.className = 'sbemail-startup-line';
-                line.style.opacity = '1';
-                line.style.color = i === shutdownMessages.length - 1 ? '#ff0000' : '#00ff00';
-                line.style.fontSize = '25px';
-                line.textContent = shutdownMessages[i];
-                
-                // Simply append to terminal content - no forced positioning
-                terminalContent.appendChild(line);
-                
-                // Let browser handle natural scrolling
-                terminalContent.scrollTop = terminalContent.scrollHeight;
-                
-                resolve();
-            }, 200 + Math.random() * 300); // Variable delay for realism
-        });
-    }
+                createCRTShutdownEffect();
+            }, currentDelay + 3000); // Wait for all messages + 3 second pause
+            
+        }, 500); // Wait for clear effect to complete
+    }, 300); // Brief delay before clearing screen
     
-    // Step 3: All LEDs turn off (system stopped)
+    // Step 5: All LEDs turn off (system stopped)
     setTimeout(() => {
         allButtons.forEach(btn => {
             btn.classList.remove('active', 'shutdown', 'stopping');
         });
-    }, 1000);
+    }, 8000); // Timing to account for clear screen + shutdown messages + CRT effect
     
-    // Step 4: Wait 3 seconds, then start new system with boot animation
+    // Step 6: Wait for CRT shutdown effect, then start new system with boot animation
     setTimeout(() => {
         // Add boot animation to target theme button
         clickedButton.style.animation = 'kvmGreenBoot 2s ease-in-out forwards';
@@ -250,6 +273,12 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
             clickedButton.style.animation = '';
             clickedButton.classList.add('active');
             
+            // Remove any CRT shutdown effects before switching
+            const crtShutdown = document.querySelector('.sbemail-crt-shutdown');
+            if (crtShutdown) {
+                crtShutdown.remove();
+            }
+            
             // Call the core theme switching function
             if (typeof switchToTheme === 'function') {
                 switchToTheme(targetTheme);
@@ -257,7 +286,40 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
                 window.switchToTheme(targetTheme);
             }
         }, 2000); // Wait for boot animation to complete
-    }, 3000);
+    }, 12000); // Increased delay to account for complete shutdown sequence + CRT effect (3s + shutdown messages + 3s CRT effect)
+}
+
+// Create authentic CRT shutdown effect - collapsing raster and static discharge dot
+function createCRTShutdownEffect() {
+    const terminalBody = document.querySelector('.sbemail-terminal-body');
+    if (!terminalBody) return;
+    
+    // Create the CRT shutdown overlay
+    const crtShutdown = document.createElement('div');
+    crtShutdown.className = 'sbemail-crt-shutdown';
+    
+    // Create the collapsing raster effect
+    const rasterCollapse = document.createElement('div');
+    rasterCollapse.className = 'sbemail-raster-collapse';
+    
+    crtShutdown.appendChild(rasterCollapse);
+    terminalBody.appendChild(crtShutdown);
+    
+    // After raster collapse completes, create the static discharge dot
+    setTimeout(() => {
+        // Remove the raster, add the static dot
+        rasterCollapse.remove();
+        
+        const staticDot = document.createElement('div');
+        staticDot.className = 'sbemail-static-dot';
+        crtShutdown.appendChild(staticDot);
+        
+        // Remove the entire CRT effect after dot fades
+        setTimeout(() => {
+            crtShutdown.remove();
+        }, 1000); // Wait for dot fade animation
+        
+    }, 2000); // Wait for raster collapse animation
 }
 
 // Generate system shutdown messages based on target theme
@@ -325,7 +387,7 @@ function startTerminalSequence() {
     promptLine.id = 'initialPrompt';
     promptLine.style.opacity = '1';
     promptLine.style.color = '#00ff00';
-    promptLine.style.fontSize = '25px';
+    promptLine.style.fontSize = '18px';
     promptLine.style.lineHeight = '1.4';
     promptLine.style.marginBottom = '8px';
     promptLine.textContent = 'A:\\> ';
@@ -707,7 +769,7 @@ function addWeatherSearchLine() {
     const weatherPromptLine = document.createElement('div');
     weatherPromptLine.className = 'sbemail-startup-line';
     weatherPromptLine.style.color = '#00ff00';
-    weatherPromptLine.style.fontSize = '25px';
+    weatherPromptLine.style.fontSize = '18px';
     weatherPromptLine.style.opacity = '1';
     weatherPromptLine.innerHTML = 'WEATHER SEARCH: <input type="text" class="sbemail-inline-input" id="sbemailSearchInput" placeholder="ENTER CITY"> <button class="sbemail-inline-button" id="sbemailSearchButton">SEARCH</button>';
     
@@ -718,7 +780,7 @@ function addWeatherSearchLine() {
     weatherTickerLine.className = 'sbemail-startup-line';
     weatherTickerLine.id = 'sbemailWeatherTickerLine';
     weatherTickerLine.style.color = '#00ff00';
-    weatherTickerLine.style.fontSize = '25px';
+    weatherTickerLine.style.fontSize = '18px';
     weatherTickerLine.style.opacity = '1';
     weatherTickerLine.style.display = 'none';
     weatherTickerLine.innerHTML = '<span class="sbemail-ticker-label">WEATHER DATA:</span> <div class="sbemail-inline-ticker" id="sbemailTickerContent">NO DATA LOADED</div>';
@@ -1071,8 +1133,9 @@ function updateOgWeatherTicker() {
     if (newWeatherText !== sbemailWeatherText) {
         sbemailWeatherText = newWeatherText;
         
-        // Create proper scrolling structure for CSS animation
-        tickerContent.innerHTML = `<div class="sbemail-ticker-scroll">${newWeatherText}</div>`;
+        // Create proper scrolling structure for CSS animation with multiple copies for seamless loop
+        const duplicatedContent = newWeatherText.repeat(4); // Create 4 copies like Matrix theme
+        tickerContent.innerHTML = `<div class="sbemail-ticker-scroll">${duplicatedContent}</div>`;
         
         // Activate protection after first successful update
         if (!sbemailTickerProtected && newWeatherText.includes('°F')) {
