@@ -180,23 +180,135 @@ function addThemeControlListeners() {
             e.preventDefault();
             const themeName = button.dataset.theme;
             
-            // Update LED states - turn off all, turn on clicked
-            themeButtons.forEach(btn => {
-                btn.classList.remove('active', 'shutdown');
-            });
-            button.classList.add('active');
-            
-            // Switch to the selected theme if not SBEMAIL
-            if (themeName !== 'sbemail') {
-                // Call the core theme switching function
-                if (window.switchTheme) {
-                    window.switchTheme(themeName);
-                } else if (window.changeTheme) {
-                    window.changeTheme(themeName);
-                }
+            // Don't switch if clicking the already active SBEMAIL theme
+            if (themeName === 'sbemail') {
+                return;
             }
+            
+            // Start KVM-style system switching sequence
+            initiateSystemSwitch(themeName, button, themeButtons);
         });
     });
+}
+
+// KVM-style system switching with shutdown messages
+async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    // Step 1: Set clicked button to RED (stopping current system)
+    allButtons.forEach(btn => {
+        if (btn === clickedButton) {
+            btn.classList.remove('active');
+            btn.classList.add('stopping');
+        } else if (btn.dataset.theme === 'sbemail') {
+            btn.classList.remove('active');
+            btn.classList.add('shutdown');
+        }
+    });
+    
+    // Step 2: Display system shutdown messages naturally like any other terminal output
+    const shutdownMessages = getSystemShutdownMessages(targetTheme);
+    
+    // Add shutdown messages line by line to existing terminal content - let them flow naturally
+    for (let i = 0; i < shutdownMessages.length; i++) {
+        await new Promise(resolve => {
+            setTimeout(() => {
+                // Create shutdown line that flows naturally with existing content
+                const line = document.createElement('div');
+                line.className = 'sbemail-startup-line';
+                line.style.opacity = '1';
+                line.style.color = i === shutdownMessages.length - 1 ? '#ff0000' : '#00ff00';
+                line.style.fontSize = '25px';
+                line.textContent = shutdownMessages[i];
+                
+                // Simply append to terminal content - no forced positioning
+                terminalContent.appendChild(line);
+                
+                // Let browser handle natural scrolling
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+                
+                resolve();
+            }, 200 + Math.random() * 300); // Variable delay for realism
+        });
+    }
+    
+    // Step 3: All LEDs turn off (system stopped)
+    setTimeout(() => {
+        allButtons.forEach(btn => {
+            btn.classList.remove('active', 'shutdown', 'stopping');
+        });
+    }, 1000);
+    
+    // Step 4: Wait 3 seconds, then start new system with boot animation
+    setTimeout(() => {
+        // Add boot animation to target theme button
+        clickedButton.style.animation = 'kvmGreenBoot 2s ease-in-out forwards';
+        
+        // After boot animation, set to active and switch theme
+        setTimeout(() => {
+            clickedButton.style.animation = '';
+            clickedButton.classList.add('active');
+            
+            // Call the core theme switching function
+            if (typeof switchToTheme === 'function') {
+                switchToTheme(targetTheme);
+            } else if (window.switchToTheme) {
+                window.switchToTheme(targetTheme);
+            }
+        }, 2000); // Wait for boot animation to complete
+    }, 3000);
+}
+
+// Generate system shutdown messages based on target theme
+function getSystemShutdownMessages(targetTheme) {
+    const baseMessages = [
+        'COMPY 386 SYSTEM SHUTDOWN INITIATED...',
+        'Stopping Strong Bad\'s Temporal Interface...',
+        'Closing The Cheat applications...',
+        'Saving Homestar\'s incomplete tasks...',
+        'Terminating Bubs\' Concession Stand processes...',
+        'Disconnecting from Free Country USA network...'
+    ];
+    
+    const themeSpecificMessages = {
+        'matrix': [
+            'Preparing to jack into the Matrix...',
+            'Loading red pill protocols...',
+            'Connecting to Zion mainframe...',
+            'MATRIX SYSTEM ONLINE'
+        ],
+        'lcars': [
+            'Engaging warp drive systems...',
+            'Connecting to Starfleet Command...',
+            'Initializing LCARS interface...',
+            'STARFLEET SYSTEM OPERATIONAL'
+        ],
+        'thor': [
+            'Summoning the power of Asgard...',
+            'Calling forth Mjolnir\'s lightning...',
+            'Opening the Rainbow Bridge...',
+            'NORSE SYSTEM ACTIVATED'
+        ],
+        'linux': [
+            'Initializing X Window System...',
+            'Loading desktop environment...',
+            'Starting terminal applications...',
+            'LINUX DESKTOP READY'
+        ]
+    };
+    
+    const shutdownMessages = [
+        ...baseMessages,
+        'Clearing browser cache of The Cheat\'s viruses...',
+        'Backing up Marzipan\'s annoying messages...',
+        'COMPY 386 SYSTEM HALTED',
+        '',
+        'Switching to ' + targetTheme.toUpperCase() + ' system...',
+        ...themeSpecificMessages[targetTheme] || ['TARGET SYSTEM INITIALIZING...']
+    ];
+    
+    return shutdownMessages;
 }
 
 // Start authentic terminal sequence with A:\ prompt and DOS navigation

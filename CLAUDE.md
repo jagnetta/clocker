@@ -122,11 +122,38 @@ python3 -m http.server 8000  # Optional local server
 - **Focus Management**: Click anywhere in terminal to maintain input focus
 - **Cascading Placement**: Automatic window positioning to avoid overlaps
 
+## SBEMAIL Theme Features
+
+### Authentic Compy 386 Experience
+- **Strong Bad's Computer**: Faithful recreation of the Compy 386 from HomestarRunner.com
+- **DOS-Style Startup**: Authentic A:\> prompt with Strong Bad's boxing glove typing
+- **Random Phrases**: Rotating collection of Strong Bad quotes during initialization
+- **Retro Aesthetics**: Beige monitor housing, green terminal text, scan lines
+
+### Interactive Weather System
+- **Built-in Weather Search**: Integrated weather search within the terminal interface
+- **Scrolling Ticker**: Animated weather data display with proper CSS-based scrolling
+- **Multiple Search Support**: Users can perform unlimited weather searches with real-time ticker updates
+- **API Integration**: Full OpenWeatherMap API integration with error handling
+
+### Typography and Styling
+- **Consistent Font Sizing**: All terminal text elements use uniform 25px font size
+- **Retro Computer Fonts**: Westminster, Press Start 2P, Orbitron font stack
+- **CRT Effects**: Authentic scan lines and screen flicker animations
+- **Boxing Gloves Interaction**: Click effects with boxing gloves and occasional Trogdor appearances
+
+### Timezone Management
+- **Integrated Slider**: Built-in timezone control within the Compy terminal
+- **DST Support**: Full daylight saving time calculations and display
+- **Real-time Updates**: Clock updates reflect timezone changes immediately
+
 ## Current Status
 
 - **Web Application**: Production-ready with comprehensive theme system and weather integration
-- **Matrix Theme**: Fixed rotating kanji display - now properly shows in upper right corner of time/date panel (resolved CSS override conflict between base-style.css and matrix-theme.css)
+- **SBEMAIL Theme**: Complete Strong Bad Compy 386 experience with weather integration, scrolling ticker, and consistent styling
+- **Matrix Theme**: Fixed rotating kanji display - now properly shows in upper right corner of time/date panel
 - **Linux Theme**: Full X-Windows simulation with terminal applications, desktop icons, and window management
 - **Terminal Scripts**: Both original and enhanced versions available
+- **Code Quality**: All excessive debug logging removed, optimized performance
 - **Documentation**: Complete technical documentation consolidated in README.md and CLAUDE.md
 - **Testing**: All features tested across themes and platforms

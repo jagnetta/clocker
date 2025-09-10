@@ -12,10 +12,12 @@ A sophisticated clock display project featuring both terminal and web implementa
 - **Responsive Design**: Adapts to window resizing with dynamic font scaling
 
 ### 🎨 **Advanced Theme System**
-- **Three Epic Themes**:
+- **Five Epic Themes**:
   - **⚡ Matrix**: Green terminal aesthetic with Matrix rain effects and rotating kanji in upper right corner
   - **🖖 LCARS**: Star Trek orange interface with warp speed animations and Vulcan salute decoration
   - **🔨 Thor**: Norse gold theme with lightning effects and runes
+  - **📧 SBEMAIL**: Strong Bad's Compy 386 with authentic DOS interface and weather integration
+  - **🐧 Linux**: X-Windows desktop simulation with draggable terminal applications
 - **Modular Architecture**: Dynamic theme loading with proper resource management
 - **Random Initialization**: Randomly selects theme on startup
 - **Smooth Transitions**: Professional theme switching with comprehensive cleanup
@@ -53,6 +55,10 @@ clocker/
 ├── lcars-theme.css         # LCARS theme styling
 ├── thor-theme.js           # Thor theme module
 ├── thor-theme.css          # Thor theme styling
+├── sbemail-theme.js        # SBEMAIL theme module
+├── sbemail-theme.css       # SBEMAIL theme styling
+├── linux-theme.js          # Linux theme module
+├── linux-theme.css         # Linux theme styling
 └── clocker                 # Terminal bash script
 ```
 
@@ -66,9 +72,10 @@ clocker/
 
 ### **Web Application**
 1. Open `index.html` in any modern web browser
-2. Use theme selector buttons to switch between Matrix, LCARS, and Thor
+2. Use theme selector buttons to switch between Matrix, LCARS, Thor, SBEMAIL, and Linux themes
 3. Enter city, ZIP code, or coordinates in weather search
 4. Press **Ctrl+C** for themed exit messages and random theme switching
+5. **SBEMAIL Theme**: Use built-in weather search within the Compy 386 terminal interface
 
 ### **Terminal Version**
 ```bash
@@ -127,6 +134,8 @@ The original `clocker` bash script is a compact 48-line terminal clock display w
 - **Matrix Theme**: Terminal-style interface with falling characters and kanji rotation
 - **LCARS Theme**: Star Trek interface with warp stars and Starfleet styling  
 - **Thor Theme**: Norse mythology with lightning bolts, sparks, and Asgardian runes
+- **SBEMAIL Theme**: Strong Bad's Compy 386 with authentic DOS startup, boxing glove typing, and integrated weather system
+- **Linux Theme**: X-Windows desktop environment with draggable terminal applications
 
 ### **Interactive Features**
 - **Theme Selector**: Click buttons to instantly switch themes
@@ -218,10 +227,22 @@ IFS='|' read -r day_name date_raw time_str <<< "$datetime_raw"
 
 ## 🔧 Recent Updates
 
+### SBEMAIL Theme Complete Implementation
+- **Weather Integration**: Full weather search and scrolling ticker implementation within Compy 386 terminal
+- **Multiple Search Support**: Users can perform unlimited weather searches with real-time ticker updates
+- **Consistent Typography**: All terminal elements now use uniform 25px font sizing
+- **Scrolling Animation**: Fixed CSS-based weather ticker scrolling with proper HTML structure
+- **Code Optimization**: Removed all excessive debug logging for production-ready performance
+
 ### Matrix Theme Kanji Fix
 - **Issue**: CSS override conflict between `base-style.css` and `matrix-theme.css` was preventing the rotating kanji from displaying
 - **Solution**: Removed conflicting CSS rule from `matrix-theme.css` to allow proper kanji rotation
 - **Result**: Matrix theme now properly displays rotating kanji (時, 空, 夢, etc.) in the upper right corner of the time/date panel with full 360° rotation animation
+
+### Performance and Code Quality
+- **Debug Logging Cleanup**: Removed all excessive console logging statements across all themes
+- **Optimized Performance**: Cleaner code execution with minimal logging overhead
+- **Production Ready**: All themes now optimized for production deployment
 
 ---
 
