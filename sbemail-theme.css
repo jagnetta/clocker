@@ -75,7 +75,7 @@
 
 .sbemail-terminal-title {
     color: #2a2a2a;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     font-family: 'Arial Black', Arial, sans-serif;
@@ -135,7 +135,7 @@
 
 .sbemail-terminal-title {
     color: #2a2a2a;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     letter-spacing: 2px;
@@ -191,7 +191,7 @@
     flex: 1;
     padding: 12px;
     color: #00ff00;
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1.4;
     overflow-y: auto;
     overflow-x: hidden;
@@ -281,7 +281,7 @@
     white-space: nowrap;
     overflow: hidden;
     position: relative;
-    font-size: 25px;
+    font-size: 18px;
 }
 
 .sbemail-startup-line.ready-for-input::after {
@@ -356,18 +356,18 @@
 }
 
 .sbemail-clock-day {
-    font-size: 47.5px;
+    font-size: 32px;
     color: #00ff00;
     text-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
 }
 
 .sbemail-clock-date {
-    font-size: 37.5px;
+    font-size: 26px;
     color: #00ff00;
 }
 
 .sbemail-clock-time {
-    font-size: 40px;
+    font-size: 28px;
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     letter-spacing: 2px;
@@ -397,7 +397,7 @@
     color: #00ff00;
     padding: 4px 8px;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
-    font-size: 20px;
+    font-size: 16px;
     margin-left: 10px;
     width: 200px;
     border-radius: 2px;
@@ -421,7 +421,7 @@
     margin-left: 8px;
     cursor: pointer;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
-    font-size: 17.5px;
+    font-size: 14px;
     border-radius: 2px;
 }
 
@@ -449,7 +449,7 @@
 .sbemail-input-prefix {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-right: 5px;
     text-shadow: 1px 1px 0 #004400;
 }
@@ -459,7 +459,7 @@
     border: 1px solid #00ff00;
     color: #00ff00;
     font-family: 'VT323', monospace;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     outline: none;
     padding: 4px 8px;
     text-shadow: 1px 1px 0 #004400;
@@ -470,7 +470,7 @@
 .sbemail-blinking-cursor {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     animation: sbemail-blink 1s infinite;
     text-shadow: 1px 1px 0 #004400;
     margin-left: 2px;
@@ -484,7 +484,7 @@
 .sbemail-search-prompt {
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
-    font-size: 1.375rem;
+    font-size: 1.1rem;
     white-space: nowrap;
     margin-right: 10px;
     text-shadow: 1px 1px 0 #004400, 0 0 8px rgba(0, 255, 0, 0.8);
@@ -494,7 +494,7 @@
     width: 70%;
     padding: 8px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
-    font-size: 20px;
+    font-size: 16px;
     background: #000000 !important;
     color: #00ff00 !important;
     border: 2px solid #00ff00;
@@ -529,7 +529,7 @@
 .sbemail-search-button {
     padding: 6px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
-    font-size: 1.375rem;
+    font-size: 1.1rem;
     background: #006600;
     color: #00ff00;
     border: 2px solid #00ff00;
@@ -571,7 +571,7 @@
 .sbemail-ticker-label {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.375rem;
+    font-size: 1.1rem;
     text-shadow: 1px 1px 0 #004400;
     white-space: nowrap;
     flex-shrink: 0;
@@ -580,7 +580,7 @@
 .sbemail-ticker-content {
     font-family: 'Westminster', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     line-height: 1.4;
     text-shadow: 1px 1px 0 #004400;
     letter-spacing: 1px;
@@ -661,7 +661,7 @@
 .sbemail-timezone-display {
     font-family: 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-top: 3px;
     text-shadow: 1px 1px 0 #004400;
 }
@@ -669,7 +669,7 @@
 /* Compy 386 Cursor */
 .sbemail-terminal-cursor {
     color: #00ff00;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     animation: compyCursorBlink 0.8s infinite;
@@ -706,7 +706,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 20px 0 20px;
-    font-size: 20px;
+    font-size: 16px;
     overflow: visible;
 }
 
@@ -1174,7 +1174,7 @@ body.sbemail-theme .sbemail-terminal-window {
 .sbemail-theme .weather-day {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-shadow: 
         1px 1px 0 #004400,
         2px 2px 2px rgba(0, 0, 0, 0.8);
@@ -1229,7 +1229,7 @@ body.sbemail-theme .sbemail-terminal-window {
     color: #00ff00;
     border: 2px solid #00ff00;
     border-radius: 0;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 .sbemail-theme .weather-button {
@@ -1317,13 +1317,13 @@ body.sbemail-theme .weather-container {
         max-height: 400px;
     }
     
-    .sbemail-clock-day { font-size: 25px; }
+    .sbemail-clock-day { font-size: 20px; }
     .sbemail-clock-date { font-size: 20px; }
-    .sbemail-clock-time { font-size: 22.5px; }
+    .sbemail-clock-time { font-size: 18px; }
     
     .sbemail-terminal-content {
         padding: 0 10px 10px 10px;
-        font-size: 20px;
+        font-size: 16px;
     }
 }
 
@@ -1433,7 +1433,7 @@ body.sbemail-theme .weather-container {
     transform: none !important;
     margin-bottom: 6px !important;
     color: #00ff00 !important;
-    font-size: 25px !important;
+    font-size: 18px !important;
     white-space: nowrap !important;
     position: static !important;
 }
