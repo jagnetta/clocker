@@ -218,7 +218,7 @@ function launchApplication(appType) {
  * Launch the Weather application
  */
 function launchWeatherApplication(terminalId, x, y) {
-    const terminal = createDraggableTerminal(terminalId, 'weather', x, y, 600, 400);
+    const terminal = createDraggableTerminal(terminalId, 'weather', x, y, 700, 500);
     document.body.appendChild(terminal);
     linuxTerminals.push(terminal);
     openWindows.set('weather', terminal); // Track this window
@@ -272,7 +272,7 @@ function launchWeatherApplication(terminalId, x, y) {
  * Launch the Clocker application (original clocker script)
  */
 function launchClockerApplication(terminalId, x, y) {
-    const terminal = createDraggableTerminal(terminalId, 'clocker', x, y, 600, 400);
+    const terminal = createDraggableTerminal(terminalId, 'clocker', x, y, 700, 500);
     document.body.appendChild(terminal);
     linuxTerminals.push(terminal);
     openWindows.set('clocker', terminal); // Track this window
@@ -358,11 +358,59 @@ function launchClockerApplication(terminalId, x, y) {
                     border-top: 1px solid #008800;
                     pointer-events: none;
                 `;
-                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Q to Quit';
+                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Q to Quit';
                 content.appendChild(statusDiv);
                 
                 // Initialize timezone index (start with local time)
                 terminal.timezoneIndex = findLocalTimezoneIndex();
+                
+                // Initialize font size tracking
+                terminal.clockFontSizes = {
+                    day: 22,     // Default day font size
+                    date: 16,    // Default date font size  
+                    time: 18     // Default time font size
+                };
+                
+                // Set up keyboard handling for clocker
+                terminal.tabIndex = -1;
+                terminal.focus();
+                
+                const handleClockerKeyPress = (e) => {
+                    switch(e.key) {
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            // Change timezone (existing functionality)
+                            terminal.timezoneIndex = (terminal.timezoneIndex - 1 + worldTimezones.length) % worldTimezones.length;
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            // Change timezone (existing functionality)
+                            terminal.timezoneIndex = (terminal.timezoneIndex + 1) % worldTimezones.length;
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            // Increase font sizes
+                            terminal.clockFontSizes.day = Math.min(terminal.clockFontSizes.day + 2, 40);
+                            terminal.clockFontSizes.date = Math.min(terminal.clockFontSizes.date + 2, 30);
+                            terminal.clockFontSizes.time = Math.min(terminal.clockFontSizes.time + 2, 35);
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            // Decrease font sizes
+                            terminal.clockFontSizes.day = Math.max(terminal.clockFontSizes.day - 2, 10);
+                            terminal.clockFontSizes.date = Math.max(terminal.clockFontSizes.date - 2, 8);
+                            terminal.clockFontSizes.time = Math.max(terminal.clockFontSizes.time - 2, 10);
+                            break;
+                        case 'q':
+                        case 'Q':
+                            // Quit clocker
+                            terminal.remove();
+                            break;
+                    }
+                };
+                
+                // Add keyboard event listener
+                registerEventListener(terminal, 'keydown', handleClockerKeyPress);
                 
                 // Start updating the original clocker with centering and timezone controls
                 startOriginalClockerUpdate(terminalId, terminal);
@@ -377,7 +425,7 @@ function launchClockerApplication(terminalId, x, y) {
  * Launch the xTerm less viewer application
  */
 function launchXTermApplication(terminalId, x, y) {
-    const terminal = createDraggableTerminal(terminalId, 'less clocker-improved', x, y, 600, 400);
+    const terminal = createDraggableTerminal(terminalId, 'less clocker-improved', x, y, 700, 500);
     document.body.appendChild(terminal);
     linuxTerminals.push(terminal);
     openWindows.set('xterm', terminal); // Track this window
@@ -409,7 +457,7 @@ function launchXTermApplication(terminalId, x, y) {
  * Launch the original Clocker less viewer application
  */
 function launchClockerOrigApplication(terminalId, x, y) {
-    const terminal = createDraggableTerminal(terminalId, 'less clocker', x, y, 600, 400);
+    const terminal = createDraggableTerminal(terminalId, 'less clocker', x, y, 700, 500);
     document.body.appendChild(terminal);
     linuxTerminals.push(terminal);
     openWindows.set('clocker-orig', terminal); // Track this window
@@ -941,7 +989,7 @@ VERSION
        For more information about Clocker themes, press Ctrl+C to switch themes
        or visit the project documentation.
 
-                                  $(date '+%B %Y')                           README.1st(1)`;
+                                  ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}                           README.1st(1)`;
 }
 
 /**
@@ -1542,11 +1590,12 @@ function startOriginalClockerUpdate(terminalId, terminal) {
         // Format time with timezone abbreviation
         const timeStr = formatTimeForTimezone(now, currentTimezone);
         
-        // Update clocker display
+        // Update clocker display with dynamic font sizes
+        const fontSizes = terminal.clockFontSizes || { day: 22, date: 16, time: 18 };
         clockerDisplay.innerHTML = `
-            <div class="xterm-clocker-day" style="margin-bottom: 4px; color: #ffff00; font-size: 22px; font-weight: bold;">${dayStr}</div>
-            <div class="xterm-clocker-date" style="margin-bottom: 4px; color: #00ffff; font-size: 16px;">${dateStr}</div>
-            <div class="xterm-clocker-time" style="margin-bottom: 8px; color: #00ff00; font-size: 18px;">${timeStr}</div>
+            <div class="xterm-clocker-day" style="margin-bottom: 4px; color: #ffff00; font-size: ${fontSizes.day}px; font-weight: bold;">${dayStr}</div>
+            <div class="xterm-clocker-date" style="margin-bottom: 4px; color: #00ffff; font-size: ${fontSizes.date}px;">${dateStr}</div>
+            <div class="xterm-clocker-time" style="margin-bottom: 8px; color: #00ff00; font-size: ${fontSizes.time}px;">${timeStr}</div>
         `;
         
         // Update timezone controls display
@@ -1950,6 +1999,15 @@ function recreateClockerInterface(terminal) {
     // Reset to user's local timezone when restarting
     terminal.timezoneIndex = findLocalTimezoneIndex();
     
+    // Initialize font size tracking if not already present
+    if (!terminal.clockFontSizes) {
+        terminal.clockFontSizes = {
+            day: 22,     // Default day font size
+            date: 16,    // Default date font size  
+            time: 18     // Default time font size
+        };
+    }
+    
     // Create the centered clocker display area
     const clockerDiv = document.createElement('div');
     clockerDiv.id = `xtermClocker${terminalId}`;
@@ -2094,7 +2152,7 @@ function setupClockerRestartInput(terminal, inputId) {
                     border-top: 1px solid #008800;
                     pointer-events: none;
                 `;
-                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Q to Quit';
+                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Q to Quit';
                 content.appendChild(statusDiv);
                 
                 // Restart the clocker functionality

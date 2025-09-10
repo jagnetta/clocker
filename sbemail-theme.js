@@ -309,7 +309,7 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
             
             // Step 4: Add CRT shutdown effect after all messages are done
             setTimeout(() => {
-                createCRTShutdownEffect();
+                if (!sbemailInterrupted) createCRTShutdownEffect();
             }, currentDelay + 3000); // Wait for all messages + 3 second pause
             
         }, 500); // Wait for clear effect to complete
@@ -366,6 +366,8 @@ function createCRTShutdownEffect() {
     
     // After raster collapse completes, create the static discharge dot
     setTimeout(() => {
+        if (sbemailInterrupted) return;
+        
         // Remove the raster, add the static dot
         rasterCollapse.remove();
         
@@ -375,7 +377,7 @@ function createCRTShutdownEffect() {
         
         // Remove the entire CRT effect after dot fades - extended pause for authentic feel
         setTimeout(() => {
-            crtShutdown.remove();
+            if (!sbemailInterrupted) crtShutdown.remove();
         }, 3000); // Wait for dot fade animation + 2 second pause like real CRT TVs
         
     }, 2000); // Wait for raster collapse animation

@@ -354,9 +354,31 @@ function cleanupCurrentTheme() {
 async function switchToTheme(themeName) {
     if (currentTheme === themeName) return;
     
-    // IMMEDIATELY interrupt SBEMAIL processes if switching from SBEMAIL
-    if (currentTheme === 'sbemail' && typeof interruptSbemailProcesses === 'function') {
-        interruptSbemailProcesses();
+    // Special handling for SBEMAIL theme - let it handle its own shutdown with CRT effects
+    if (currentTheme === 'sbemail') {
+        // Check if SBEMAIL is already in shutdown mode
+        const shutdownInProgress = document.querySelector('.sbemail-theme-btn.shutdown') || 
+                                 document.querySelector('.sbemail-theme-btn.stopping');
+        
+        if (shutdownInProgress) {
+            // SBEMAIL shutdown is already in progress, let it complete
+            console.log('🔥 SBEMAIL shutdown already in progress, waiting for CRT effects...');
+            return;
+        } else {
+            // Trigger SBEMAIL's own shutdown sequence with CRT effects
+            const targetButton = document.querySelector(`[data-theme="${themeName}"]`);
+            if (targetButton && typeof initiateSystemSwitch === 'function') {
+                console.log('🔥 Triggering SBEMAIL CRT shutdown sequence...');
+                const allButtons = document.querySelectorAll('.sbemail-control-button.theme-btn');
+                initiateSystemSwitch(themeName, targetButton, allButtons);
+                return;
+            } else {
+                // Fallback: interrupt startup processes if no proper shutdown
+                if (typeof interruptSbemailProcesses === 'function') {
+                    interruptSbemailProcesses();
+                }
+            }
+        }
     }
     
     // Immediately hide all background elements to prevent flash
