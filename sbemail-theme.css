@@ -786,7 +786,18 @@
         0 0 12px rgba(0, 255, 0, 0.8);
 }
 
-/* Shutdown button - red LED */
+/* Stopping button - red LED with pulse (system stopping) */
+.sbemail-control-button.stopping::after {
+    background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
+    border: 1px solid #aa0000;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ff0000,
+        0 0 12px rgba(255, 0, 0, 0.8);
+    animation: kvmRedPulse 0.5s ease-in-out infinite alternate;
+}
+
+/* Shutdown button - solid red LED (system halted) */
 .sbemail-control-button.shutdown::after {
     background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
     border: 1px solid #aa0000;
@@ -794,6 +805,47 @@
         inset 1px 1px 2px rgba(0, 0, 0, 0.3),
         0 0 8px #ff0000,
         0 0 12px rgba(255, 0, 0, 0.8);
+}
+
+/* KVM-style LED animations */
+@keyframes kvmRedPulse {
+    0% { 
+        opacity: 1;
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 8px #ff0000,
+            0 0 12px rgba(255, 0, 0, 0.8);
+    }
+    100% { 
+        opacity: 0.3;
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 4px #ff0000,
+            0 0 6px rgba(255, 0, 0, 0.4);
+    }
+}
+
+@keyframes kvmGreenBoot {
+    0% { 
+        opacity: 0;
+        background: radial-gradient(circle at 30% 30%, #333333, #111111);
+        box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    50% { 
+        opacity: 0.5;
+        background: radial-gradient(circle at 30% 30%, #ffff00, #cc9900);
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 4px #ffff00;
+    }
+    100% { 
+        opacity: 1;
+        background: radial-gradient(circle at 30% 30%, #00ff00, #008800);
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 8px #00ff00,
+            0 0 12px rgba(0, 255, 0, 0.8);
+    }
 }
 
 .sbemail-status-text {
@@ -1368,4 +1420,40 @@ body.sbemail-theme .weather-container {
 /* ================================
    KEYBOARD REMOVED FOR CLEANER SBEMAIL EXPERIENCE
    ================================ */
+
+/* ================================
+   OVERRIDE FOR SHUTDOWN LINES - NO ANIMATIONS ALLOWED ON OLD CONSOLES
+   ================================ */
+.sbemail-shutdown-line {
+    opacity: 1 !important;
+    width: auto !important;
+    overflow: visible !important;
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    margin-bottom: 6px !important;
+    color: #00ff00 !important;
+    font-size: 25px !important;
+    white-space: nowrap !important;
+    position: static !important;
+}
+
+/* FORCE TERMINAL CONTENT TO BE COMPLETELY STATIC DURING SHUTDOWN */
+.sbemail-terminal-content.shutdown-mode {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    scroll-behavior: auto !important;
+}
+
+.sbemail-terminal-content.shutdown-mode * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+/* FORCE ALL SBEMAIL ELEMENTS TO HAVE NO SMOOTH SCROLLING */
+.sbemail-terminal-content {
+    scroll-behavior: auto !important;
+}
 
