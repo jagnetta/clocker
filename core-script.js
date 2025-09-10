@@ -25,7 +25,6 @@ let currentTimezoneIndex = 0;
 function createTimezoneOffsetMap() {
     const offsetMap = {};
     if (typeof timezones === 'undefined') {
-        console.error('timezones array not loaded from timezones.js');
         return {};
     }
     
@@ -74,7 +73,6 @@ let timezoneOffsetMap = {};
 document.addEventListener('DOMContentLoaded', function() {
     timezoneOffsetMap = createTimezoneOffsetMap();
     if (Object.keys(timezoneOffsetMap).length === 0) {
-        console.warn('No timezone data loaded, using fallback');
         // Fallback for testing
         timezoneOffsetMap = {
             '0': { name: 'GMT', label: 'Greenwich Mean Time', dst: false, index: 0, offset: 0 }
@@ -200,14 +198,12 @@ function getLastSundayOfMonth(year, month) {
 // Modular theme loading system
 async function loadTheme(themeName) {
     if (!availableThemes.includes(themeName)) {
-        console.error(`Unknown theme: ${themeName}`);
         return false;
     }
     
     // Check if theme is appropriate for mobile device
     const appropriateThemes = getMobileAppropriateThemes();
     if (!appropriateThemes.includes(themeName)) {
-        console.warn(`📱 Theme "${themeName}" is not available on mobile devices. Available mobile themes:`, appropriateThemes);
         return false;
     }
     
@@ -225,14 +221,14 @@ async function loadTheme(themeName) {
             const cssLink = document.createElement('link');
             cssLink.rel = 'stylesheet';
             cssLink.href = `${themeName}-theme.css`;
-            cssLink.onerror = () => console.error(`Failed to load ${themeName}-theme.css`);
+            cssLink.onerror = () => {};
             document.head.appendChild(cssLink);
             currentlyLoadedCss = themeName;
             
             // Load JavaScript module
             const script = document.createElement('script');
             script.src = `${themeName}-theme.js`;
-            script.onerror = () => console.error(`Failed to load ${themeName}-theme.js`);
+            script.onerror = () => {};
             
             await new Promise((resolve, reject) => {
                 script.onload = resolve;
@@ -246,11 +242,9 @@ async function loadTheme(themeName) {
         // Minimal delay to ensure CSS is applied (reduced for faster Matrix startup)
         await new Promise(resolve => setTimeout(resolve, 20));
         
-        console.log(`🎨 Theme loaded: ${themeName.toUpperCase()}`);
         return true;
         
     } catch (error) {
-        console.error(`Failed to load ${themeName} theme:`, error);
         return false;
     }
 }
@@ -376,7 +370,6 @@ function registerEventListener(element, event, handler) {
 function cleanupCurrentTheme() {
     if (!currentTheme) return;
     
-    console.log(`🧹 Cleaning up ${currentTheme.toUpperCase()} theme...`);
     
     // Clear all intervals and timeouts
     clearAllIntervals();
@@ -402,7 +395,6 @@ function cleanupCurrentTheme() {
     
     // Force garbage collection of theme assets
     setTimeout(() => {
-        console.log(`✅ ${currentTheme.toUpperCase()} theme cleanup complete`);
     }, 100);
 }
 
@@ -410,7 +402,6 @@ function cleanupCurrentTheme() {
 async function switchToTheme(themeName) {
     if (currentTheme === themeName) return;
     
-    console.log(`🔄 Switching from ${currentTheme || 'none'} to ${themeName.toUpperCase()} theme...`);
     
     // Step 1: Clean up current theme completely
     cleanupCurrentTheme();
@@ -464,7 +455,6 @@ async function switchToTheme(themeName) {
     // Step 4: Load new theme resources
     const loaded = await loadTheme(themeName);
     if (!loaded) {
-        console.error(`❌ Failed to load ${themeName} theme`);
         return;
     }
     
@@ -536,7 +526,6 @@ async function switchToTheme(themeName) {
             initFunctions[themeName]();
         }
         
-        console.log(`✨ Successfully switched from ${oldTheme || 'none'} to ${themeName.toUpperCase()} theme`);
     }, 100);
 }
 
@@ -544,7 +533,6 @@ async function switchToTheme(themeName) {
 function initRandomTheme() {
     const appropriateThemes = getMobileAppropriateThemes();
     const randomTheme = appropriateThemes[Math.floor(Math.random() * appropriateThemes.length)];
-    console.log(`🎲 Randomly selected theme: ${randomTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
     switchToTheme(randomTheme);
 }
 
@@ -554,12 +542,10 @@ function switchToRandomTheme(excludeTheme = null) {
     const availableOptions = appropriateThemes.filter(theme => theme !== (excludeTheme || currentTheme));
     
     if (availableOptions.length === 0) {
-        console.log('🎲 No other themes available for random selection');
         return;
     }
     
     const randomTheme = availableOptions[Math.floor(Math.random() * availableOptions.length)];
-    console.log(`🎲 Randomly switching to: ${randomTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
     switchToTheme(randomTheme);
 }
 
@@ -813,7 +799,6 @@ function detectBrowserTimezone() {
     try {
         // Use modern Intl.DateTimeFormat API for accurate timezone detection
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log(`🌍 Detected timezone: ${timezone}`);
         
         // Get current date to check DST status
         const now = new Date();
@@ -832,10 +817,6 @@ function detectBrowserTimezone() {
         const usesDST = janOffset !== julOffset;
         const standardOffset = Math.min(janOffset, julOffset); // Standard time is the smaller offset (more negative)
         
-        console.log(`📅 Current offset: UTC${currentOffset >= 0 ? '+' : ''}${currentOffset}`);
-        console.log(`❄️ Winter offset: UTC${janOffset >= 0 ? '+' : ''}${janOffset}`);
-        console.log(`☀️ Summer offset: UTC${julOffset >= 0 ? '+' : ''}${julOffset}`);
-        console.log(`🔄 Uses DST: ${usesDST ? 'Yes' : 'No'}`);
         
         // Find the best matching timezone in our data
         let bestMatch = 0;
@@ -873,12 +854,9 @@ function detectBrowserTimezone() {
             }
         }
         
-        console.log(`🎯 Best match: UTC${bestMatch >= 0 ? '+' : ''}${bestMatch} (score: ${bestScore})`);
-        console.log(`🕒 For EDT users: Detected offset should be -5 (EST standard) with current showing -4 (EDT active)`);
         return bestMatch;
         
     } catch (error) {
-        console.warn('⚠️ Timezone detection failed, falling back to offset calculation:', error);
         // Fallback to simple offset calculation
         return -new Date().getTimezoneOffset() / 60;
     }
@@ -982,10 +960,6 @@ function initTimezoneSlider() {
     // Update offset for backward compatibility
     updateCurrentTimezoneFromIndex();
     
-    console.log(`🌐 Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
-    console.log(`⏰ Detected offset: UTC${detectedOffset >= 0 ? '+' : ''}${detectedOffset}`);
-    console.log(`🎯 Selected timezone: ${timezones[closestIndex]?.name} (${exactMatch ? 'exact match' : 'closest match'})`);
-    console.log(`🎚️ Slider position: ${closestIndex}`);
     
     updateTimezoneDisplay();
     updateClock();
@@ -1169,7 +1143,6 @@ function initKeyboardShortcuts() {
                 const appropriateThemes = getMobileAppropriateThemes();
                 const otherThemes = appropriateThemes.filter(theme => theme !== currentTheme);
                 const nextTheme = otherThemes[Math.floor(Math.random() * otherThemes.length)];
-                console.log(`🎭 Switching from ${currentTheme.toUpperCase()} to ${nextTheme.toUpperCase()}${isMobileDevice ? ' (mobile-optimized)' : ''}`);
                 switchToTheme(nextTheme);
             }
         }
@@ -1207,7 +1180,6 @@ function detectMobileDevice() {
     
     if (isMobileDevice) {
         document.body.classList.add('mobile-device');
-        console.log('📱 Mobile device detected - applying simplified styles');
     }
     
     return isMobileDevice;
@@ -1293,13 +1265,11 @@ function msToMph(ms) {
 
 // Create weather ticker display
 function createWeatherTicker(weatherData, locationName) {
-    console.log('🎯 createWeatherTicker called - starting immediately');
     const weatherScroll = document.getElementById('weatherScroll');
     
     
     // Check if weatherScroll element exists
     if (!weatherScroll) {
-        console.error('❌ weatherScroll element not found in DOM');
         return;
     }
     
@@ -1395,11 +1365,8 @@ function createWeatherTicker(weatherData, locationName) {
         weatherScroll.appendChild(contentBlock);
     }
     
-    console.log('🎯 Weather ticker creation completed - should be visible now');
     
     // Debug: Check if elements were actually created
-    console.log('🔍 DEBUG: weatherScroll children count:', weatherScroll.children.length);
-    console.log('🔍 DEBUG: weatherScroll innerHTML length:', weatherScroll.innerHTML.length);
     
     // Check first few weather elements for visibility
     const firstWeatherDay = weatherScroll.querySelector('.weather-day');
@@ -1407,23 +1374,12 @@ function createWeatherTicker(weatherData, locationName) {
     
     if (firstWeatherDay) {
         const dayStyles = window.getComputedStyle(firstWeatherDay);
-        console.log('🔍 DEBUG: weather-day element found');
-        console.log('🔍 DEBUG: weather-day color:', dayStyles.color);
-        console.log('🔍 DEBUG: weather-day font-size:', dayStyles.fontSize);
-        console.log('🔍 DEBUG: weather-day display:', dayStyles.display);
-        console.log('🔍 DEBUG: weather-day visibility:', dayStyles.visibility);
-        console.log('🔍 DEBUG: weather-day opacity:', dayStyles.opacity);
     } else {
-        console.log('❌ DEBUG: No weather-day element found');
     }
     
     if (firstWeatherTemp) {
         const tempStyles = window.getComputedStyle(firstWeatherTemp);
-        console.log('🔍 DEBUG: weather-temp element found');
-        console.log('🔍 DEBUG: weather-temp color:', tempStyles.color);
-        console.log('🔍 DEBUG: weather-temp font-size:', tempStyles.fontSize);
     } else {
-        console.log('❌ DEBUG: No weather-temp element found');
     }
 }
 
@@ -1509,7 +1465,6 @@ async function getCoordinatesFromLocation(locationInput, apiKey) {
         };
         
     } catch (error) {
-        console.error('Geocoding error:', error);
         throw error;
     }
 }
@@ -1520,7 +1475,6 @@ async function fetchWeatherData(locationInput) {
     const API_KEY = weatherApiKey;
     
     try {
-        console.log(`🌡️ Connecting to OpenWeather API for location: ${locationInput}`);
         
         // First, get coordinates for the location using Geocoding API
         let coordinates;
@@ -1583,11 +1537,9 @@ async function fetchWeatherData(locationInput) {
             }
         };
         
-        console.log(`🌦️ Weather data successfully retrieved for: ${transformedData.name}`);
         return transformedData;
         
     } catch (error) {
-        console.error('❌ Weather API fetch failed:', error);
         throw new Error(`Weather data access denied: ${error.message}`);
     }
 }
@@ -1624,7 +1576,6 @@ function resetWeatherPanel() {
     if (weatherControls) weatherControls.classList.remove('hidden');
     if (cityInput) cityInput.value = '';
     
-    console.log('🌦️ Weather panel reset');
 }
 
 // Handle weather request with real API integration
@@ -1697,7 +1648,6 @@ async function handleWeatherRequest() {
             }
         }
     } catch (error) {
-        console.error('Weather API error:', error);
         if (weatherScroll) {
             weatherScroll.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
             // Error message shown in already visible ticker
@@ -1708,36 +1658,30 @@ async function handleWeatherRequest() {
 
 // Global click handler for theme-specific effects
 function handleGlobalClick(event) {
-    console.log('Global click detected! Current theme:', currentTheme);
     
     // Don't trigger on theme selector clicks
     if (event.target.closest('.theme-selector')) {
-        console.log('Theme selector clicked, ignoring');
         return;
     }
     
     // Don't trigger on timezone container clicks
     if (event.target.closest('.timezone-container')) {
-        console.log('Timezone panel clicked, ignoring');
         return;
     }
     
     // Don't trigger on weather interface clicks
     if (event.target.closest('.weather-container')) {
-        console.log('Weather interface clicked, ignoring');
         return;
     }
     
     // Don't trigger on weather search panel clicks
     if (event.target.closest('.city-input-container')) {
-        console.log('Weather search panel clicked, ignoring');
         return;
     }
     
     // Don't trigger on interactive elements (inputs, buttons, sliders)
     if (event.target.matches('input, button, select, textarea, [contenteditable]') || 
         event.target.closest('input, button, select, textarea, [contenteditable]')) {
-        console.log('Interactive element clicked, ignoring');
         return;
     }
     
@@ -1777,36 +1721,6 @@ function init() {
     // Add global click handler (global, not theme-specific)
     document.addEventListener('click', handleGlobalClick);
     
-    // Add enhanced console message with auto-detection info
-    const browserTZ = getBrowserTimezoneName();
-    const detectedOffset = detectBrowserTimezone();
-    
-    console.log(`
-    ⚡ MATRIX TEMPORAL INTERFACE ONLINE ⚡
-    ════════════════════════════════════════════════════════════════
-    Welcome to the Matrix. Reality is now under your control.
-    
-    🌐 AUTO-DETECTED TEMPORAL ZONE:
-    📍 ${browserTZ ? browserTZ.identifier : 'Unknown Sector'}
-    🔢 ${browserTZ ? browserTZ.short : 'N/A'}
-    ⏰ Temporal Offset: UTC${detectedOffset >= 0 ? '+' : ''}${detectedOffset}
-    
-    🔋 SYSTEM CAPABILITIES:
-    🤖 Automatic gesbemailraphical temporal detection
-    🌞 Full seasonal time adjustment algorithms
-    🔄 Real-time temporal zone calculations
-    🌏 35+ global temporal regions supported
-    🏠 Local temporal zone indicator
-    🌡️ Weather data interface access
-    
-    ⚡ INTERFACE CONTROLS:
-    • Adjust the temporal zone control
-    • Ctrl+C to exit the Matrix
-    • Arrow keys for system calibration
-    • Click interface for system reset
-    
-    💊 Choose your pill wisely. There is no spoon. 💊
-    `);
 }
 
 // Add Matrix shake animation to CSS dynamically

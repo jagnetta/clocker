@@ -2,23 +2,23 @@
 /* Authentic HomestarRunner.com sbemail experience */
 
 /* Import authentic 1970s chunky robot computer fonts */
-@import url('https://fonts.gosbemailleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700;900&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700;900&family=VT323&display=swap');
 
 /* Note: Removed problematic external fonts that were causing 404 errors.
    Theme will use Gosbemaille Fonts (Press Start 2P, Orbitron, VT323) and fallback fonts.
    This provides authentic retro computer appearance without loading errors. */
 
-/* Compy 386 Computer Container */
+/* Compy 386 Computer Container - Authentic Beige Monitor Housing */
 .sbemail-terminal-window {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 800px;
-    height: 600px;
-    max-width: 90vw;
-    max-height: 85vh;
-    background: linear-gradient(135deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%);
+    width: 66.5vw;
+    height: 73vh;
+    max-width: 980px;
+    max-height: 750px;
+    background: #d4d4aa;
     border-radius: 0;
     border: 8px solid #8b8b6b;
     box-shadow: 
@@ -50,65 +50,19 @@
     }
 }
 
-/* Compy 386 Header (Monitor Bezel) */
+/* Compy 386 Header (Monitor Bezel) - Authentic Beige */
 .sbemail-terminal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 40px;
-    background: linear-gradient(180deg, #a8a888 0%, #8b8b6b 100%);
+    background: #d4d4aa;
     border-bottom: 3px solid #6b6b4b;
     padding: 0 15px;
     user-select: none;
     position: relative;
 }
 
-.sbemail-terminal-header::after {
-    content: '';
-    position: absolute;
-    top: 8px;
-    right: 15px;
-    width: 24px;
-    height: 24px;
-    background: linear-gradient(
-        135deg,
-        #ff0000 0%,   /* Red */
-        #ff8800 14%,  /* Orange */
-        #ffff00 28%,  /* Yellow */
-        #88ff00 42%,  /* Light Green */
-        #00ff00 57%,  /* Green */
-        #00ffff 71%,  /* Cyan */
-        #0088ff 85%,  /* Blue */
-        #8800ff 100%  /* Purple */
-    );
-    clip-path: polygon(
-        50% 0%,
-        61% 35%,
-        98% 35%,
-        68% 57%,
-        79% 91%,
-        50% 70%,
-        21% 91%,
-        32% 57%,
-        2% 35%,
-        39% 35%
-    );
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-.sbemail-terminal-header::before {
-    content: '';
-    position: absolute;
-    top: 13px;
-    right: 22px;
-    width: 7px;
-    height: 7px;
-    background: #a8a888;
-    border-radius: 50% 0 50% 50%;
-    transform: rotate(-45deg);
-    box-shadow: inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
 
 /* Header Text Section - Horizontal Layout */
 .sbemail-header-text {
@@ -121,7 +75,7 @@
 
 .sbemail-terminal-title {
     color: #2a2a2a;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     font-family: 'Arial Black', Arial, sans-serif;
@@ -131,7 +85,7 @@
 .sbemail-status-text {
     color: #2a2a2a;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 15px;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
 }
 
@@ -160,7 +114,6 @@
     border-radius: 50%;
     position: relative;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .sbemail-btn-close {
@@ -182,22 +135,24 @@
 
 .sbemail-terminal-title {
     color: #2a2a2a;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     letter-spacing: 2px;
     font-family: 'Arial Black', Arial, sans-serif;
 }
 
-/* Compy 386 Screen */
+/* Compy 386 Screen - ADJUSTED TO NOT COVER RED FOOTER */
 .sbemail-terminal-body {
     display: flex;
-    height: calc(100% - 40px - 30px);
+    height: calc(100% - 40px - 80px);
     background: #000000;
     position: relative;
     border: 4px solid #333333;
+    border-bottom: none;
     border-radius: 4px;
     margin: 8px;
+    overflow: hidden;
     box-shadow: 
         inset 2px 2px 4px rgba(0, 0, 0, 0.8),
         inset -1px -1px 2px rgba(255, 255, 255, 0.1);
@@ -238,9 +193,9 @@
     color: #00ff00;
     font-size: 18px;
     line-height: 1.4;
-    overflow-y: hidden;
+    overflow-y: auto;
     overflow-x: hidden;
-    max-height: calc(100% - 30px);
+    max-height: calc(100% - 10px);
     position: relative;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     font-weight: normal;
@@ -265,6 +220,25 @@
 .sbemail-terminal-content > * {
     position: relative;
     z-index: 5;
+}
+
+/* Ensure first element starts at the very top */
+.sbemail-terminal-content > *:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Prevent layout shifts when elements are added */
+.sbemail-terminal-content > * {
+    margin-bottom: 8px;
+}
+
+.sbemail-clock-display {
+    margin: 30px 0;
+}
+
+.sbemail-weather-search {
+    margin: 20px 0;
 }
 
 /* Removed CRT diagonal scan line */
@@ -307,7 +281,7 @@
     white-space: nowrap;
     overflow: hidden;
     position: relative;
-    font-size: 20px;
+    font-size: 25px;
 }
 
 .sbemail-startup-line.ready-for-input::after {
@@ -357,9 +331,8 @@
 /* Compy 386 Clock Display */
 .sbemail-clock-display {
     text-align: center;
-    margin: 30px 0;
-    opacity: 0;
-    transition: opacity 1s ease;
+    margin: 15px 0 10px 0;
+    opacity: 1;
     border: 2px solid #00ff00;
     padding: 16px;
     background: rgba(0, 255, 0, 0.05);
@@ -383,18 +356,18 @@
 }
 
 .sbemail-clock-day {
-    font-size: 28px;
+    font-size: 47.5px;
     color: #00ff00;
     text-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
 }
 
 .sbemail-clock-date {
-    font-size: 22px;
+    font-size: 37.5px;
     color: #00ff00;
 }
 
 .sbemail-clock-time {
-    font-size: 24px;
+    font-size: 40px;
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     letter-spacing: 2px;
@@ -408,13 +381,62 @@
 
 /* SBEMAIL Weather Search Interface */
 .sbemail-weather-search {
-    margin: 20px 0;
-    padding: 15px;
+    margin: 5px 0 10px 0;
+    padding: 12px;
     border: 2px solid #00ff00;
     background: rgba(0, 255, 0, 0.05);
     border-radius: 8px;
     position: relative;
     z-index: 10;
+}
+
+/* Inline weather search elements for terminal lines */
+.sbemail-inline-input {
+    background: transparent;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 4px 8px;
+    font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 20px;
+    margin-left: 10px;
+    width: 200px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.sbemail-inline-input:focus {
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+    border-color: #00ff00;
+}
+
+.sbemail-inline-input::placeholder {
+    color: rgba(0, 255, 0, 0.6);
+}
+
+.sbemail-inline-button {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 4px 12px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-size: 17.5px;
+    border-radius: 2px;
+}
+
+.sbemail-inline-button:hover {
+    background: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+}
+
+.sbemail-inline-ticker {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 600px;
+    color: #00ff00;
+    font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
 }
 
 .sbemail-input-container {
@@ -427,7 +449,7 @@
 .sbemail-input-prefix {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-right: 5px;
     text-shadow: 1px 1px 0 #004400;
 }
@@ -437,7 +459,7 @@
     border: 1px solid #00ff00;
     color: #00ff00;
     font-family: 'VT323', monospace;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     outline: none;
     padding: 4px 8px;
     text-shadow: 1px 1px 0 #004400;
@@ -462,7 +484,7 @@
 .sbemail-search-prompt {
     color: #00ff00;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
-    font-size: 1.1rem;
+    font-size: 1.375rem;
     white-space: nowrap;
     margin-right: 10px;
     text-shadow: 1px 1px 0 #004400, 0 0 8px rgba(0, 255, 0, 0.8);
@@ -472,9 +494,9 @@
     width: 70%;
     padding: 8px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
-    font-size: 16px;
-    background: #000000;
-    color: #00ff00;
+    font-size: 20px;
+    background: #000000 !important;
+    color: #00ff00 !important;
     border: 2px solid #00ff00;
     border-radius: 4px;
     outline: none;
@@ -485,6 +507,18 @@
 .sbemail-search-input:focus {
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     border-color: #00ffff;
+    background: #000000 !important;
+    color: #00ff00 !important;
+}
+
+.sbemail-search-input:hover {
+    background: #000000 !important;
+    color: #00ff00 !important;
+}
+
+.sbemail-search-input:active {
+    background: #000000 !important;
+    color: #00ff00 !important;
 }
 
 .sbemail-search-input::placeholder {
@@ -495,7 +529,7 @@
 .sbemail-search-button {
     padding: 6px 12px;
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
-    font-size: 1.1rem;
+    font-size: 1.375rem;
     background: #006600;
     color: #00ff00;
     border: 2px solid #00ff00;
@@ -503,7 +537,6 @@
     cursor: pointer;
     text-shadow: 1px 1px 0 #004400, 0 0 5px rgba(0, 255, 0, 0.6);
     white-space: nowrap;
-    transition: all 0.3s ease;
 }
 
 .sbemail-search-button:hover {
@@ -527,6 +560,8 @@
     box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
+/* SBEMAIL ticker content should NOT have its own animation - contained scrolling only */
+
 .sbemail-ticker-container {
     display: flex;
     align-items: center;
@@ -536,7 +571,7 @@
 .sbemail-ticker-label {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.1rem;
+    font-size: 1.375rem;
     text-shadow: 1px 1px 0 #004400;
     white-space: nowrap;
     flex-shrink: 0;
@@ -561,6 +596,7 @@
     display: flex;
     align-items: center;
     position: relative;
+    /* Container should contain the scrolling animation, not move itself */
 }
 
 .sbemail-ticker-scroll {
@@ -625,7 +661,7 @@
 .sbemail-timezone-display {
     font-family: 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-top: 3px;
     text-shadow: 1px 1px 0 #004400;
 }
@@ -656,21 +692,108 @@
     scrollbar-width: none;
 }
 
-/* Hide the fake scrollbar element */
+/* Terminal scrollbar element - completely removed */
 .sbemail-terminal-scrollbar {
     display: none;
 }
 
-/* Compy 386 Footer */
+/* Compy 386 Footer - Control Panel with Theme Buttons */
 .sbemail-terminal-footer {
-    height: 30px;
-    background: linear-gradient(180deg, #a8a888 0%, #8b8b6b 100%);
+    height: 80px;
+    background: #d4d4aa;
     border-top: 2px solid #6b6b4b;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px;
-    font-size: 16px;
+    padding: 0 20px 0 20px;
+    font-size: 20px;
+    overflow: visible;
+}
+
+/* Compy 386 Theme Control Buttons */
+.sbemail-theme-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    height: 100%;
+}
+
+.sbemail-control-button {
+    background: linear-gradient(145deg, #d4d4aa 0%, #b8b894 50%, #9c9c82 100%);
+    border: 3px solid #8b8b6b;
+    border-radius: 4px;
+    color: #2a2a2a;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    box-shadow: 
+        inset -2px -2px 4px rgba(0, 0, 0, 0.25),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+    user-select: none;
+    min-width: 80px;
+    text-align: left;
+    text-transform: uppercase;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    transform: translateY(-8px);
+}
+
+.sbemail-control-button:hover {
+    background: linear-gradient(145deg, #dcdcb2 0%, #c0c09c 50%, #a4a48a 100%);
+    border-color: #939373;
+    box-shadow: 
+        inset -2px -2px 4px rgba(0, 0, 0, 0.15),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.sbemail-control-button:active {
+    transform: translateY(-8px) scale(0.98);
+    box-shadow: 
+        inset -4px -4px 8px rgba(0, 0, 0, 0.4),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.5),
+        0 0 2px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #b8b894 0%, #9c9c82 50%, #808070 100%);
+}
+
+/* LED Light for buttons */
+.sbemail-control-button::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333333;
+    border: 1px solid #666666;
+    margin-left: 8px;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Active button - green LED */
+.sbemail-control-button.active::after {
+    background: radial-gradient(circle at 30% 30%, #00ff00, #008800);
+    border: 1px solid #00aa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #00ff00,
+        0 0 12px rgba(0, 255, 0, 0.8);
+}
+
+/* Shutdown button - red LED */
+.sbemail-control-button.shutdown::after {
+    background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
+    border: 1px solid #aa0000;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ff0000,
+        0 0 12px rgba(255, 0, 0, 0.8);
 }
 
 .sbemail-status-text {
@@ -683,13 +806,13 @@
     color: #000000;
     font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 15px;
     text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.8);
-    padding: 3px 8px;
+    padding: 2px 6px;
     border-radius: 3px;
     border: 1px solid rgba(0, 0, 0, 0.3);
-    max-width: 300px;
+    max-width: 200px;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -992,14 +1115,14 @@ body.sbemail-theme::after {
 }
 
 body.sbemail-theme .sbemail-terminal-window {
-    z-index: 1001;
+    z-index: 2000;
 }
 
 /* SBEMAIL Theme Weather Styling */
 .sbemail-theme .weather-day {
     font-family: 'Westminster', 'Press Start 2P', 'VT323', monospace;
     color: #00ff00;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     text-shadow: 
         1px 1px 0 #004400,
         2px 2px 2px rgba(0, 0, 0, 0.8);
@@ -1054,7 +1177,7 @@ body.sbemail-theme .sbemail-terminal-window {
     color: #00ff00;
     border: 2px solid #00ff00;
     border-radius: 0;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 .sbemail-theme .weather-button {
@@ -1116,7 +1239,8 @@ body.sbemail-theme .sbemail-terminal-window {
 
 /* Hide other theme elements when SBEMAIL is active */
 body.sbemail-theme .clock-container,
-body.sbemail-theme .timezone-container {
+body.sbemail-theme .timezone-container,
+body.sbemail-theme .theme-switch {
     display: none !important;
 }
 
@@ -1131,41 +1255,30 @@ body.sbemail-theme .weather-container {
     overflow: hidden !important;
 }
 
-/* Responsive Design - Scale down to avoid theme switcher conflicts */
-@media (max-width: 1200px) {
-    .sbemail-terminal-window {
-        width: 700px;
-        height: 525px;
-        max-width: 85vw;
-        max-height: 80vh;
-    }
-}
+/* Responsive Design */
 
 @media (max-width: 900px) {
     .sbemail-terminal-window {
-        width: 600px;
-        height: 450px;
-        max-width: 90vw;
-        max-height: 75vh;
-        top: 45%;
+        width: 90vw;
+        height: 70vh;
+        max-width: 600px;
+        max-height: 400px;
     }
     
-    .sbemail-clock-day { font-size: 20px; }
-    .sbemail-clock-date { font-size: 16px; }
-    .sbemail-clock-time { font-size: 18px; }
+    .sbemail-clock-day { font-size: 25px; }
+    .sbemail-clock-date { font-size: 20px; }
+    .sbemail-clock-time { font-size: 22.5px; }
     
     .sbemail-terminal-content {
-        padding: 10px;
-        font-size: 16px;
+        padding: 0 10px 10px 10px;
+        font-size: 20px;
     }
 }
 
 @media (max-width: 600px) {
     .sbemail-terminal-window {
         width: 95vw;
-        height: 70vh;
-        max-height: 70vh;
-        top: 40%;
+        height: 80vh;
     }
     
     .sbemail-terminal-header {
@@ -1174,7 +1287,7 @@ body.sbemail-theme .weather-container {
     }
     
     .sbemail-terminal-title {
-        font-size: 11px;
+        font-size: 13.75px;
     }
     
     .sbemail-btn {
@@ -1184,7 +1297,7 @@ body.sbemail-theme .weather-container {
     
     .sbemail-terminal-footer {
         height: 20px;
-        font-size: 10px;
+        font-size: 12.5px;
     }
     
     /* Hide weather search panel on mobile for cleaner SBEMAIL experience */
@@ -1195,25 +1308,23 @@ body.sbemail-theme .weather-container {
 }
 
 /* ================================
-   RAINBOW STAR LOGO (Compy 386 Brand Mark)
-   Classic rainbow star with bite - homage to vintage computer logos
+   FOOTER RAINBOW STAR LOGO (Compy 386 Brand Mark)
+   Apple Computer inspired rainbow star with bite on right side
    ================================ */
 
-.sbemail-rainbow-star {
+.sbemail-footer-logo {
     position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
+    transform: translateY(-8px);
     background: linear-gradient(
-        135deg,
-        #ff0000 0%,   /* Red */
-        #ff8800 14%,  /* Orange */
-        #ffff00 28%,  /* Yellow */
-        #88ff00 42%,  /* Light Green */
-        #00ff00 57%,  /* Green */
-        #00ffff 71%,  /* Cyan */
-        #0088ff 85%,  /* Blue */
-        #8800ff 100%  /* Purple */
+        -5deg,
+        #00ff00 0%,    /* Green at top */
+        #ffff00 20%,   /* Yellow */
+        #ff8800 40%,   /* Orange */  
+        #ff0000 60%,   /* Red */
+        #8b00ff 80%,   /* Purple */
+        #0088ff 100%   /* Blue at bottom */
     );
     clip-path: polygon(
         50% 0%,
@@ -1227,30 +1338,31 @@ body.sbemail-theme .weather-container {
         2% 35%,
         39% 35%
     );
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+    box-shadow: 
+        /* Raised dome effect with multiple shadows */
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        /* Inner highlight for dome effect */
+        inset -1px -1px 2px rgba(0, 0, 0, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+        /* Subtle outer glow */
+        0 0 8px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
 }
 
-.sbemail-rainbow-star::after {
+/* Apple-style bite mark on right side */
+.sbemail-footer-logo::after {
     content: '';
     position: absolute;
     top: 20%;
-    right: 15%;
-    width: 12px;
-    height: 12px;
-    background: #d4d4aa;
-    border-radius: 50% 0 50% 50%;
-    transform: rotate(-45deg);
-    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.sbemail-rainbow-star-small {
+    right: 0%;
     width: 24px;
     height: 24px;
-}
-
-.sbemail-rainbow-star-small::after {
-    width: 7px;
-    height: 7px;
+    background: #d4d4aa;
+    border-radius: 50%;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 1;
 }
 
 /* ================================

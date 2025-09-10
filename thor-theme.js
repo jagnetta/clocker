@@ -12,7 +12,6 @@ let thorEffectsInterval;
  * This function can be called from external scripts to activate Thor theme
  */
 function initThorTheme() {
-    console.log('🔨 Initializing Thor theme...');
     
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'thor';
@@ -25,7 +24,6 @@ function initThorTheme() {
     // Update Thor-specific labels
     updateThorLabels();
     
-    console.log('🔨 THOR THEME ACTIVATED - FOR ASGARD! 🔨');
 }
 
 /**
@@ -108,7 +106,6 @@ function switchToThorTheme() {
         updateThemeLabels();
     }
     
-    console.log('🔨 THOR THEME ACTIVATED - FOR ASGARD! 🔨');
 }
 
 /**
@@ -300,7 +297,6 @@ function createLightningFlash(clickX, clickY) {
  * Create Mjolnir strike effect
  */
 function createMjolnirStrike(clickX, clickY) {
-    console.log('Mjolnir answers the call...', clickX, clickY);
     
     const mjolnir = document.createElement('div');
     mjolnir.className = 'mjolnir-strike';
@@ -402,7 +398,6 @@ function createMjolnirStrike(clickX, clickY) {
  * Create Loki mischief effect
  */
 function createLokiTrick(clickX, clickY) {
-    console.log('Loki weaves his mischief...', clickX, clickY);
     
     // Create multiple illusion effects
     const numberOfIllusions = 3 + Math.floor(Math.random() * 4); // 3-6 illusions
@@ -549,16 +544,13 @@ function createLokiShapeshift(clickX, clickY) {
 function handleThorClick(clickX, clickY) {
     const randomValue = Math.random();
     if (randomValue < 0.25) {
-        console.log('Loki causes mischief...');
         // Note: createLokiTrick function would need to be implemented or imported
         if (typeof createLokiTrick === 'function') {
             createLokiTrick(clickX, clickY);
         }
     } else if (randomValue < 0.30) {
-        console.log('Mjolnir strikes...');
         createMjolnirStrike(clickX, clickY);
     } else {
-        console.log('Triggering Thor lightning');
         createLightningFlash(clickX, clickY);
     }
 }
@@ -568,7 +560,6 @@ function handleThorClick(clickX, clickY) {
  * Call this when switching away from Thor theme
  */
 function cleanupThorEffects() {
-    console.log('🧹 Starting Thor theme cleanup...');
     
     if (thorEffectsInterval) {
         clearInterval(thorEffectsInterval);
@@ -603,7 +594,6 @@ function cleanupThorEffects() {
         thorBg.removeAttribute('style');
     }
     
-    console.log('✅ Thor theme cleanup complete');
 }
 
 /**

@@ -13,7 +13,6 @@ let matrixParticles = [];
  * This is the main entry point for the Matrix theme
  */
 function initMatrixTheme() {
-    console.log('⚡ Initializing Matrix theme...');
     
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'matrix';
@@ -28,7 +27,6 @@ function initMatrixTheme() {
     // Update labels to Matrix theme
     updateMatrixLabels();
     
-    console.log('⚡ MATRIX THEME ACTIVATED ⚡');
 }
 
 /**
@@ -83,7 +81,6 @@ function switchToMatrixTheme() {
     // Update labels
     updateMatrixLabels();
     
-    console.log('⚡ MATRIX INTERFACE ACTIVATED ⚡');
 }
 
 /**
@@ -283,7 +280,6 @@ function createWhiteRabbit(clickX, clickY) {
 function initMatrixSpecialClick() {
     // Matrix click events are handled by the global click system
     // This function exists to maintain consistency with the init pattern
-    console.log('⚡ Matrix special click events initialized');
 }
 
 /**
@@ -417,10 +413,8 @@ function animatePillStraight(pill) {
 function handleMatrixClick(clickX, clickY) {
     const randomValue = Math.random();
     if (randomValue < 0.10) {
-        console.log('Matrix click detected - creating white rabbit');
         createWhiteRabbit(clickX, clickY);
     } else {
-        console.log('Matrix click detected - creating red/blue pill effect');
         createMatrixPills(clickX, clickY);
     }
 }
@@ -429,7 +423,6 @@ function handleMatrixClick(clickX, clickY) {
  * Clean up Matrix effects completely
  */
 function cleanupMatrixTheme() {
-    console.log('🧹 Starting Matrix theme cleanup...');
     
     // Clear ALL Matrix intervals
     if (matrixKanjiInterval) {
@@ -541,7 +534,6 @@ function cleanupMatrixTheme() {
         }
     });
     
-    console.log('✅ Matrix theme cleanup complete');
 }
 
 // Export functions for module usage

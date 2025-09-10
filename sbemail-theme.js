@@ -5,20 +5,22 @@ let sbemailTerminalInterval = null;
 let sbemailStartTime = null;
 let sbemailStarsInterval = null;
 let sbemailClickHandler = null;
+let sbemailRestartHandler = null;
+let sbemailTickerProtected = false; // Flag to protect the precious weather ticker
+
+// Simple terminal scroll - just scroll to bottom like any terminal
+function smoothScrollTerminal() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    
+    if (terminalContent) {
+        // Simple scroll to bottom - like pressing Enter in a terminal
+        terminalContent.scrollTop = terminalContent.scrollHeight - terminalContent.clientHeight;
+    }
+}
 
 // Auto-scroll to show weather widget in Compy 386 screen
 function scrollToWeatherWidget() {
-    const terminalContent = document.getElementById('sbemailTerminalContent');
-    const weatherSearch = document.getElementById('sbemailWeatherSearch');
-    
-    if (terminalContent && weatherSearch) {
-        // Smooth scroll to show the weather widget
-        weatherSearch.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end',
-            inline: 'nearest'
-        });
-    }
+    smoothScrollTerminal();
 }
 
 // Retro computer phrases for the fourth startup line
@@ -52,16 +54,12 @@ function getRandomStartupPhrase() {
 
 // Initialize Strong Bad's Compy 386 Theme
 function initSBEMAILTheme() {
-    console.log('📧 Initializing Strong Bad\'s Compy 386 theme');
     
     // Record theme start time
     sbemailStartTime = Date.now();
     
     // Create Compy 386 computer
     createCompy386();
-    
-    // Start Compy clock updates
-    startCompyClock();
     
     // Add sbemail-specific keyboard handlers
     addSbemailKeyboardHandlers();
@@ -72,12 +70,10 @@ function initSBEMAILTheme() {
     // Add boxing gloves click handler
     addBoxingGlovesHandler();
     
-    console.log('📧 Strong Bad\'s Compy 386 theme initialized');
 }
 
 // Cleanup Strong Bad's Compy 386 Theme - Complete cleanup
 function cleanupSBEMAILTheme() {
-    console.log('📧 Powering down Strong Bad\'s Compy 386...');
     
     // Clear Compy update interval
     if (sbemailTerminalInterval) {
@@ -119,7 +115,6 @@ function cleanupSBEMAILTheme() {
     sbemailStarsInterval = null;
     sbemailClickHandler = null;
     
-    console.log('✅ Strong Bad\'s Compy 386 powered down completely');
 }
 
 // Create Strong Bad's Compy 386
@@ -138,43 +133,28 @@ function createCompy386() {
             </div>
             <div class="sbemail-terminal-body">
                 <div class="sbemail-terminal-content" id="sbemailTerminalContent">
-                    <div class="sbemail-terminal-startup">
-                        <div class="sbemail-startup-line" id="initialPrompt">A:\\> </div>
-                        <div class="sbemail-startup-line" id="newPrompt" style="display: none;">A:\\SBEMAIL_CLOCK> </div>
-                        <div class="sbemail-startup-line sbemail-startup-delay-1" id="loadingMsg" style="display: none;">Loading Strong Bad's Temporal Interface...</div>
-                        <div class="sbemail-startup-line sbemail-startup-delay-2" id="virusMsg" style="display: none;">Scanning for The Cheat viruses... NONE FOUND</div>
-                        <div class="sbemail-startup-line sbemail-startup-delay-3" id="emailMsg" style="display: none;">Checking email... 0 new messages</div>
-                        <div class="sbemail-startup-line sbemail-startup-delay-4" id="readyMsg" style="display: none;">${getRandomStartupPhrase()}</div>
-                    </div>
-                    <div class="sbemail-clock-display" id="sbemailClockDisplay">
-                        <div class="sbemail-timezone-control">
-                            <label class="sbemail-timezone-label">TIMEZONE: <span id="sbemailTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
-                            <input type="range" id="sbemailTimezoneSlider" class="sbemail-timezone-slider" min="0" max="38" value="0" step="1">
-                        </div>
-                        <div class="sbemail-clock-day" id="sbemailClockDay"></div>
-                        <div class="sbemail-clock-date" id="sbemailClockDate"></div>
-                        <div class="sbemail-clock-time" id="sbemailClockTime"></div>
-                    </div>
-                    <div class="sbemail-weather-search" id="sbemailWeatherSearch" style="display: none;">
-                        <div class="sbemail-input-container">
-                            <span class="sbemail-search-prompt">WEATHER SEARCH:</span>
-                            <input type="text" class="sbemail-search-input" id="sbemailSearchInput" placeholder="ENTER CITY NAME">
-                            <button class="sbemail-search-button" id="sbemailSearchButton">SEARCH</button>
-                        </div>
-                        <div class="sbemail-weather-ticker" id="sbemailWeatherTicker" style="display: none;">
-                            <div class="sbemail-ticker-container">
-                                <span class="sbemail-ticker-label">WEATHER DATA:</span>
-                                <div class="sbemail-ticker-content" id="sbemailTickerContent">NO DATA LOADED</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="sbemail-terminal-scrollbar">
-                    <div class="sbemail-scrollbar-thumb"></div>
+                    <!-- Terminal starts completely empty - all content added line by line -->
                 </div>
             </div>
             <div class="sbemail-terminal-footer">
-                <!-- Footer area -->
+                <div class="sbemail-theme-controls">
+                    <button class="sbemail-control-button theme-btn" data-theme="matrix">
+                        <span>MATRIX</span>
+                    </button>
+                    <button class="sbemail-control-button theme-btn" data-theme="lcars">
+                        <span>LCARS</span>
+                    </button>
+                    <button class="sbemail-control-button theme-btn" data-theme="thor">
+                        <span>THOR</span>
+                    </button>
+                    <button class="sbemail-control-button theme-btn active" data-theme="sbemail">
+                        <span>SBEMAIL</span>
+                    </button>
+                    <button class="sbemail-control-button theme-btn" data-theme="linux">
+                        <span>LINUX</span>
+                    </button>
+                </div>
+                <div class="sbemail-footer-logo"></div>
             </div>
         </div>
     `;
@@ -182,33 +162,171 @@ function createCompy386() {
     // Add Compy 386 to document
     document.body.insertAdjacentHTML('beforeend', compyHTML);
     
+    // Add theme control button event listeners
+    addThemeControlListeners();
+    
     // Start the authentic terminal sequence
     setTimeout(() => {
         startTerminalSequence();
     }, 1000);
 }
 
-// Start authentic terminal sequence with A:\ prompt and DOS navigation
-function startTerminalSequence() {
-    // Show A:\> prompt immediately with blinking cursor
-    const initialPrompt = document.getElementById('initialPrompt');
-    if (initialPrompt) {
-        initialPrompt.style.opacity = '1';
-        initialPrompt.classList.add('ready-for-input');
-    }
+// Add theme control button event listeners
+function addThemeControlListeners() {
+    const themeButtons = document.querySelectorAll('.sbemail-control-button.theme-btn');
     
-    // Let scanlines run for about 8-10 seconds (1-2 cycles at 4.2s each) while cursor blinks
-    setTimeout(() => {
-        // Remove cursor and start the DOS typing sequence
-        if (initialPrompt) {
-            initialPrompt.classList.remove('ready-for-input');
-        }
-        // Start the DOS startup sequence
-        showDOSStartup();
-    }, 8400); // About 2 scanner cycles
+    themeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const themeName = button.dataset.theme;
+            
+            // Update LED states - turn off all, turn on clicked
+            themeButtons.forEach(btn => {
+                btn.classList.remove('active', 'shutdown');
+            });
+            button.classList.add('active');
+            
+            // Switch to the selected theme if not SBEMAIL
+            if (themeName !== 'sbemail') {
+                // Call the core theme switching function
+                if (window.switchTheme) {
+                    window.switchTheme(themeName);
+                } else if (window.changeTheme) {
+                    window.changeTheme(themeName);
+                }
+            }
+        });
+    });
 }
 
-// Simulate typing with realistic delays - append to existing prompt
+// Start authentic terminal sequence with A:\ prompt and DOS navigation
+function startTerminalSequence() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    
+    if (!terminalContent) {
+        return;
+    }
+    
+    // Add the A:\> prompt line
+    const promptLine = document.createElement('div');
+    promptLine.className = 'sbemail-startup-line';
+    promptLine.id = 'initialPrompt';
+    promptLine.style.opacity = '1';
+    promptLine.style.color = '#00ff00';
+    promptLine.style.fontSize = '25px';
+    promptLine.style.lineHeight = '1.4';
+    promptLine.style.marginBottom = '8px';
+    promptLine.textContent = 'A:\\> ';
+    promptLine.classList.add('ready-for-input');
+    
+    terminalContent.appendChild(promptLine);
+    
+    // Let cursor blink for a few seconds before typing command
+    setTimeout(() => {
+        // Remove cursor and start the DOS typing sequence
+        promptLine.classList.remove('ready-for-input');
+        // Start the DOS startup sequence
+        showDOSStartup();
+    }, 3000); // 3 seconds for cursor to blink
+}
+
+// Fast computer response typing (for Compy output)
+function typeCompyResponse(element, text, callback, typingSpeed = 6) {
+    if (!element) {
+        if (callback) callback();
+        return;
+    }
+    
+    let i = 0;
+    
+    const typeNextChar = () => {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            
+            // Fast computer typing with slight variation
+            const delay = typingSpeed + (Math.random() * 15 - 7);
+            setTimeout(typeNextChar, delay);
+        } else {
+            if (callback) callback();
+        }
+    };
+    
+    typeNextChar();
+}
+
+// Boxing gloves typing (for Strong Bad commands) with typos and backspaces
+function typeStrongBadCommand(element, text, callback, baseSpeed = 180) {
+    if (!element) {
+        if (callback) callback();
+        return;
+    }
+    
+    const basePrompt = element.textContent; // Keep existing prompt content
+    let currentText = '';
+    let targetIndex = 0;
+    
+    const typeNextAction = () => {
+        if (targetIndex < text.length) {
+            const char = text.charAt(targetIndex);
+            
+            // 15% chance of making a typo (but not on first character)
+            const shouldMakeTypo = targetIndex > 0 && Math.random() < 0.15;
+            
+            if (shouldMakeTypo) {
+                // Type a wrong character first
+                const wrongChars = 'qwertyuiopasdfghjklzxcvbnm';
+                const wrongChar = wrongChars.charAt(Math.floor(Math.random() * wrongChars.length));
+                currentText += wrongChar;
+                element.textContent = basePrompt + currentText;
+                
+                // Pause when Strong Bad realizes the mistake (300-800ms)
+                const realizationPause = 300 + Math.random() * 500;
+                setTimeout(() => {
+                    // Backspace to remove the wrong character
+                    currentText = currentText.slice(0, -1);
+                    element.textContent = basePrompt + currentText;
+                    
+                    // Brief pause after backspace (100-200ms)
+                    setTimeout(() => {
+                        // Now type the correct character
+                        currentText += char;
+                        element.textContent = basePrompt + currentText;
+                        targetIndex++;
+                        
+                        // Continue after correction
+                        const nextDelay = baseSpeed + (Math.random() * 100 - 50);
+                        setTimeout(typeNextAction, nextDelay);
+                    }, 100 + Math.random() * 100);
+                }, realizationPause);
+            } else {
+                // Type the correct character
+                currentText += char;
+                element.textContent = basePrompt + currentText;
+                targetIndex++;
+                
+                // Variable typing speed with occasional long pauses (boxing gloves!)
+                let delay = baseSpeed + (Math.random() * 120 - 60);
+                
+                // 10% chance of a longer pause (struggling with gloves)
+                if (Math.random() < 0.1) {
+                    delay += 200 + Math.random() * 300;
+                }
+                
+                setTimeout(typeNextAction, delay);
+            }
+        } else {
+            // Finished typing command
+            setTimeout(() => {
+                if (callback) callback();
+            }, 200);
+        }
+    };
+    
+    typeNextAction();
+}
+
+// Regular human typing (for non-Strong Bad input)
 function typeText(element, text, callback, typingSpeed = 80) {
     if (!element) {
         if (callback) callback();
@@ -239,100 +357,314 @@ function typeText(element, text, callback, typingSpeed = 80) {
 
 // Simulate DOS startup sequence with typing
 function showDOSStartup() {
-    // Step 1: Type "cd sbemail_clock" command on the existing A:\> prompt
+    const terminalContent = document.getElementById('sbemailTerminalContent');
     const initialPrompt = document.getElementById('initialPrompt');
     
-    typeText(initialPrompt, 'cd sbemail_clock', () => {
+    if (!terminalContent || !initialPrompt) {
+        return;
+    }
+    
+    // Step 1: Strong Bad types "cd sbemail_clock" command with boxing gloves
+    typeStrongBadCommand(initialPrompt, 'cd sbemail_clock', () => {
         // Step 2: Add new line and show new prompt A:\SBEMAIL_CLOCK>
         setTimeout(() => {
-            const newPrompt = document.getElementById('newPrompt');
-            newPrompt.style.display = 'block';
+            const newPrompt = document.createElement('div');
+            newPrompt.className = 'sbemail-startup-line';
+            newPrompt.id = 'newPrompt';
             newPrompt.style.opacity = '1';
+            newPrompt.style.color = '#00ff00';
+            newPrompt.textContent = 'A:\\SBEMAIL_CLOCK> ';
             newPrompt.classList.add('ready-for-input');
+            terminalContent.appendChild(newPrompt);
             
             // Step 3: After brief pause, type exe command on new prompt
             setTimeout(() => {
                 newPrompt.classList.remove('ready-for-input');
                 
-                typeText(newPrompt, 'sbemail_clock.exe', () => {
-                    // Step 4: Start prsbemailram output
+                typeStrongBadCommand(newPrompt, 'sbemail_clock.exe', () => {
+                    // Step 4: Start program output (clock will start after screen clear)
                     showProgramOutput();
-                }, 70);
+                });
                 
             }, 1000); // 1 second pause at new prompt
         }, 300); // Brief pause after cd command
-    }, 90); // Slightly slower typing for cd command
+    }); // Strong Bad typing with boxing gloves
 }
 
 // Show prsbemailram output lines one at a time
 function showProgramOutput() {
-    const outputElements = [
-        { id: 'loadingMsg', text: 'Loading Strong Bad\'s Temporal Interface...' },
-        { id: 'virusMsg', text: 'Scanning for The Cheat viruses... NONE FOUND' },
-        { id: 'emailMsg', text: 'Checking email... 0 new messages' },
-        { id: 'readyMsg', text: getRandomStartupPhrase() }
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) {
+        return;
+    }
+    
+    const outputLines = [
+        'Loading Strong Bad\'s Temporal Interface...',
+        'Scanning for The Cheat viruses... NONE FOUND',
+        'Checking email... 0 new messages',
+        getRandomStartupPhrase()
     ];
     
     let currentLineIndex = 0;
     
     const showNextLine = () => {
-        if (currentLineIndex < outputElements.length) {
-            const line = outputElements[currentLineIndex];
-            const element = document.getElementById(line.id);
-            if (element) {
-                element.style.display = 'block';
-                element.textContent = line.text;
-                element.style.opacity = '1';
-            }
+        
+        if (currentLineIndex < outputLines.length) {
+            const line = document.createElement('div');
+            line.className = 'sbemail-startup-line';
+            line.style.opacity = '1';
+            line.style.color = '#00ff00';
+            line.textContent = ''; // Start empty
+            terminalContent.appendChild(line);
             
-            currentLineIndex++;
             
-            // Short delay between output lines (400-700ms)
-            const randomDelay = 400 + Math.random() * 300;
-            setTimeout(showNextLine, randomDelay);
-        } else {
-            // All output lines shown, show clock display
-            setTimeout(() => {
-                const startup = document.querySelector('.sbemail-terminal-startup');
-                if (startup) startup.style.opacity = '0.4';
+            // Type this line character by character (fast computer typing)
+            typeCompyResponse(line, outputLines[currentLineIndex], () => {
+                currentLineIndex++;
                 
-                const clockDisplay = document.getElementById('sbemailClockDisplay');
-                if (clockDisplay) {
-                    clockDisplay.style.opacity = '1';
-                    // Auto-scroll to show the clock
-                    clockDisplay.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                    
-                    // Wait additional time after clock panel is rendered to show weather tool
-                    setTimeout(() => {
-                        const weatherSearch = document.getElementById('sbemailWeatherSearch');
-                        if (weatherSearch) {
-                            weatherSearch.style.display = 'block';
-                            weatherSearch.style.opacity = '0';
-                            setTimeout(() => {
-                                weatherSearch.style.opacity = '1';
-                                weatherSearch.style.transition = 'opacity 0.5s ease-in';
-                                
-                                // Auto-scroll to show the weather widget
-                                scrollToWeatherWidget();
-                            }, 100);
-                        }
-                        
-                        // Initialize weather search functionality after displaying
-                        initOgWeatherSearch();
-                        
-                        // Initialize timezone slider functionality
-                        initOgTimezoneSlider();
-                    }, 1500); // Show weather tool 1.5 seconds after clock panel
-                }
-            }, 800); // Brief pause after final output line
+                // Short delay between output lines (200-400ms)
+                const randomDelay = 200 + Math.random() * 200;
+                setTimeout(showNextLine, randomDelay);
+            });
+        } else {
+            // All output lines shown, clear screen and show fresh interface
+            setTimeout(() => {
+                clearScreenAndShowInterface();
+            }, 1000); // Brief pause after last line
         }
     };
     
     // Start showing output lines after a brief pause
     setTimeout(showNextLine, 400);
+}
+
+// Clear screen and show fresh interface from the top
+function clearScreenAndShowInterface() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    
+    // Clear all existing content
+    terminalContent.innerHTML = '';
+    
+    // Show both clock and weather search panels at the same time
+    showFreshClockDisplay();
+    showFreshWeatherSearch();
+}
+
+// Show fresh clock display at top of cleared screen
+function showFreshClockDisplay() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    
+    // Create clock display container
+    const clockDisplay = document.createElement('div');
+    clockDisplay.className = 'sbemail-clock-display';
+    clockDisplay.id = 'sbemailClockDisplay';
+    clockDisplay.style.opacity = '1';
+    
+    // Create timezone control
+    const timezoneControl = document.createElement('div');
+    timezoneControl.className = 'sbemail-timezone-control';
+    timezoneControl.innerHTML = `
+        <label class="sbemail-timezone-label">TIMEZONE: <span id="sbemailTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
+        <input type="range" id="sbemailTimezoneSlider" class="sbemail-timezone-slider" min="0" max="38" value="0" step="1">
+    `;
+    
+    // Create clock elements
+    const clockDay = document.createElement('div');
+    clockDay.className = 'sbemail-clock-day';
+    clockDay.id = 'sbemailClockDay';
+    
+    const clockDate = document.createElement('div');
+    clockDate.className = 'sbemail-clock-date';
+    clockDate.id = 'sbemailClockDate';
+    
+    const clockTime = document.createElement('div');
+    clockTime.className = 'sbemail-clock-time';
+    clockTime.id = 'sbemailClockTime';
+    
+    // Assemble clock display
+    clockDisplay.appendChild(timezoneControl);
+    clockDisplay.appendChild(clockDay);
+    clockDisplay.appendChild(clockDate);
+    clockDisplay.appendChild(clockTime);
+    
+    // Add to top of terminal
+    terminalContent.appendChild(clockDisplay);
+    
+    // Initialize timezone slider functionality
+    initOgTimezoneSlider();
+    
+    // Start clock updates
+    startCompyClock();
+}
+
+// Show fresh weather search panel
+function showFreshWeatherSearch() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    
+    // Create weather search container
+    const weatherSearch = document.createElement('div');
+    weatherSearch.className = 'sbemail-weather-search';
+    weatherSearch.id = 'sbemailWeatherSearch';
+    weatherSearch.style.opacity = '1';
+    weatherSearch.innerHTML = `
+        <div class="sbemail-input-container">
+            <span class="sbemail-search-prompt">WEATHER SEARCH:</span>
+            <input type="text" class="sbemail-search-input" id="sbemailSearchInput" placeholder="ENTER CITY NAME">
+            <button class="sbemail-search-button" id="sbemailSearchButton">SEARCH</button>
+        </div>
+        <div class="sbemail-weather-ticker" id="sbemailWeatherTicker">
+            <div class="sbemail-ticker-container">
+                <span class="sbemail-ticker-label">WEATHER DATA:</span>
+                <div class="sbemail-ticker-content" id="sbemailTickerContent">READY FOR SEARCH...</div>
+            </div>
+        </div>
+    `;
+    
+    // Add below clock
+    terminalContent.appendChild(weatherSearch);
+    
+    // Initialize weather search functionality
+    initOgWeatherSearch();
+}
+
+// Show the clock display after program output
+function showClockDisplay() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    // Create clock display container
+    const clockDisplay = document.createElement('div');
+    clockDisplay.className = 'sbemail-clock-display';
+    clockDisplay.id = 'sbemailClockDisplay';
+    clockDisplay.style.opacity = '1';
+    
+    // Create timezone control
+    const timezoneControl = document.createElement('div');
+    timezoneControl.className = 'sbemail-timezone-control';
+    timezoneControl.innerHTML = `
+        <label class="sbemail-timezone-label">TIMEZONE: <span id="sbemailTimezoneDescription">UTC+0 (LOCAL TIME)</span></label>
+        <input type="range" id="sbemailTimezoneSlider" class="sbemail-timezone-slider" min="0" max="38" value="0" step="1">
+    `;
+    
+    // Create clock elements
+    const clockDay = document.createElement('div');
+    clockDay.className = 'sbemail-clock-day';
+    clockDay.id = 'sbemailClockDay';
+    
+    const clockDate = document.createElement('div');
+    clockDate.className = 'sbemail-clock-date';
+    clockDate.id = 'sbemailClockDate';
+    
+    const clockTime = document.createElement('div');
+    clockTime.className = 'sbemail-clock-time';
+    clockTime.id = 'sbemailClockTime';
+    
+    // Assemble clock display
+    clockDisplay.appendChild(timezoneControl);
+    clockDisplay.appendChild(clockDay);
+    clockDisplay.appendChild(clockDate);
+    clockDisplay.appendChild(clockTime);
+    
+    terminalContent.appendChild(clockDisplay);
+    
+    // Show weather search after clock - flows naturally like terminal text
+    setTimeout(() => {
+        showWeatherSearch();
+    }, 1500);
+}
+
+// Add weather search as a terminal line (not separate container)
+function addWeatherSearchLine() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    // Add a small spacer line
+    const spacerLine = document.createElement('div');
+    spacerLine.className = 'sbemail-startup-line';
+    spacerLine.style.height = '8px';
+    spacerLine.innerHTML = '&nbsp;';
+    terminalContent.appendChild(spacerLine);
+    
+    // Add weather search prompt as a terminal line
+    const weatherPromptLine = document.createElement('div');
+    weatherPromptLine.className = 'sbemail-startup-line';
+    weatherPromptLine.style.color = '#00ff00';
+    weatherPromptLine.style.fontSize = '25px';
+    weatherPromptLine.style.opacity = '1';
+    weatherPromptLine.innerHTML = 'WEATHER SEARCH: <input type="text" class="sbemail-inline-input" id="sbemailSearchInput" placeholder="ENTER CITY"> <button class="sbemail-inline-button" id="sbemailSearchButton">SEARCH</button>';
+    
+    terminalContent.appendChild(weatherPromptLine);
+    
+    // Add weather ticker line (hidden initially)
+    const weatherTickerLine = document.createElement('div');
+    weatherTickerLine.className = 'sbemail-startup-line';
+    weatherTickerLine.id = 'sbemailWeatherTickerLine';
+    weatherTickerLine.style.color = '#00ff00';
+    weatherTickerLine.style.fontSize = '25px';
+    weatherTickerLine.style.opacity = '1';
+    weatherTickerLine.style.display = 'none';
+    weatherTickerLine.innerHTML = '<span class="sbemail-ticker-label">WEATHER DATA:</span> <div class="sbemail-inline-ticker" id="sbemailTickerContent">NO DATA LOADED</div>';
+    
+    terminalContent.appendChild(weatherTickerLine);
+    
+    // Initialize weather search functionality for inline elements
+    initInlineWeatherSearch();
+    
+    // Initialize timezone slider functionality
+    initOgTimezoneSlider();
+    
+    // Scroll to show the new content
+    setTimeout(() => {
+        smoothScrollTerminal();
+    }, 200);
+}
+
+// Show the weather search interface
+function showWeatherSearch() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+    
+    // Add a small spacer line to separate from clock
+    const spacerLine = document.createElement('div');
+    spacerLine.className = 'sbemail-startup-line';
+    spacerLine.style.height = '8px';
+    spacerLine.innerHTML = '&nbsp;';
+    terminalContent.appendChild(spacerLine);
+    
+    // Create weather search container that flows like terminal content
+    const weatherSearch = document.createElement('div');
+    weatherSearch.className = 'sbemail-weather-search';
+    weatherSearch.id = 'sbemailWeatherSearch';
+    weatherSearch.style.opacity = '1';
+    weatherSearch.innerHTML = `
+        <div class="sbemail-input-container">
+            <span class="sbemail-search-prompt">WEATHER SEARCH:</span>
+            <input type="text" class="sbemail-search-input" id="sbemailSearchInput" placeholder="ENTER CITY NAME">
+            <button class="sbemail-search-button" id="sbemailSearchButton">SEARCH</button>
+        </div>
+        <div class="sbemail-weather-ticker" id="sbemailWeatherTicker" style="display: none;">
+            <div class="sbemail-ticker-container">
+                <span class="sbemail-ticker-label">WEATHER DATA:</span>
+                <div class="sbemail-ticker-content" id="sbemailTickerContent">NO DATA LOADED</div>
+            </div>
+        </div>
+    `;
+    
+    terminalContent.appendChild(weatherSearch);
+    
+    // Initialize weather search functionality
+    initOgWeatherSearch();
+    
+    // Initialize timezone slider functionality
+    initOgTimezoneSlider();
+    
+    // No scrolling - let browser handle it naturally
 }
 
 // Type text character by character into an element
@@ -492,24 +824,80 @@ let sbemailWeatherScrollInterval = null;
 let sbemailWeatherText = '';
 let sbemailWeatherScrollPosition = 0;
 
-// Update weather ticker in the search tool area
-function updateOgWeatherTicker() {
-    console.log('🔧 SBEMAIL: updateOgWeatherTicker called');
+// Update inline weather ticker in terminal line
+function updateInlineWeatherTicker() {
     const tickerContent = document.getElementById('sbemailTickerContent');
     if (!tickerContent) {
-        console.log('❌ SBEMAIL: tickerContent element not found');
         return;
+    }
+    
+    // Get weather data from main weather system
+    const weatherScroll = document.getElementById('weatherScroll');
+    let newWeatherText = '';
+    
+    if (weatherScroll && weatherScroll.children.length > 0) {
+        
+        const citySeparator = weatherScroll.querySelector('.city-separator');
+        const city = citySeparator ? citySeparator.textContent.replace(/🌐/g, '').trim() : 'UNKNOWN';
+        
+        const firstBlock = weatherScroll.children[0];
+        if (firstBlock) {
+            const currentItems = firstBlock.querySelectorAll('.weather-item');
+            let weatherParts = [city];
+            
+            currentItems.forEach((item, index) => {
+                if (index < 3) { // Only show first 3 items to fit inline
+                    const tempElement = item.querySelector('.weather-temp');
+                    const iconElement = item.querySelector('.weather-icon');
+                    const descElement = item.querySelector('.weather-desc');
+                    
+                    if (tempElement) {
+                        const temp = tempElement.textContent.trim();
+                        const icon = iconElement ? iconElement.textContent.trim() : '';
+                        const desc = descElement ? descElement.textContent.trim() : '';
+                        weatherParts.push(`${icon} ${temp} ${desc}`);
+                    }
+                }
+            });
+            
+            newWeatherText = weatherParts.join(' • ');
+        } else {
+            newWeatherText = 'WEATHER: NO DATA AVAILABLE';
+        }
+    } else {
+        newWeatherText = 'WEATHER: LOADING DATA...';
+    }
+    
+    // Update ticker content directly (no scrolling for inline)
+    tickerContent.textContent = newWeatherText;
+}
+
+// Update weather ticker in the search tool area - PROTECTED PRECIOUS RESOURCE
+function updateOgWeatherTicker() {
+    
+    const tickerContent = document.getElementById('sbemailTickerContent');
+    if (!tickerContent) {
+        return;
+    }
+    
+    
+    // Check if we should block unnecessary updates to protect the precious display
+    if (sbemailTickerProtected) {
+        const currentContent = tickerContent.textContent || tickerContent.innerHTML || '';
+        
+        // If content is already good and contains weather data, don't mess with it
+        // BUT allow updates if the protection was just temporarily disabled (new search)
+        if (currentContent.includes('°F') && currentContent.length > 50) {
+            return;
+        }
     }
     
     // Try to get weather data from main weather system
     const weatherScroll = document.getElementById('weatherScroll');
-    console.log('🔧 SBEMAIL: weatherScroll element:', weatherScroll);
-    console.log('🔧 SBEMAIL: weatherScroll children:', weatherScroll ? weatherScroll.children.length : 'null');
     let newWeatherText = '';
     
     // Extract weather data more efficiently from the main weather system
     if (weatherScroll && weatherScroll.children.length > 0) {
-        console.log('🔧 SBEMAIL: Found weather data in hidden scroll element');
         
         // Get basic info
         const citySeparator = weatherScroll.querySelector('.city-separator');
@@ -518,7 +906,6 @@ function updateOgWeatherTicker() {
         // Get only the first content block to avoid massive duplication
         const firstBlock = weatherScroll.children[0];
         if (firstBlock) {
-            console.log('🔧 SBEMAIL: Processing first weather block only');
             
             // Extract current weather
             const currentItems = firstBlock.querySelectorAll('.weather-item');
@@ -561,46 +948,138 @@ function updateOgWeatherTicker() {
             }
             
             newWeatherText = weatherParts.join(' • ') + ' • ';
-            console.log('🔧 SBEMAIL: Built optimized weather text:', newWeatherText);
         } else {
             newWeatherText = 'WEATHER: NO DATA AVAILABLE • ';
         }
     } else {
         newWeatherText = 'WEATHER: LOADING DATA... • ';
-        console.log('🔧 SBEMAIL: No weatherScroll or no children');
     }
     
-    // Update weather text if changed and start/restart scrolling
+    // Update weather text with proper scrolling animation structure
     if (newWeatherText !== sbemailWeatherText) {
         sbemailWeatherText = newWeatherText;
-        sbemailWeatherScrollPosition = 0;
-        startOgWeatherTickerScrolling();
+        
+        // Create proper scrolling structure for CSS animation
+        tickerContent.innerHTML = `<div class="sbemail-ticker-scroll">${newWeatherText}</div>`;
+        
+        // Activate protection after first successful update
+        if (!sbemailTickerProtected && newWeatherText.includes('°F')) {
+            sbemailTickerProtected = true;
+            
+            // Add DOM mutation observer to detect any interference
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                });
+            });
+            
+            // Also observe the entire clock container for changes
+            const clockContainer = document.querySelector('.clock-container');
+            if (clockContainer) {
+                const clockObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                    });
+                });
+                
+                clockObserver.observe(clockContainer, {
+                    childList: true,
+                    attributes: true,
+                    characterData: true,
+                    subtree: true
+                });
+                
+            }
+            
+            // Observe the weather container too
+            const weatherContainer = document.querySelector('.weather-container');
+            if (weatherContainer) {
+                const weatherObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                    });
+                });
+                
+                weatherObserver.observe(weatherContainer, {
+                    childList: true,
+                    attributes: true,
+                    characterData: true,
+                    subtree: true
+                });
+                
+            }
+            
+            // Observe the ticker for any unauthorized changes
+            observer.observe(tickerContent, {
+                childList: true,
+                attributes: true,
+                characterData: true,
+                subtree: true
+            });
+            
+            // Monitor all function calls that could interfere with the display
+            const originalSetTimeout = window.setTimeout;
+            window.setTimeout = function(...args) {
+                if (sbemailTickerProtected) {
+                }
+                return originalSetTimeout.apply(this, args);
+            };
+            
+            const originalSetInterval = window.setInterval;
+            window.setInterval = function(...args) {
+                if (sbemailTickerProtected) {
+                }
+                return originalSetInterval.apply(this, args);
+            };
+            
+            // Monitor specific functions that could interfere
+            const originalUpdateOgWeatherTicker = window.updateOgWeatherTicker;
+            if (typeof window.updateOgWeatherTicker === 'function') {
+                window.updateOgWeatherTicker = function(...args) {
+                    if (sbemailTickerProtected) {
+                    }
+                    return originalUpdateOgWeatherTicker.apply(this, args);
+                };
+            }
+            
+            // Monitor main weather system calls
+            const originalHandleWeatherRequest = window.handleWeatherRequest;
+            if (typeof window.handleWeatherRequest === 'function') {
+                window.handleWeatherRequest = function(...args) {
+                    if (sbemailTickerProtected) {
+                    }
+                    return originalHandleWeatherRequest.apply(this, args);
+                };
+            }
+            
+            // Monitor display updates
+            const originalUpdateClockDisplay = window.updateClockDisplay;
+            if (typeof window.updateClockDisplay === 'function') {
+                window.updateClockDisplay = function(...args) {
+                    if (sbemailTickerProtected) {
+                    }
+                    return originalUpdateClockDisplay.apply(this, args);
+                };
+            }
+            
+            // ALLOW NORMAL CLOCK UPDATES - Only block interference with weather ticker
+            
+            // Only block the specific scrollToWeatherWidget function that was causing problems
+            if (typeof scrollToWeatherWidget !== 'undefined') {
+                const originalScrollToWeatherWidget = scrollToWeatherWidget;
+                window.scrollToWeatherWidget = function(...args) {
+                    return; // Don't execute - this was causing the "moving stuff around" problem
+                };
+            }
+            
+        }
+    } else {
+        if (sbemailTickerProtected) {
+        } else {
+        }
     }
 }
 
-// Start smooth CSS-based scrolling animation for weather ticker
+// Legacy scrolling function - no longer used with fixed layout
 function startOgWeatherTickerScrolling() {
-    const tickerContent = document.getElementById('sbemailTickerContent');
-    if (!tickerContent || !sbemailWeatherText) return;
-    
-    // Clear existing interval if any
-    if (sbemailWeatherScrollInterval) {
-        clearInterval(sbemailWeatherScrollInterval);
-        sbemailWeatherScrollInterval = null;
-    }
-    
-    console.log('🔧 SBEMAIL: Starting smooth CSS scrolling');
-    
-    // Create scrolling container with CSS animation
-    const scrollContainer = document.createElement('div');
-    scrollContainer.className = 'sbemail-ticker-scroll';
-    scrollContainer.textContent = sbemailWeatherText;
-    
-    // Clear and add the scrolling element
-    tickerContent.innerHTML = '';
-    tickerContent.appendChild(scrollContainer);
-    
-    console.log('🔧 SBEMAIL: Smooth scrolling started with text:', sbemailWeatherText);
+    // No longer needed - weather ticker now uses simple text updates
 }
 
 // Strong Bad's sbemail-specific keyboard handlers
@@ -842,13 +1321,11 @@ function initOgTimezoneSlider() {
     const timezoneSlider = document.getElementById('sbemailTimezoneSlider');
     
     if (timezoneSlider) {
-        console.log('🕰️ SBEMAIL: Initializing timezone slider');
         
         // Sync with main timezone system
         const mainSlider = document.getElementById('timezoneSlider');
         if (mainSlider) {
             timezoneSlider.value = mainSlider.value;
-            console.log('🕰️ SBEMAIL: Synced slider value from main system:', mainSlider.value);
         }
         
         // Initial display update
@@ -858,7 +1335,6 @@ function initOgTimezoneSlider() {
         updateCompyClock();
         
         timezoneSlider.addEventListener('input', () => {
-            console.log('🕰️ SBEMAIL: Timezone slider changed to:', timezoneSlider.value);
             
             // Update main timezone system
             if (mainSlider) {
@@ -888,11 +1364,9 @@ function updateOgTimezoneDisplay() {
     
     if (timezoneSlider && timezoneDescription && typeof timezones !== 'undefined') {
         const index = parseInt(timezoneSlider.value);
-        console.log('🕰️ SBEMAIL: Updating timezone display for index:', index);
         
         if (timezones[index]) {
             const tzInfo = timezones[index];
-            console.log('🕰️ SBEMAIL: Timezone info:', tzInfo);
             
             // Check if DST is currently active using the main system's lsbemailic
             const now = new Date();
@@ -946,7 +1420,6 @@ function updateOgTimezoneDisplay() {
             const timezoneText = `${displayOffset} (${timezoneName})`.toUpperCase();
             timezoneDescription.textContent = timezoneText;
             
-            console.log('🕰️ SBEMAIL: Updated timezone description to:', timezoneText);
             
             // Update global timezone offset for the clock
             // Parse the offset (e.g., "UTC-05:00" -> -5)
@@ -961,12 +1434,26 @@ function updateOgTimezoneDisplay() {
             }
             
             window.currentTimezoneOffset = offset;
-            console.log('🕰️ SBEMAIL: Set timezone offset to:', offset, '(DST active:', isDstActive + ')');
         }
     }
 }
 
-// Initialize SBEMAIL weather search functionality
+// Initialize inline weather search functionality  
+function initInlineWeatherSearch() {
+    const searchButton = document.getElementById('sbemailSearchButton');
+    const searchInput = document.getElementById('sbemailSearchInput');
+    
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', handleInlineWeatherSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleInlineWeatherSearch();
+            }
+        });
+    }
+}
+
+// Initialize SBEMAIL weather search functionality (legacy)
 function initOgWeatherSearch() {
     const searchButton = document.getElementById('sbemailSearchButton');
     const searchInput = document.getElementById('sbemailSearchInput');
@@ -981,8 +1468,8 @@ function initOgWeatherSearch() {
     }
 }
 
-// Handle weather search from SBEMAIL theme
-async function handleOgWeatherSearch() {
+// Handle inline weather search from terminal line
+async function handleInlineWeatherSearch() {
     const searchInput = document.getElementById('sbemailSearchInput');
     if (!searchInput || !searchInput.value.trim()) return;
     
@@ -998,35 +1485,84 @@ async function handleOgWeatherSearch() {
             try {
                 await handleWeatherRequest();
                 
-                // Show the weather ticker after successful search
+                // Show the weather ticker line after successful search
                 setTimeout(() => {
-                    console.log('🔧 SBEMAIL: Attempting to show weather ticker');
-                    const weatherTicker = document.getElementById('sbemailWeatherTicker');
-                    if (weatherTicker) {
-                        console.log('🔧 SBEMAIL: Weather ticker found, showing it');
-                        weatherTicker.style.display = 'block';
-                        updateOgWeatherTicker(); // Start the ticker
+                    const weatherTickerLine = document.getElementById('sbemailWeatherTickerLine');
+                    if (weatherTickerLine) {
+                        weatherTickerLine.style.display = 'block';
+                        updateInlineWeatherTicker(); // Start the inline ticker
                         
-                        // Auto-scroll to show the weather ticker
+                        // Smooth scroll to show the weather ticker
                         setTimeout(() => {
-                            scrollToWeatherWidget();
-                        }, 500); // Small delay to let ticker render
-                    } else {
-                        console.log('❌ SBEMAIL: Weather ticker element not found');
+                            smoothScrollTerminal();
+                        }, 300);
                     }
-                }, 1000); // Wait a second for weather data to load
+                }, 1000); // Wait for weather data to load
                 
             } catch (error) {
-                console.error('Weather search failed:', error);
             }
         }
     }
     
-    // Clear both SBEMAIL and main inputs for consistency
+    // Clear both inputs
     searchInput.value = '';
     if (mainCityInput) {
         mainCityInput.value = '';
     }
+}
+
+// Handle weather search from SBEMAIL theme (legacy)
+async function handleOgWeatherSearch() {
+    
+    const searchInput = document.getElementById('sbemailSearchInput');
+    if (!searchInput || !searchInput.value.trim()) {
+        return;
+    }
+    
+    const city = searchInput.value.trim();
+    
+    // For subsequent searches, temporarily disable protection to allow updates
+    const wasProtected = sbemailTickerProtected;
+    if (wasProtected) {
+        sbemailTickerProtected = false;
+    }
+    
+    // Update the main city input and trigger weather search
+    const mainCityInput = document.getElementById('cityInput');
+    if (mainCityInput) {
+        mainCityInput.value = city;
+        
+        // Trigger the main weather search function
+        if (typeof handleWeatherRequest === 'function') {
+            try {
+                await handleWeatherRequest();
+                
+                // Check if protection was activated after weather request
+                setTimeout(() => {
+                }, 100);
+                
+                setTimeout(() => {
+                }, 500);
+                
+                setTimeout(() => {
+                    if (sbemailTickerProtected) {
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                // Re-enable protection if there was an error and it was previously protected
+                if (wasProtected) {
+                    sbemailTickerProtected = true;
+                }
+            }
+        } else {
+        }
+    } else {
+    }
+    
+    // Clear SBEMAIL input but keep main input for subsequent searches
+    searchInput.value = '';
+    
 }
 
 // Export functions for modular theme system

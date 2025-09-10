@@ -16,7 +16,6 @@ let openWindows = new Map(); // Track open windows by app type
  * Initialize and activate the Linux theme
  */
 function initLinuxTheme() {
-    console.log('🐧 Initializing Linux theme...');
     
     currentTheme = 'linux';
     
@@ -26,8 +25,6 @@ function initLinuxTheme() {
     // Create desktop icons instead of terminal windows
     createDesktopIcons();
     
-    console.log('🐧 LINUX THEME ACTIVATED 🐧');
-    console.log('🖱️  Double-click desktop icons to launch applications');
 }
 
 /**
@@ -62,10 +59,8 @@ function detectUserInfo() {
             linuxHostname = 'japanbox';
         }
         
-        console.log(`🔍 Detected user: ${linuxUsername}@${linuxHostname}`);
         
     } catch (error) {
-        console.log('🔍 Using default user: root@vulcan');
         // Keep defaults
     }
 }
@@ -759,7 +754,6 @@ function downloadFile(content, filename) {
     const confirmed = confirm(`Do you want to download ${filename}?\n\nThis will save the script file to your computer's Downloads folder.`);
     
     if (!confirmed) {
-        console.log(`Download cancelled by user: ${filename}`);
         return; // User cancelled, return to previous state
     }
     
@@ -780,9 +774,7 @@ function downloadFile(content, filename) {
         document.body.removeChild(downloadLink);
         URL.revokeObjectURL(downloadLink.href);
         
-        console.log(`Downloaded file: ${filename}`);
     } catch (error) {
-        console.error('Error downloading file:', error);
         alert(`Error downloading file: ${error.message}`);
     }
 }
@@ -792,13 +784,11 @@ function downloadFile(content, filename) {
  */
 function getFilenameFromStatusBar(statusBar) {
     const statusText = statusBar.textContent;
-    console.log('Status bar text:', statusText); // Debug log
     
     // Extract filename from status bar (format: "filename - Use arrow keys...")
     // Look for the pattern "filename - Use arrow keys" and extract everything before " - Use"
     const match = statusText.match(/^(.+?)\s*-\s*Use arrow keys/);
     let filename = match ? match[1].trim() : 'script';
-    console.log('Extracted raw filename:', filename); // Debug log
     
     // Ensure proper file extension based on filename
     if (filename === 'clocker' && !filename.includes('.')) {
@@ -814,7 +804,6 @@ function getFilenameFromStatusBar(statusBar) {
         filename += '.sh';
     }
     
-    console.log('Final filename:', filename); // Debug log
     return filename;
 }
 
@@ -1850,14 +1839,12 @@ function findLocalTimezoneIndex() {
     try {
         browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     } catch (e) {
-        console.log('Browser timezone detection not available');
     }
     
     // First try to match by browser timezone name
     if (browserTimezone) {
         const browserMatch = findTimezoneByBrowserName(browserTimezone);
         if (browserMatch !== -1) {
-            console.log(`Found local timezone by browser name: ${timezones[browserMatch].name}`);
             return browserMatch;
         }
     }
@@ -1897,19 +1884,16 @@ function findLocalTimezoneIndex() {
     }
     
     if (bestMatch !== -1) {
-        console.log(`Found local timezone by offset: ${timezones[bestMatch].name}`);
         return bestMatch;
     }
     
     // Fallback: try common US timezones based on offset
     const fallbackMatch = getFallbackTimezoneByOffset(localOffset);
     if (fallbackMatch !== -1) {
-        console.log(`Found local timezone by fallback: ${timezones[fallbackMatch].name}`);
         return fallbackMatch;
     }
     
     // Last resort: default to first timezone
-    console.log('Using default timezone (first in array)');
     return 0;
 }
 
@@ -2504,7 +2488,6 @@ function handleLinuxClick(x, y) {
  * Cleanup xTerm theme
  */
 function cleanupLinuxTheme() {
-    console.log('🧹 Cleaning up Linux theme...');
     
     // Clear all intervals
     linuxIntervals.forEach(intervalId => {
@@ -2531,5 +2514,4 @@ function cleanupLinuxTheme() {
     openWindows.clear();
     nextTerminalId = 1;
     
-    console.log('✅ Linux theme cleanup complete');
 }

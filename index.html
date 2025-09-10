@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ MATRIX TEMPORAL INTERFACE ⚡</title>
+    <title>Clocker Web</title>
     <link rel="stylesheet" href="base-style.css">
 </head>
 <body>
@@ -112,14 +112,12 @@
             
             // Filter theme options for mobile devices
             if (typeof isMobileDevice !== 'undefined' && isMobileDevice) {
-                console.log('📱 Mobile device detected - filtering theme options');
                 const mobileRestrictedThemes = ['sbemail', 'linux'];
                 
                 themeOptions.forEach(option => {
                     const themeData = option.getAttribute('data-theme');
                     if (mobileRestrictedThemes.includes(themeData)) {
                         option.style.display = 'none';
-                        console.log(`📱 Hidden ${themeData} theme button on mobile`);
                     }
                 });
             }
@@ -139,7 +137,6 @@
                 });
             });
             
-            console.log('🎨 Modular theme system ready');
         });
     </script>
 </body>

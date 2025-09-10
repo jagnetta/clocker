@@ -12,7 +12,6 @@ let activeUfos = 0;
  * This is the main entry point for the LCARS theme
  */
 function initLcarsTheme() {
-    console.log('🖖 Initializing LCARS theme...');
     
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'lcars';
@@ -195,7 +194,6 @@ function initLcarsTheme() {
             }
         }
         
-        console.log('🖖 LCARS INTERFACE ENGAGED 🖖');
     }, 100);
 }
 
@@ -203,7 +201,6 @@ function initLcarsTheme() {
  * Clean up LCARS theme effects and resources - complete cleanup
  */
 function cleanupLcarsTheme() {
-    console.log('🧹 Starting LCARS theme cleanup...');
     
     // Clear intervals
     if (warpStarsInterval) {
@@ -248,7 +245,6 @@ function cleanupLcarsTheme() {
         }
     });
     
-    console.log('✅ LCARS theme cleanup complete');
 }
 
 /**
@@ -334,7 +330,6 @@ function switchToLcarsTheme() {
     // Update labels
     updateLcarsLabels();
     
-    console.log('🖖 LCARS INTERFACE ENGAGED 🖖');
 }
 
 /**
@@ -354,7 +349,6 @@ function updateLcarsLabels() {
 function initWarpSpeed() {
     const warpContainer = document.getElementById('warpStars');
     if (!warpContainer) {
-        console.warn('Warp stars container not found');
         return;
     }
     
@@ -502,11 +496,9 @@ function createKlingonFlyby(clickX, clickY) {
 function createStarTrekFlyby(clickX, clickY) {
     // Prevent more than 2 UFOs
     if (activeUfos >= 2) {
-        console.log('Maximum UFOs active, skipping...');
         return;
     }
     
-    console.log('Engage! UFO flyby...', clickX, clickY);
     activeUfos++;
     
     // UFO only
@@ -627,10 +619,8 @@ function createStarTrekFlyby(clickX, clickY) {
 function handleLcarsClick(clickX, clickY) {
     // 25% chance to show UFO/Galaxy, 75% chance for photon torpedoes
     if (Math.random() < 0.25) {
-        console.log('Engage! Star Trek flyby...');
         createStarTrekFlyby(clickX, clickY);
     } else {
-        console.log('Triggering LCARS photon torpedoes');
         createKlingonFlyby(clickX, clickY);
     }
 }
