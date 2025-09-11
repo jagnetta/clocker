@@ -1228,9 +1228,9 @@ function setupWeatherInput(terminal, terminalId) {
     const content = terminal.querySelector('.xterm-content');
     
     if (weatherInput) {
-        // Handle 'q' key for immediate quit
-        registerEventListener(weatherInput, 'keydown', (event) => {
-            if (event.key === 'q' || event.key === 'Q') {
+        // Handle 'q' key for quit only when it's the only character and at the start
+        registerEventListener(weatherInput, 'keypress', (event) => {
+            if ((event.key === 'q' || event.key === 'Q') && weatherInput.value === '') {
                 event.preventDefault();
                 closeTerminal(terminal);
                 return;
@@ -1413,9 +1413,9 @@ function setupWeatherRestartInput(terminal, inputId) {
     const content = terminal.querySelector('.xterm-content');
     
     if (weatherInput) {
-        // Handle 'q' key for immediate quit
-        registerEventListener(weatherInput, 'keydown', (event) => {
-            if (event.key === 'q' || event.key === 'Q') {
+        // Handle 'q' key for quit only when it's the only character and at the start
+        registerEventListener(weatherInput, 'keypress', (event) => {
+            if ((event.key === 'q' || event.key === 'Q') && weatherInput.value === '') {
                 event.preventDefault();
                 closeTerminal(terminal);
                 return;

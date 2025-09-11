@@ -131,7 +131,7 @@ function initMatrixParticles() {
 function createMatrixColumn(columnIndex, columnWidth, matrixChars, container) {
     const columnLength = 5 + Math.floor(Math.random() * 45);
     const columnX = columnIndex * columnWidth;
-    const animationDelay = Math.random() * 0.1; // Start within 100ms, most immediately
+    const animationDelay = 0; // Start immediately
     const fallSpeed = 8 + Math.random() * 12;
     
     const blurLevels = [2.0, 3.5, 5.5, 7.5, 10.0];

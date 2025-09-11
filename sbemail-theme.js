@@ -9,6 +9,7 @@ let sbemailRestartHandler = null;
 let sbemailTickerProtected = false; // Flag to protect the precious weather ticker
 let sbemailInterrupted = false; // Flag to interrupt any ongoing processes
 let sbemailActiveTimeouts = []; // Track all active timeouts for cleanup
+let sbemailThemeSwitchUsed = false; // Flag to prevent multiple theme switches
 
 // Helper function to wrap setTimeout with interrupt capability
 function sbemailSetTimeout(callback, delay) {
@@ -32,11 +33,16 @@ function shouldContinue() {
     return !sbemailInterrupted;
 }
 
-// Function to immediately interrupt all ongoing processes
+// Function to immediately interrupt all ongoing processes except CRT shutdown
 function interruptSbemailProcesses() {
+    // Don't interrupt if CRT shutdown is already in progress
+    if (document.querySelector('.sbemail-crt-shutdown')) {
+        return;
+    }
+    
     sbemailInterrupted = true;
     
-    // Clear all active timeouts
+    // Clear all active timeouts except those related to CRT effects
     sbemailActiveTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
     sbemailActiveTimeouts = [];
     
@@ -124,9 +130,11 @@ function initSBEMAILTheme() {
 
 // Cleanup Strong Bad's Compy 386 Theme - Complete cleanup
 function cleanupSBEMAILTheme() {
-    
     // FIRST: Interrupt all ongoing processes immediately
     interruptSbemailProcesses();
+    
+    // Reset theme switch flag for next time SBEMAIL is loaded
+    sbemailThemeSwitchUsed = false;
     
     // Clear Compy update interval
     if (sbemailTerminalInterval) {
@@ -220,9 +228,9 @@ function createCompy386() {
     // Add theme control button event listeners
     addThemeControlListeners();
     
-    // Start the authentic terminal sequence
+    // Start the Compy 386 boot sequence
     sbemailSetTimeout(() => {
-        if (shouldContinue()) startTerminalSequence();
+        if (shouldContinue()) showCompyBootSequence();
     }, 1000);
 }
 
@@ -235,10 +243,21 @@ function addThemeControlListeners() {
             e.preventDefault();
             const themeName = button.dataset.theme;
             
-            // Don't switch if clicking the already active SBEMAIL theme
-            if (themeName === 'sbemail') {
+            // Don't allow any theme switching if one has already been used
+            if (sbemailThemeSwitchUsed) {
                 return;
             }
+            
+            // If clicking the already active SBEMAIL theme, initiate reboot sequence
+            if (themeName === 'sbemail') {
+                // Set flag to prevent any future theme switches during reboot
+                sbemailThemeSwitchUsed = true;
+                initiateCompyReboot();
+                return;
+            }
+            
+            // Set flag to prevent any future theme switches
+            sbemailThemeSwitchUsed = true;
             
             // Start KVM-style system switching sequence
             initiateSystemSwitch(themeName, button, themeButtons);
@@ -249,9 +268,19 @@ function addThemeControlListeners() {
 // KVM-style system switching with shutdown messages
 async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
     const terminalContent = document.getElementById('sbemailTerminalContent');
-    if (!terminalContent) return;
     
-    // Step 1: Set clicked button to RED (stopping current system)
+    if (!terminalContent) {
+        console.error('🔥 SBEMAIL: Terminal not found!');
+        
+        // Try to continue with normal theme switch since CRT effect can't work
+        if (typeof switchToTheme === 'function') {
+            window.sbemailThemeSwitchInProgress = true;
+            switchToTheme(targetTheme);
+        }
+        return;
+    }
+    
+    // Step 1: Set button states
     allButtons.forEach(btn => {
         if (btn === clickedButton) {
             btn.classList.remove('active');
@@ -262,96 +291,78 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
         }
     });
     
-    // Step 2: Clear the terminal screen first (like a real terminal shutdown)
+    // Step 2: Clear terminal screen
     setTimeout(() => {
-        terminalContent.innerHTML = ''; // Clear all existing content
-        terminalContent.style.background = '#000000'; // Ensure black background
+        terminalContent.innerHTML = '';
+        terminalContent.style.background = '#000000';
         
-        // Add a subtle clearing effect
+        // Add clearing effect
         terminalContent.style.transition = 'opacity 0.3s ease-out';
         terminalContent.style.opacity = '0.3';
         
         setTimeout(() => {
             terminalContent.style.opacity = '1';
             
-            // Step 3: Display system shutdown messages directly to cleared terminal
+            // Step 3: Display shutdown messages
             const shutdownMessages = getSystemShutdownMessages(targetTheme);
-            
-            // Add shutdown messages line by line using sequential timeouts to prevent slipping
             let currentDelay = 0;
             
             shutdownMessages.forEach((message, i) => {
                 setTimeout(() => {
-                    // Create shutdown line directly in terminal content
                     const line = document.createElement('div');
                     line.className = 'sbemail-startup-line';
                     line.style.opacity = '1';
                     line.style.color = i === shutdownMessages.length - 1 ? '#ff0000' : '#00ff00';
                     line.style.fontSize = '18px';
                     line.style.marginBottom = '6px';
-                    line.textContent = ''; // Start empty for character-by-character typing
+                    line.textContent = '';
                     
-                    // Add directly to cleared terminal content (no bouncing since screen is cleared)
                     terminalContent.appendChild(line);
                     
-                    // Use character-by-character typing for consistency with theme
                     typeCompyResponse(line, message, () => {
-                        // Keep content at top - don't auto-scroll to prevent bouncing
                         terminalContent.scrollTop = 0;
                     });
                     
                 }, currentDelay);
                 
-                // Increment delay for next message - longer delay to account for character-by-character typing
-                const typingTime = message.length * 6; // Estimate typing time (6ms per character)
-                currentDelay += typingTime + 500 + Math.random() * 300; // Typing time + 500-800ms pause
+                const typingTime = message.length * 6;
+                currentDelay += typingTime + 500 + Math.random() * 300;
             });
             
-            // Step 4: Add CRT shutdown effect after all messages are done
+            // Step 4: CRT shutdown effect
+            const crtStartTime = currentDelay + 3000;
             setTimeout(() => {
-                if (!sbemailInterrupted) createCRTShutdownEffect();
-            }, currentDelay + 3000); // Wait for all messages + 3 second pause
+                if (!sbemailInterrupted) {
+                    createCRTShutdownEffect(targetTheme, clickedButton, allButtons);
+                }
+            }, crtStartTime);
             
-        }, 500); // Wait for clear effect to complete
-    }, 300); // Brief delay before clearing screen
-    
-    // Step 5: All LEDs turn off (system stopped)
-    setTimeout(() => {
-        allButtons.forEach(btn => {
-            btn.classList.remove('active', 'shutdown', 'stopping');
-        });
-    }, 8000); // Timing to account for clear screen + shutdown messages + CRT effect
-    
-    // Step 6: Wait for CRT shutdown effect, then start new system with boot animation
-    setTimeout(() => {
-        // Add boot animation to target theme button
-        clickedButton.style.animation = 'kvmGreenBoot 2s ease-in-out forwards';
-        
-        // After boot animation, set to active and switch theme
-        setTimeout(() => {
-            clickedButton.style.animation = '';
-            clickedButton.classList.add('active');
+            // Step 5: LED controls off
+            const ledOffTime = Math.max(8000, currentDelay + 1000);
+            setTimeout(() => {
+                allButtons.forEach(btn => {
+                    btn.classList.remove('active', 'shutdown', 'stopping');
+                });
+            }, ledOffTime);
             
-            // Remove any CRT shutdown effects before switching
-            const crtShutdown = document.querySelector('.sbemail-crt-shutdown');
-            if (crtShutdown) {
-                crtShutdown.remove();
-            }
-            
-            // Call the core theme switching function
-            if (typeof switchToTheme === 'function') {
-                switchToTheme(targetTheme);
-            } else if (window.switchToTheme) {
-                window.switchToTheme(targetTheme);
-            }
-        }, 2000); // Wait for boot animation to complete
-    }, 12000); // Increased delay to account for complete shutdown sequence + CRT effect (3s + shutdown messages + 3s CRT effect)
+        }, 500);
+    }, 300);
 }
 
 // Create authentic CRT shutdown effect - collapsing raster and static discharge dot
-function createCRTShutdownEffect() {
+function createCRTShutdownEffect(targetTheme, clickedButton, allButtons) {
     const terminalBody = document.querySelector('.sbemail-terminal-body');
-    if (!terminalBody) return;
+    
+    if (!terminalBody) {
+        console.error('🔥 Terminal body not found for CRT effect');
+        
+        // Fallback to direct theme switch
+        if (typeof switchToTheme === 'function') {
+            window.sbemailThemeSwitchInProgress = true;
+            switchToTheme(targetTheme);
+        }
+        return;
+    }
     
     // Create the CRT shutdown overlay
     const crtShutdown = document.createElement('div');
@@ -368,19 +379,36 @@ function createCRTShutdownEffect() {
     setTimeout(() => {
         if (sbemailInterrupted) return;
         
-        // Remove the raster, add the static dot
+        // Remove raster, add static dot
         rasterCollapse.remove();
-        
         const staticDot = document.createElement('div');
         staticDot.className = 'sbemail-static-dot';
         crtShutdown.appendChild(staticDot);
         
-        // Remove the entire CRT effect after dot fades - extended pause for authentic feel
+        // After static dot fade, switch themes
         setTimeout(() => {
-            if (!sbemailInterrupted) crtShutdown.remove();
-        }, 3000); // Wait for dot fade animation + 2 second pause like real CRT TVs
+            // Clean up CRT effect
+            crtShutdown.remove();
+            
+            // Set flag and switch theme
+            window.sbemailThemeSwitchInProgress = true;
+            
+            if (typeof switchToTheme === 'function') {
+                switchToTheme(targetTheme);
+            } else if (window.switchToTheme) {
+                window.switchToTheme(targetTheme);
+            } else {
+                console.error('🔥 No switchToTheme function found!');
+            }
+            
+            // Clear flag after switch
+            setTimeout(() => {
+                window.sbemailThemeSwitchInProgress = false;
+            }, 1000);
+            
+        }, 1000); // Static dot fade time
         
-    }, 2000); // Wait for raster collapse animation
+    }, 2000); // Raster collapse time
 }
 
 // Generate system shutdown messages based on target theme
@@ -434,6 +462,200 @@ function getSystemShutdownMessages(targetTheme) {
     return shutdownMessages;
 }
 
+// Initiate Compy 386 reboot sequence
+function initiateCompyReboot() {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) {
+        return;
+    }
+    
+    // Reset interruption flag to ensure reboot sequence can complete
+    sbemailInterrupted = false;
+    
+    // Clear terminal and show reboot messages
+    terminalContent.innerHTML = '';
+    
+    const rebootMessages = [
+        'REBOOT SEQUENCE INITIATED...',
+        'Saving system state...',
+        'Shutting down StrongBadOS...',
+        '',
+        'System will restart in 3 seconds...',
+        '3...',
+        '2...',
+        '1...',
+        ''
+    ];
+    
+    let currentDelay = 300;
+    
+    rebootMessages.forEach((message, index) => {
+        sbemailSetTimeout(() => {
+            if (!shouldContinue()) return;
+            
+            const line = document.createElement('div');
+            line.className = 'sbemail-startup-line';
+            line.style.opacity = '1';
+            line.style.color = '#ffff00'; // Yellow for reboot messages
+            line.style.fontSize = '16px';
+            line.style.lineHeight = '1.4';
+            line.style.marginBottom = '6px';
+            line.textContent = '';
+            
+            terminalContent.appendChild(line);
+            
+            if (message === '') {
+                // Empty line
+                if (index === rebootMessages.length - 1) {
+                    // Last message - start CRT shutdown after pause
+                    sbemailSetTimeout(() => {
+                        startRebootCRTEffect();
+                    }, 2000); // 2 second pause
+                }
+            } else {
+                typeCompyResponse(line, message, () => {
+                    if (index === rebootMessages.length - 1) {
+                        // Last message - start CRT shutdown after pause
+                        sbemailSetTimeout(() => {
+                            startRebootCRTEffect();
+                        }, 2000); // 2 second pause
+                    }
+                }, 12); // Slightly faster typing for reboot
+            }
+            
+        }, currentDelay);
+        
+        currentDelay += (message === '') ? 200 : (message.length * 20 + 500);
+    });
+}
+
+// Start CRT effect for reboot, then boot up again
+function startRebootCRTEffect() {
+    
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) {
+        return;
+    }
+    
+    // Ensure we're not interrupted during CRT effect
+    sbemailInterrupted = false;
+    
+    // Create the CRT shutdown effect
+    const crtShutdown = document.createElement('div');
+    crtShutdown.className = 'sbemail-crt-shutdown';
+    crtShutdown.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(to bottom, transparent 0%, transparent 49.5%, #00ff00 50%, transparent 50.5%, transparent 100%);
+        background-size: 100% 4px;
+        z-index: 10000;
+        pointer-events: none;
+        animation: crt-collapse 1.5s ease-in forwards;
+    `;
+    
+    document.body.appendChild(crtShutdown);
+    
+    // After collapse, add static dot
+    setTimeout(() => {
+        const staticDot = document.createElement('div');
+        staticDot.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            z-index: 10001;
+            animation: static-dot-fade 1s ease-out forwards;
+        `;
+        staticDot.className = 'sbemail-static-dot';
+        crtShutdown.appendChild(staticDot);
+        
+        // After static dot fade, restart boot sequence
+        setTimeout(() => {
+            
+            // Clean up CRT effect
+            crtShutdown.remove();
+            
+            // Reset interruption flag and theme switch lock for fresh start
+            sbemailInterrupted = false;
+            sbemailThemeSwitchUsed = false; // Reactivate buttons after reboot
+            showCompyBootSequence();
+        }, 1000);
+    }, 1500);
+}
+
+// Show Compy 386 boot sequence
+function showCompyBootSequence() {
+    if (!shouldContinue()) return;
+    
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) {
+        return;
+    }
+    
+    // Clear terminal content
+    terminalContent.innerHTML = '';
+    
+    const bootMessages = [
+        'Compy 386 Starting...',
+        'Copyright (c) 1982, 2003 The Cheat Systems',
+        '',
+        'Testing RAM...OK',
+        'Detecting Hard Drive...OK',
+        'Loading STRONGDOS v2.0...',
+        '',
+        'System Ready.',
+        'Welcome to StrongBadOS!'
+    ];
+    
+    let currentDelay = 500;
+    
+    bootMessages.forEach((message, index) => {
+        sbemailSetTimeout(() => {
+            if (!shouldContinue()) return;
+            
+            const line = document.createElement('div');
+            line.className = 'sbemail-startup-line';
+            line.style.opacity = '1';
+            line.style.color = '#00ff00';
+            line.style.fontSize = '16px';
+            line.style.lineHeight = '1.4';
+            line.style.marginBottom = '6px';
+            line.textContent = '';
+            
+            terminalContent.appendChild(line);
+            
+            // Type out each line character by character
+            if (message === '') {
+                // Empty line - just continue
+                if (index === bootMessages.length - 1) {
+                    // Last message - start terminal sequence after pause
+                    sbemailSetTimeout(() => {
+                        startTerminalSequence();
+                    }, 2000); // 2 second pause after boot sequence
+                }
+            } else {
+                typeCompyResponse(line, message, () => {
+                    if (index === bootMessages.length - 1) {
+                        // Last message - start terminal sequence after pause
+                        sbemailSetTimeout(() => {
+                            startTerminalSequence();
+                        }, 2000); // 2 second pause after boot sequence
+                    }
+                });
+            }
+            
+        }, currentDelay);
+        
+        currentDelay += (message === '') ? 200 : (message.length * 15 + 800); // Adjust timing for typing
+    });
+}
+
 // Start authentic terminal sequence with A:\ prompt and DOS navigation
 function startTerminalSequence() {
     if (!shouldContinue()) return;
@@ -443,6 +665,9 @@ function startTerminalSequence() {
     if (!terminalContent) {
         return;
     }
+    
+    // Clear screen before showing A:\ prompt
+    terminalContent.innerHTML = '';
     
     // Add the A:\> prompt line
     const promptLine = document.createElement('div');
@@ -1527,7 +1752,7 @@ function createBoxingGloves(x, y) {
 
 function createTrogdor(x, y) {
     const trogdor = document.createElement('div');
-    trogdor.className = 'sbemail-trogdor-test';
+    trogdor.className = 'sbemail-trsbemaildor-test';
     trogdor.innerHTML = '🐉'; // Oriental dragon emoji representing Trogdor the Burninator
     
     // Start at click position

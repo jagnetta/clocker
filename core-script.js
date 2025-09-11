@@ -198,25 +198,23 @@ function getLastSundayOfMonth(year, month) {
 // Optimized modular theme loading system with proper CSS loading
 async function loadTheme(themeName) {
     if (!availableThemes.includes(themeName)) {
+        console.error('🎨 Theme not available:', themeName);
         return false;
     }
     
     // Check if theme is appropriate for mobile device
     const appropriateThemes = getMobileAppropriateThemes();
     if (!appropriateThemes.includes(themeName)) {
+        console.error('🎨 Theme not supported on this device:', themeName);
         return false;
     }
     
     try {
-        // Remove old CSS immediately to prevent conflicts
-        if (currentlyLoadedCss && currentlyLoadedCss !== themeName) {
-            const oldLink = document.querySelector(`link[href="${currentlyLoadedCss}-theme.css"]`);
-            if (oldLink) {
-                oldLink.remove();
-            }
-        }
+        // Don't remove CSS files - they might be needed later
+        // Just load the new theme CSS alongside existing ones
         
         if (!loadedThemes.has(themeName)) {
+            
             // Load CSS and JS in parallel for faster loading
             const cssPromise = new Promise((resolve, reject) => {
                 const cssLink = document.createElement('link');
@@ -245,11 +243,145 @@ async function loadTheme(themeName) {
         // Wait for CSS to fully apply - crucial for preventing skeleton flash
         await new Promise(resolve => setTimeout(resolve, 50));
         
+        // Validate that theme resources are properly loaded
+        const validation = await validateThemeLoad(themeName);
+        if (!validation.success) {
+            console.error('🎨 Theme validation failed:', validation.errors);
+            return false;
+        }
+        
         return true;
         
     } catch (error) {
+        console.error('🎨 Critical error loading theme', themeName, error);
         return false;
     }
+}
+
+// Comprehensive theme validation system
+async function validateThemeLoad(themeName) {
+    const errors = [];
+    const warnings = [];
+    
+    // Check 1: Validate CSS is loaded and applied
+    const cssLink = document.querySelector(`link[href="${themeName}-theme.css"]`);
+    if (!cssLink) {
+        errors.push(`CSS file not found: ${themeName}-theme.css`);
+    }
+    
+    // Check 2: Validate JS functions are available
+    const requiredFunctions = {
+        'matrix': ['initMatrixTheme', 'cleanupMatrixTheme'],
+        'lcars': ['initLcarsTheme', 'cleanupLcarsTheme'],
+        'thor': ['initThorTheme', 'cleanupThorEffects'],
+        'sbemail': ['initSBEMAILTheme', 'cleanupSBEMAILTheme'],
+        'linux': ['initLinuxTheme', 'cleanupLinuxTheme']
+    };
+    
+    if (requiredFunctions[themeName]) {
+        for (const funcName of requiredFunctions[themeName]) {
+            if (typeof window[funcName] !== 'function') {
+                errors.push(`Function not found: ${funcName}`);
+            }
+        }
+    }
+    
+    // Check 3: Validate theme-specific DOM requirements
+    const domRequirements = await validateThemeDOM(themeName);
+    errors.push(...domRequirements.errors);
+    warnings.push(...domRequirements.warnings);
+    
+    // Check 4: Validate theme resources
+    const resourceCheck = await validateThemeResources(themeName);
+    errors.push(...resourceCheck.errors);
+    warnings.push(...resourceCheck.warnings);
+    
+    const success = errors.length === 0;
+    
+    if (!success) {
+        console.error(`🎨 ${themeName} validation failed:`, errors);
+    }
+    
+    if (warnings.length > 0) {
+        console.warn(`🎨 ${themeName} validation warnings:`, warnings);
+    }
+    
+    return {
+        success,
+        errors,
+        warnings,
+        themeName
+    };
+}
+
+// Validate theme-specific DOM requirements
+async function validateThemeDOM(themeName) {
+    const errors = [];
+    const warnings = [];
+    
+    switch (themeName) {
+        case 'matrix':
+            // Matrix needs clock container and weather container (using correct selectors)
+            if (!document.querySelector('.clock-container')) {
+                errors.push('Matrix theme requires .clock-container element');
+            }
+            if (!document.querySelector('.weather-container')) {
+                errors.push('Matrix theme requires .weather-container element');
+            }
+            break;
+            
+        case 'lcars':
+            // LCARS needs clock container
+            if (!document.querySelector('.clock-container')) {
+                errors.push('LCARS theme requires .clock-container element');
+            }
+            break;
+            
+        case 'thor':
+            // Thor needs clock container
+            if (!document.querySelector('.clock-container')) {
+                errors.push('Thor theme requires .clock-container element');
+            }
+            break;
+            
+        case 'linux':
+            // Linux needs clock container
+            if (!document.querySelector('.clock-container')) {
+                errors.push('Linux theme requires .clock-container element');
+            }
+            break;
+            
+        case 'sbemail':
+            // SBEMAIL creates its own terminal, just needs body
+            if (!document.body) {
+                errors.push('SBEMAIL theme requires document body');
+            }
+            break;
+    }
+    
+    return { errors, warnings };
+}
+
+// Validate theme resources
+async function validateThemeResources(themeName) {
+    const errors = [];
+    const warnings = [];
+    
+    // Check for theme-specific background elements
+    const backgroundIds = {
+        'matrix': 'matrixBg',
+        'lcars': 'lcarsBg',
+        'thor': 'thorBg'
+    };
+    
+    if (backgroundIds[themeName]) {
+        const bgElement = document.getElementById(backgroundIds[themeName]);
+        if (!bgElement) {
+            warnings.push(`Background element not found: #${backgroundIds[themeName]} (will be created dynamically)`);
+        }
+    }
+    
+    return { errors, warnings };
 }
 
 // Global arrays to track intervals and event listeners for cleanup
@@ -332,53 +464,62 @@ function cleanupCurrentTheme() {
     // Clear all theme-specific DOM modifications
     clearThemeDOM();
     
-    // Theme-specific cleanup functions
+    // Theme-specific cleanup functions with validation
     const cleanupFunctions = {
-        'matrix': () => typeof cleanupMatrixTheme === 'function' && cleanupMatrixTheme(),
-        'lcars': () => typeof cleanupLcarsTheme === 'function' && cleanupLcarsTheme(),
-        'thor': () => typeof cleanupThorEffects === 'function' && cleanupThorEffects(),
-        'sbemail': () => typeof cleanupSBEMAILTheme === 'function' && cleanupSBEMAILTheme(),
-        'linux': () => typeof cleanupLinuxTheme === 'function' && cleanupLinuxTheme()
+        'matrix': 'cleanupMatrixTheme',
+        'lcars': 'cleanupLcarsTheme',
+        'thor': 'cleanupThorEffects',
+        'sbemail': 'cleanupSBEMAILTheme',
+        'linux': 'cleanupLinuxTheme'
     };
     
-    if (cleanupFunctions[currentTheme]) {
-        cleanupFunctions[currentTheme]();
+    const cleanupFunctionName = cleanupFunctions[currentTheme];
+    if (cleanupFunctionName && typeof window[cleanupFunctionName] === 'function') {
+        try {
+            window[cleanupFunctionName]();
+        } catch (error) {
+            console.error(`🎨 ${currentTheme} cleanup failed:`, error);
+        }
     }
-    
-    // Force garbage collection of theme assets
-    setTimeout(() => {
-    }, 100);
 }
+
+// Flag to indicate when SBEMAIL is handling its own theme switch
+window.sbemailThemeSwitchInProgress = false;
 
 // Optimized theme switching with minimal flashing
 async function switchToTheme(themeName) {
-    if (currentTheme === themeName) return;
+    if (currentTheme === themeName) {
+        return;
+    }
+    
+    // Check if this theme recently failed
+    if (lastFailedTheme === themeName && themeFailureCount >= 2) {
+        console.warn(`🎨 Theme ${themeName} recently failed ${themeFailureCount} times, blocking attempt`);
+        return;
+    }
     
     // Special handling for SBEMAIL theme - let it handle its own shutdown with CRT effects
-    if (currentTheme === 'sbemail') {
-        // Check if SBEMAIL is already in shutdown mode
-        const shutdownInProgress = document.querySelector('.sbemail-theme-btn.shutdown') || 
-                                 document.querySelector('.sbemail-theme-btn.stopping');
+    if (currentTheme === 'sbemail' && !window.sbemailThemeSwitchInProgress) {
+        // Always trigger SBEMAIL's own shutdown sequence with CRT effects
+        const targetButton = document.querySelector(`[data-theme="${themeName}"]`);
         
-        if (shutdownInProgress) {
-            // SBEMAIL shutdown is already in progress, let it complete
-            console.log('🔥 SBEMAIL shutdown already in progress, waiting for CRT effects...');
+        if (targetButton && typeof initiateSystemSwitch === 'function') {
+            const allButtons = document.querySelectorAll('.sbemail-control-button.theme-btn');
+            
+            // Set flag to indicate SBEMAIL is handling its own switch
+            window.sbemailThemeSwitchInProgress = true;
+            
+            initiateSystemSwitch(themeName, targetButton, allButtons);
             return;
         } else {
-            // Trigger SBEMAIL's own shutdown sequence with CRT effects
-            const targetButton = document.querySelector(`[data-theme="${themeName}"]`);
-            if (targetButton && typeof initiateSystemSwitch === 'function') {
-                console.log('🔥 Triggering SBEMAIL CRT shutdown sequence...');
-                const allButtons = document.querySelectorAll('.sbemail-control-button.theme-btn');
-                initiateSystemSwitch(themeName, targetButton, allButtons);
-                return;
-            } else {
-                // Fallback: interrupt startup processes if no proper shutdown
-                if (typeof interruptSbemailProcesses === 'function') {
-                    interruptSbemailProcesses();
-                }
+            // Fallback: interrupt startup processes and continue with normal switch
+            if (typeof interruptSbemailProcesses === 'function') {
+                interruptSbemailProcesses();
             }
         }
+    } else if (currentTheme === 'sbemail' && window.sbemailThemeSwitchInProgress) {
+        // SBEMAIL is already handling its own switch, so use fast cleanup instead of 12-second delay
+        // This happens when SBEMAIL's CRT effect calls switchToTheme() after completion
     }
     
     // Immediately hide all background elements to prevent flash
@@ -395,7 +536,8 @@ async function switchToTheme(themeName) {
     cleanupCurrentTheme();
     
     // Step 2: Wait for cleanup to complete - extra time for SBEMAIL theme CRT shutdown effect
-    const cleanupDelay = currentTheme === 'sbemail' ? 12000 : 150;
+    // But use fast cleanup if SBEMAIL is already handling its own switch
+    const cleanupDelay = (currentTheme === 'sbemail' && !window.sbemailThemeSwitchInProgress) ? 12000 : 150;
     await new Promise(resolve => setTimeout(resolve, cleanupDelay));
     
     // Step 3: Remove all theme-specific CSS classes from body
@@ -422,11 +564,12 @@ async function switchToTheme(themeName) {
     // Step 4: Load new theme resources
     const loaded = await loadTheme(themeName);
     if (!loaded) {
+        console.error(`🎨 Failed to load ${themeName} theme`);
+        await handleThemeLoadFailure(themeName);
         return;
     }
     
     // Step 5: Update current theme reference
-    const oldTheme = currentTheme;
     currentTheme = themeName;
     
     // Step 6: Update theme selector buttons
@@ -441,39 +584,260 @@ async function switchToTheme(themeName) {
     // Step 7: Apply new theme CSS class
     document.body.classList.add(`${themeName}-theme`);
     
-    // Step 7.5: Optimized background element management
+    // Step 7.5: Show the correct background immediately
     const backgroundElements = {
         'matrix': 'matrixBg',
         'lcars': 'lcarsBg', 
         'thor': 'thorBg'
     };
     
-    // Show the correct background immediately after CSS class is applied
     const newBgId = backgroundElements[themeName];
     if (newBgId) {
         const newBgElement = document.getElementById(newBgId);
         if (newBgElement) {
-            // Remove all inline styles and hidden class
             newBgElement.removeAttribute('style');
             newBgElement.classList.remove('hidden');
-            // Force immediate reflow
-            newBgElement.offsetHeight;
+            newBgElement.offsetHeight; // Force reflow
         }
     }
     
-    // Step 8: Initialize the new theme immediately after CSS is loaded
+    // Step 8: Initialize the new theme
+    const initResult = await initializeThemeWithValidation(themeName);
+    
+    if (!initResult.success) {
+        console.error(`🎨 ${themeName} initialization failed:`, initResult.errors);
+        // Try to fall back to matrix theme
+        if (themeName !== 'matrix') {
+            await switchToTheme('matrix');
+        }
+        return;
+    }
+    
+    
+    // Quick health check after theme has had time to initialize
+    setTimeout(async () => {
+        const clockElement = document.getElementById('clock');
+        if (clockElement) {
+            const initialTime = clockElement.textContent;
+            // Wait longer for clock to update after theme switch
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            const updatedTime = clockElement.textContent;
+            if (initialTime === updatedTime) {
+                console.warn('🎨 Clock not updating after theme switch');
+            }
+        }
+    }, 3000); // Wait 3 seconds for theme to fully stabilize
+}
+
+// Initialize theme with validation and error handling
+async function initializeThemeWithValidation(themeName) {
+    const errors = [];
+    const warnings = [];
+    
+    // Step 1: Validate init function exists
     const initFunctions = {
-        'matrix': () => typeof initMatrixTheme === 'function' && initMatrixTheme(),
-        'lcars': () => typeof initLcarsTheme === 'function' && initLcarsTheme(),
-        'thor': () => typeof initThorTheme === 'function' && initThorTheme(),
-        'sbemail': () => typeof initSBEMAILTheme === 'function' && initSBEMAILTheme(),
-        'linux': () => typeof initLinuxTheme === 'function' && initLinuxTheme()
+        'matrix': 'initMatrixTheme',
+        'lcars': 'initLcarsTheme', 
+        'thor': 'initThorTheme',
+        'sbemail': 'initSBEMAILTheme',
+        'linux': 'initLinuxTheme'
     };
     
-    if (initFunctions[themeName]) {
-        initFunctions[themeName]();
+    const initFunctionName = initFunctions[themeName];
+    if (!initFunctionName || typeof window[initFunctionName] !== 'function') {
+        errors.push(`Init function not found: ${initFunctionName}`);
+        return { success: false, errors, warnings };
     }
+    
+    // Step 2: Execute initialization function
+    try {
+        const initResult = window[initFunctionName]();
+        
+        // If init function returns a promise, wait for it
+        if (initResult && typeof initResult.then === 'function') {
+            await initResult;
+        }
+    } catch (error) {
+        console.error(`🎨 ${themeName} initialization error:`, error);
+        errors.push(`Theme init error: ${error.message}`);
+        return { success: false, errors, warnings };
+    }
+    
+    // Step 3: Post-initialization validation
+    const postInitValidation = await validateThemePostInit(themeName);
+    errors.push(...postInitValidation.errors);
+    warnings.push(...postInitValidation.warnings);
+    
+    const success = errors.length === 0;
+    
+    if (!success) {
+        console.error(`🎨 ${themeName} init validation failed:`, errors);
+    }
+    
+    return { success, errors, warnings };
 }
+
+// Validate theme after initialization
+async function validateThemePostInit(themeName) {
+    const errors = [];
+    const warnings = [];
+    
+    // Check theme-specific post-init requirements
+    switch (themeName) {
+        case 'matrix':
+            if (!document.getElementById('matrixBg')) {
+                errors.push('Matrix background not created');
+            }
+            break;
+            
+        case 'lcars':
+            if (!document.getElementById('lcarsBg')) {
+                errors.push('LCARS background not created');
+            }
+            break;
+            
+        case 'thor':
+            if (!document.getElementById('thorBg')) {
+                errors.push('Thor background not created');
+            }
+            break;
+            
+        case 'linux':
+            if (!document.querySelector('.linux-desktop-icons')) {
+                errors.push('Linux desktop not created');
+            }
+            break;
+            
+        case 'sbemail':
+            if (!document.getElementById('sbemailTerminalWindow')) {
+                errors.push('SBEMAIL terminal not created');
+            }
+            break;
+    }
+    
+    return { errors, warnings };
+}
+
+// Handle theme loading failures with fallback logic
+// Circuit breaker to prevent infinite loops
+let themeFailureCount = 0;
+let lastFailedTheme = null;
+const MAX_THEME_FAILURES = 3;
+
+async function handleThemeLoadFailure(failedTheme) {
+    console.error('🎨 Theme load failed:', failedTheme);
+    
+    // Circuit breaker: prevent infinite loops
+    if (failedTheme === lastFailedTheme) {
+        themeFailureCount++;
+    } else {
+        themeFailureCount = 1;
+        lastFailedTheme = failedTheme;
+    }
+    
+    if (themeFailureCount >= MAX_THEME_FAILURES) {
+        console.error('🎨 CRITICAL: Too many theme failures, stopping fallback attempts');
+        console.error('🎨 CRITICAL: Missing required HTML containers - check index.html');
+        // Disable the failed theme button to prevent further attempts
+        const failedButton = document.querySelector(`[data-theme="${failedTheme}"]`);
+        if (failedButton) {
+            failedButton.disabled = true;
+            failedButton.style.opacity = '0.5';
+            failedButton.title = `${failedTheme} theme unavailable`;
+        }
+        return;
+    }
+    
+    // Try fallback themes only if basic HTML structure exists
+    const clockContainer = document.querySelector('.clock-container');
+    
+    if (clockContainer) {
+        // Try other standard themes first if structure exists
+        const fallbackThemes = ['matrix', 'lcars', 'thor'];
+        for (const fallbackTheme of fallbackThemes) {
+            if (fallbackTheme !== failedTheme) {
+                try {
+                    await switchToTheme(fallbackTheme);
+                    themeFailureCount = 0;
+                    lastFailedTheme = null; // Clear failure tracking
+                    return;
+                } catch (error) {
+                    console.error(`🎨 ${fallbackTheme} fallback failed:`, error);
+                }
+            }
+        }
+    }
+    
+    // If all else fails, try SBEMAIL as it creates its own structure
+    if (failedTheme !== 'sbemail') {
+        try {
+            await switchToTheme('sbemail');
+            themeFailureCount = 0;
+            lastFailedTheme = null; // Clear failure tracking
+            return;
+        } catch (error) {
+            console.error('🎨 Sbemail fallback failed:', error);
+        }
+    }
+    
+    console.error('🎨 All fallback attempts failed - check HTML structure');
+}
+
+// Comprehensive theme health check
+async function performThemeHealthCheck() {
+    const healthReport = {
+        currentTheme,
+        allResourcesLoaded: true,
+        functionsAvailable: true,
+        domElementsPresent: true,
+        clockUpdating: false,
+        errors: [],
+        warnings: []
+    };
+    
+    // Check if current theme resources are loaded
+    if (currentTheme) {
+        const validation = await validateThemeLoad(currentTheme);
+        healthReport.allResourcesLoaded = validation.success;
+        healthReport.errors.push(...validation.errors);
+        healthReport.warnings.push(...validation.warnings);
+    }
+    
+    // Check clock functionality
+    const clockElement = document.getElementById('clock');
+    if (clockElement) {
+        const initialTime = clockElement.textContent;
+        await new Promise(resolve => setTimeout(resolve, 1100));
+        const updatedTime = clockElement.textContent;
+        healthReport.clockUpdating = initialTime !== updatedTime;
+    }
+    
+    // Check theme button states
+    const activeButtons = document.querySelectorAll('.theme-option.active');
+    if (activeButtons.length !== 1) {
+        healthReport.warnings.push(`Expected 1 active theme button, found ${activeButtons.length}`);
+    }
+    
+    // Overall health status
+    const isHealthy = healthReport.allResourcesLoaded && 
+                     healthReport.functionsAvailable && 
+                     healthReport.domElementsPresent &&
+                     healthReport.errors.length === 0;
+    
+    if (!isHealthy) {
+        console.warn('🎨 Theme system issues detected:', healthReport.errors);
+    }
+    
+    return healthReport;
+}
+
+// Expose health check globally for debugging
+window.checkThemeHealth = performThemeHealthCheck;
+window.debugThemeSystem = async () => {
+    const health = await performThemeHealthCheck();
+    
+    return health;
+};
 
 // Initialize random theme on load
 function initRandomTheme() {
