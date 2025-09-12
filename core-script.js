@@ -1421,9 +1421,55 @@ function getLastSunday(year, month) {
     return date.getDate() - dayOfWeek;
 }
 
+function showCustomConfirm(title, message) {
+    return new Promise((resolve) => {
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'custom-modal-overlay';
+
+        const modal = document.createElement('div');
+        modal.className = 'custom-modal';
+
+        const modalTitle = document.createElement('div');
+        modalTitle.className = 'custom-modal-title';
+        modalTitle.textContent = title;
+
+        const modalMessage = document.createElement('pre');
+        modalMessage.className = 'custom-modal-message';
+        modalMessage.textContent = message;
+
+        const modalTimer = document.createElement('div');
+        modalTimer.className = 'custom-modal-timer';
+        
+        let countdown = 10;
+        modalTimer.textContent = `Switching in ${countdown}...`;
+
+        modal.appendChild(modalTitle);
+        modal.appendChild(modalMessage);
+        modal.appendChild(modalTimer);
+        modalOverlay.appendChild(modal);
+        document.body.appendChild(modalOverlay);
+
+        const interval = setInterval(() => {
+            countdown--;
+            modalTimer.textContent = `Switching in ${countdown}...`;
+            if (countdown <= 0) {
+                clearInterval(interval);
+                document.body.removeChild(modalOverlay);
+                resolve(true);
+            }
+        }, 1000);
+
+        modalTimer.addEventListener('click', () => {
+            countdown -= 3;
+            if (countdown < 0) countdown = 0;
+            modalTimer.textContent = `Switching in ${countdown}...`;
+        });
+    });
+}
+
 // Keyboard shortcuts
 function initKeyboardShortcuts() {
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', async function(event) {
         if (event.ctrlKey && event.key === 'c') {
             const now = getTimezoneDate();
             const formatted = formatDate(now);
@@ -1442,13 +1488,22 @@ function initKeyboardShortcuts() {
                 'thor': {
                     title: '⚡ ASGARD DEACTIVATED ⚡',
                     message: `The All-Father calls you.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\n🔨 For Asgard! 🔨`
+                },
+                'sbemail': {
+                    title: 'DELETED! - SYSTEM SHUTDOWN',
+                    message: `The system is down.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\nYour computer is now a brick.`
+                },
+                'linux': {
+                    title: '🐧 KERNEL PANIC! 🐧',
+                    message: `Fatal error detected.\n\n${timeStr}\n${formatted.day}, ${formatted.date}\n\nSystem integrity compromised.`
                 }
             };
             
             const currentMessage = exitMessages[currentTheme] || exitMessages['matrix'];
             
-            // Show themed exit message and switch to random theme on OK
-            if (confirm(currentMessage.title + '\n\n' + currentMessage.message + '\n\nClick OK to journey to a new realm!')) {
+            const userConfirmed = await showCustomConfirm(currentMessage.title, currentMessage.message + '\n\nClick the timer to switch themes....');
+
+            if (userConfirmed) {
                 // Switch to a different random theme (mobile-filtered)
                 const appropriateThemes = getMobileAppropriateThemes();
                 const otherThemes = appropriateThemes.filter(theme => theme !== currentTheme);

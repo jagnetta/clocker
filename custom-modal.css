@@ -1,0 +1,54 @@
+/* Custom Modal Styles */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.custom-modal {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 20px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #000000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.custom-modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.custom-modal-message {
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.custom-modal-timer {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #adadad;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #e1e1e1;
+    border-radius: 4px;
+}
+
+.custom-modal-timer:hover {
+    background: #d1d1d1;
+}

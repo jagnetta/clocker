@@ -275,7 +275,6 @@
 }
 
 .sbemail-startup-line {
-    opacity: 0;
     margin-bottom: 6px;
     color: #00ff00;
     white-space: nowrap;
@@ -782,6 +781,56 @@
         0 0 12px rgba(0, 255, 0, 0.8);
 }
 
+/* Active button - green LED */
+.sbemail-control-button.active::after {
+    background: radial-gradient(circle at 30% 30%, #00ff00, #008800);
+    border: 1px solid #00aa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #00ff00,
+        0 0 12px rgba(0, 255, 0, 0.8);
+}
+
+/* Temporary Red LED for testing */
+.sbemail-control-button.sbemail-led-red::after {
+    background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
+    border: 1px solid #aa0000;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ff0000,
+        0 0 12px rgba(255, 0, 0, 0.8);
+}
+
+/* Temporary Green LED for testing */
+.sbemail-control-button.sbemail-led-green::after {
+    background: radial-gradient(circle at 30% 30%, #00ff00, #008800);
+    border: 1px solid #00aa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #00ff00,
+        0 0 12px rgba(0, 255, 0, 0.8);
+}
+
+/* Temporary Green LED for testing */
+.sbemail-control-button.sbemail-led-green::after {
+    background: radial-gradient(circle at 30% 30%, #00ff00, #008800);
+    border: 1px solid #00aa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #00ff00,
+        0 0 12px rgba(0, 255, 0, 0.8);
+}
+
+/* Temporary Amber LED for testing */
+.sbemail-control-button.sbemail-led-amber::after {
+    background: radial-gradient(circle at 30% 30%, #ffbf00, #cc9900);
+    border: 1px solid #ffaa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ffbf00,
+        0 0 12px rgba(255, 191, 0, 0.8);
+}
+
 /* Stopping button - red LED with pulse (system stopping) */
 .sbemail-control-button.stopping::after {
     background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
@@ -791,6 +840,28 @@
         0 0 8px #ff0000,
         0 0 12px rgba(255, 0, 0, 0.8);
     animation: kvmRedPulse 0.5s ease-in-out infinite alternate;
+}
+
+/* Stopping button - red LED with pulse (system stopping) */
+.sbemail-control-button.stopping::after {
+    background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
+    border: 1px solid #aa0000;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ff0000,
+        0 0 12px rgba(255, 0, 0, 0.8);
+    animation: kvmRedPulse 0.5s ease-in-out infinite alternate;
+}
+
+/* Rebooting button - amber LED with pulse */
+.sbemail-control-button.rebooting::after {
+    background: radial-gradient(circle at 30% 30%, #ffbf00, #cc9900);
+    border: 1px solid #ffaa00;
+    box-shadow: 
+        inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 8px #ffbf00,
+        0 0 12px rgba(255, 191, 0, 0.8);
+    animation: kvmAmberPulse 0.5s ease-in-out infinite alternate;
 }
 
 /* Shutdown button - solid red LED (system halted) */
@@ -818,6 +889,23 @@
             inset 1px 1px 2px rgba(0, 0, 0, 0.3),
             0 0 4px #ff0000,
             0 0 6px rgba(255, 0, 0, 0.4);
+    }
+}
+
+@keyframes kvmAmberPulse {
+    0% { 
+        opacity: 1;
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 8px #ffbf00,
+            0 0 12px rgba(255, 191, 0, 0.8);
+    }
+    100% { 
+        opacity: 0.3;
+        box-shadow: 
+            inset 1px 1px 2px rgba(0, 0, 0, 0.3),
+            0 0 4px #ffbf00,
+            0 0 6px rgba(255, 191, 0, 0.4);
     }
 }
 
