@@ -245,7 +245,7 @@ function launchWeatherApplication(terminalId, x, y) {
                 // Create input for weather location
                 const inputLine = document.createElement('div');
                 inputLine.className = 'xterm-line';
-                inputLine.innerHTML = `<input type="text" id="weatherInput${terminalId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
+                inputLine.innerHTML = `<input type="text" id="weatherInput${terminalId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
                 content.appendChild(inputLine);
                 
                 // Set up weather input handling
@@ -358,7 +358,7 @@ function launchClockerApplication(terminalId, x, y) {
                     border-top: 1px solid #008800;
                     pointer-events: none;
                 `;
-                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Q to Quit';
+                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Ctrl+Q to Quit';
                 content.appendChild(statusDiv);
                 
                 // Initialize timezone index (start with local time)
@@ -1024,9 +1024,9 @@ function createLessViewer(terminal, content, filename = 'file') {
     
     // Different status text for README.1st (no save option)
     if (filename === 'README.1st') {
-        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, q to quit`;
+        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, Ctrl+Q to quit`;
     } else {
-        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, s to save, q to quit`;
+        statusBar.textContent = `${filename} - Use arrow keys or mouse wheel to scroll, s to save, Ctrl+Q to quit`;
     }
     
     lessContainer.appendChild(lessViewer);
@@ -1119,8 +1119,10 @@ function setupLessViewer(terminal, lessViewer, statusBar) {
                 break;
             case 'q':
             case 'Q':
-                // Quit less viewer - close the terminal
-                closeTerminal(terminal);
+                if (e.ctrlKey) {
+                    // Quit less viewer - close the terminal
+                    closeTerminal(terminal);
+                }
                 break;
             case 'ArrowUp':
                 e.preventDefault();
@@ -1229,8 +1231,8 @@ function setupWeatherInput(terminal, terminalId) {
     
     if (weatherInput) {
         // Handle 'q' key for quit only when it's the only character and at the start
-        registerEventListener(weatherInput, 'keypress', (event) => {
-            if ((event.key === 'q' || event.key === 'Q') && weatherInput.value === '') {
+        registerEventListener(weatherInput, 'keydown', (event) => {
+            if ((event.key === 'q' || event.key === 'Q') && event.ctrlKey) {
                 event.preventDefault();
                 closeTerminal(terminal);
                 return;
@@ -1386,7 +1388,7 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
         const restartInputLine = document.createElement('div');
         restartInputLine.className = 'xterm-line';
         const newInputId = `weatherRestartInput${terminal.dataset.terminalId}_${Date.now()}`;
-        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
+        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
         content.appendChild(restartInputLine);
         
         // Set up new weather input handling
@@ -1414,8 +1416,8 @@ function setupWeatherRestartInput(terminal, inputId) {
     
     if (weatherInput) {
         // Handle 'q' key for quit only when it's the only character and at the start
-        registerEventListener(weatherInput, 'keypress', (event) => {
-            if ((event.key === 'q' || event.key === 'Q') && weatherInput.value === '') {
+        registerEventListener(weatherInput, 'keydown', (event) => {
+            if ((event.key === 'q' || event.key === 'Q') && event.ctrlKey) {
                 event.preventDefault();
                 closeTerminal(terminal);
                 return;
@@ -1426,12 +1428,7 @@ function setupWeatherRestartInput(terminal, inputId) {
             if (event.key === 'Enter') {
                 const location = weatherInput.value.trim();
                 
-                if (location.toLowerCase() === 'q') {
-                    // Quit the weather app - close the terminal window
-                    closeTerminal(terminal);
-                    return;
-                    
-                } else if (location === '') {
+                if (location === '') {
                     // Empty enter - restart weather app
                     const inputLine = weatherInput.parentElement;
                     inputLine.innerHTML = '';
@@ -1447,7 +1444,7 @@ function setupWeatherRestartInput(terminal, inputId) {
                         const restartInputLine = document.createElement('div');
                         restartInputLine.className = 'xterm-line';
                         const newInputId = `weatherInput${terminal.dataset.terminalId}_${Date.now()}`;
-                        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
+                        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
                         content.appendChild(restartInputLine);
                         
                         // Set up weather input handling with the new input id
@@ -1525,7 +1522,7 @@ function setupWeatherRestartPrompt(terminal, content) {
     const restartInputLine = document.createElement('div');
     restartInputLine.className = 'xterm-line';
     const newInputId = `weatherRestartInput${terminal.dataset.terminalId}_${Date.now()}`;
-    restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
+    restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
     content.appendChild(restartInputLine);
     
     // Set up new weather input handling
@@ -1638,7 +1635,7 @@ function startOriginalClockerUpdate(terminalId, terminal) {
             // Move east (later timezone, higher index)
             terminal.timezoneIndex = (terminal.timezoneIndex + 1) % timezones.length;
             updateOriginalClocker(); // Immediate update
-        } else if (event.key === 'q' || event.key === 'Q') {
+        } else if ((event.key === 'q' || event.key === 'Q') && event.ctrlKey) {
             event.preventDefault();
             // Quit clocker - close the terminal window
             closeTerminal(terminal);
@@ -1971,7 +1968,7 @@ function recreateWeatherInterface(terminal) {
         const inputLine = document.createElement('div');
         inputLine.className = 'xterm-line';
         const inputId = `weatherInput${terminalId}_${Date.now()}`;
-        inputLine.innerHTML = `<input type="text" id="${inputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or 'q' to quit..." maxlength="50">`;
+        inputLine.innerHTML = `<input type="text" id="${inputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
         weatherInterface.appendChild(inputLine);
         
         content.appendChild(weatherInterface);
@@ -2152,7 +2149,7 @@ function setupClockerRestartInput(terminal, inputId) {
                     border-top: 1px solid #008800;
                     pointer-events: none;
                 `;
-                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Q to Quit';
+                statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Ctrl+Q to Quit';
                 content.appendChild(statusDiv);
                 
                 // Restart the clocker functionality
