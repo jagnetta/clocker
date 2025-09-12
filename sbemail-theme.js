@@ -117,9 +117,6 @@ function initSBEMAILTheme() {
     // Create Compy 386 computer
     createCompy386();
     
-    // Add sbemail-specific keyboard handlers
-    addSbemailKeyboardHandlers();
-    
     // Start pulsing stars
     startPulsingStars();
     
@@ -163,9 +160,6 @@ function cleanupSBEMAILTheme() {
     // Remove any lingering SBEMAIL elements
     const sbemailElements = document.querySelectorAll('.sbemail-boxing-gloves, .sbemail-boxing-gloves-pair, .sbemail-trogdor, .sbemail-trogdor-test, .sbemail-pulsing-star, .sbemail-crt-shutdown');
     sbemailElements.forEach(el => el.remove());
-    
-    // Remove sbemail-specific event listeners
-    removeSbemailKeyboardHandlers();
     
     // Remove SBEMAIL-specific body classes
     document.body.classList.remove('sbemail-theme');
@@ -389,6 +383,12 @@ function createCRTShutdownEffect(targetTheme, clickedButton, allButtons) {
         setTimeout(() => {
             // Clean up CRT effect
             crtShutdown.remove();
+
+            // Turn off the flashing yellow LED on the SBEMAIL button
+            const sbemailButton = document.querySelector('.sbemail-control-button.theme-btn[data-theme="sbemail"]');
+            if (sbemailButton) {
+                sbemailButton.classList.remove('rebooting');
+            }
             
             // Set flag and switch theme
             window.sbemailThemeSwitchInProgress = true;
@@ -468,6 +468,13 @@ function initiateCompyReboot() {
     if (!terminalContent) {
         return;
     }
+
+    // Get SBEMAIL button
+    const sbemailButton = document.querySelector('.sbemail-control-button.theme-btn[data-theme="sbemail"]');
+    if (sbemailButton) {
+        sbemailButton.classList.remove('active'); // Remove green active state
+        sbemailButton.classList.add('rebooting'); // Add pulsing amber state
+    }
     
     // Reset interruption flag to ensure reboot sequence can complete
     sbemailInterrupted = false;
@@ -531,62 +538,55 @@ function initiateCompyReboot() {
 
 // Start CRT effect for reboot, then boot up again
 function startRebootCRTEffect() {
-    
-    const terminalContent = document.getElementById('sbemailTerminalContent');
-    if (!terminalContent) {
+    const terminalBody = document.querySelector('.sbemail-terminal-body');
+    if (!terminalBody) {
+        console.error('🔥 Terminal body not found for CRT effect');
+        // Fallback to just restarting the boot sequence
+        showCompyBootSequence();
         return;
     }
-    
+
     // Ensure we're not interrupted during CRT effect
     sbemailInterrupted = false;
-    
-    // Create the CRT shutdown effect
+
+    // Create the CRT shutdown overlay
     const crtShutdown = document.createElement('div');
     crtShutdown.className = 'sbemail-crt-shutdown';
-    crtShutdown.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: linear-gradient(to bottom, transparent 0%, transparent 49.5%, #00ff00 50%, transparent 50.5%, transparent 100%);
-        background-size: 100% 4px;
-        z-index: 10000;
-        pointer-events: none;
-        animation: crt-collapse 1.5s ease-in forwards;
-    `;
-    
-    document.body.appendChild(crtShutdown);
-    
-    // After collapse, add static dot
+
+    // Create the collapsing raster effect
+    const rasterCollapse = document.createElement('div');
+    rasterCollapse.className = 'sbemail-raster-collapse';
+
+    crtShutdown.appendChild(rasterCollapse);
+    terminalBody.appendChild(crtShutdown);
+
+    // After raster collapse completes, create the static discharge dot
     setTimeout(() => {
+        if (sbemailInterrupted) return;
+
+        // Remove raster, add static dot
+        rasterCollapse.remove();
         const staticDot = document.createElement('div');
-        staticDot.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 4px;
-            height: 4px;
-            background: #ffffff;
-            z-index: 10001;
-            animation: static-dot-fade 1s ease-out forwards;
-        `;
         staticDot.className = 'sbemail-static-dot';
         crtShutdown.appendChild(staticDot);
-        
+
         // After static dot fade, restart boot sequence
         setTimeout(() => {
-            
             // Clean up CRT effect
             crtShutdown.remove();
-            
+
+            // Turn off the flashing yellow LED on the SBEMAIL button
+            const sbemailButton = document.querySelector('.sbemail-control-button.theme-btn[data-theme="sbemail"]');
+            if (sbemailButton) {
+                sbemailButton.classList.remove('rebooting');
+            }
+
             // Reset interruption flag and theme switch lock for fresh start
             sbemailInterrupted = false;
             sbemailThemeSwitchUsed = false; // Reactivate buttons after reboot
             showCompyBootSequence();
-        }, 1000);
-    }, 1500);
+        }, 1000); // Static dot fade time
+    }, 2000); // Raster collapse time
 }
 
 // Show Compy 386 boot sequence
@@ -818,41 +818,307 @@ function typeText(element, text, callback, typingSpeed = 80) {
     typeNextChar();
 }
 
+function makeTypo(str) {
+    if (str.length < 3) return str;
+    const pos = Math.floor(Math.random() * (str.length - 2)) + 1;
+    const char = str[pos];
+    let typo;
+    do {
+        typo = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    } while (typo === char);
+    return str.substring(0, pos) + typo + str.substring(pos + 1);
+}
+
+function tryCommand(promptElement, command, onSuccess) {
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) return;
+
+    promptElement.classList.remove('ready-for-input');
+
+    // 30% chance of making a syntax error
+    if (Math.random() < 0.3) {
+        const badCommand = makeTypo(command);
+        typeStrongBadCommand(promptElement, badCommand, () => {
+            const errorLine = document.createElement('div');
+            errorLine.className = 'sbemail-startup-line';
+            errorLine.style.color = '#ff0000'; // Red for error
+            terminalContent.appendChild(errorLine);
+
+            typeCompyResponse(errorLine, 'SYNTAX ERROR', () => {
+                const newPrompt = document.createElement('div');
+                newPrompt.className = 'sbemail-startup-line';
+                newPrompt.style.opacity = '1';
+                newPrompt.style.color = '#00ff00';
+                newPrompt.textContent = promptElement.textContent.split('>')[0] + '> ';
+                newPrompt.classList.add('ready-for-input');
+                terminalContent.appendChild(newPrompt);
+
+                setTimeout(() => {
+                    tryCommand(newPrompt, command, onSuccess); // Retry
+                }, 1000);
+            });
+        });
+    } else {
+        typeStrongBadCommand(promptElement, command, onSuccess); // Success
+    }
+}
+
+async function runLEDLampTest(terminalContent, callback) {
+    const themeButtons = document.querySelectorAll('.sbemail-control-button.theme-btn');
+    const sbemailButton = document.querySelector('.sbemail-control-button.theme-btn[data-theme="sbemail"]');
+    const wasActive = sbemailButton ? sbemailButton.classList.contains('active') : false;
+
+    if (wasActive) {
+        sbemailButton.classList.remove('active');
+    }
+
+    let lastLine;
+    const logTest = (message, append = false) => {
+        return new Promise(resolve => {
+            if (append && lastLine) {
+                typeCompyResponse(lastLine, message, resolve, 20);
+            } else {
+                const line = document.createElement('div');
+                line.className = 'sbemail-startup-line';
+                line.style.opacity = '1';
+                line.style.color = '#00ff00';
+                line.style.fontSize = '16px';
+                line.style.lineHeight = '1.4';
+                line.style.marginBottom = '6px';
+                line.textContent = '';
+                terminalContent.appendChild(line);
+                lastLine = line;
+                typeCompyResponse(line, message, resolve);
+            }
+        });
+    };
+
+    const setButtonColor = (btn, colorClass) => {
+        btn.classList.add(colorClass);
+    };
+    
+    const resetButtonStyles = () => {
+         themeButtons.forEach(btn => {
+            btn.classList.remove('sbemail-led-red', 'sbemail-led-green', 'sbemail-led-amber');
+         });
+    };
+
+    const resetSingleButtonStyles = (btn) => {
+        btn.classList.remove('sbemail-led-red', 'sbemail-led-green', 'sbemail-led-amber');
+    };
+
+    // Test 1: Serial Red
+    await logTest('Testing RED LED (Serial)...');
+    for (let i = 0; i < themeButtons.length; i++) {
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-red');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+
+        // Special handling for the 5th button (index 4)
+        if (i === 4) {
+            setButtonColor(currentButton, 'sbemail-led-red');
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on again
+            resetSingleButtonStyles(currentButton);
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off again
+        }
+    }
+
+    // Right-to-Left for Red
+    for (let i = themeButtons.length - 2; i >= 0; i--) { // Start from 4th button (index 3)
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-red');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+    }
+    await logTest('OK', true);
+
+    // Test 3: Serial Amber
+    await logTest('Testing AMBER LED (Serial)...');
+    for (let i = 0; i < themeButtons.length; i++) {
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-amber');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+
+        // Special handling for the 5th button (index 4)
+        if (i === 4) {
+            setButtonColor(currentButton, 'sbemail-led-amber');
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on again
+            resetSingleButtonStyles(currentButton);
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off again
+        }
+    }
+
+    // Right-to-Left for Amber
+    for (let i = themeButtons.length - 2; i >= 0; i--) { // Start from 4th button (index 3)
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-amber');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+    }
+    await logTest('OK', true);
+
+    // Test 2: Serial Green
+    await logTest('Testing GREEN LED (Serial)...');
+    for (let i = 0; i < themeButtons.length; i++) {
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-green');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+
+        // Special handling for the 5th button (index 4)
+        if (i === 4) {
+            setButtonColor(currentButton, 'sbemail-led-green');
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on again
+            resetSingleButtonStyles(currentButton);
+            await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off again
+        }
+    }
+
+    // Right-to-Left for Green
+    for (let i = themeButtons.length - 2; i >= 0; i--) { // Start from 4th button (index 3)
+        const currentButton = themeButtons[i];
+        setButtonColor(currentButton, 'sbemail-led-green');
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s on
+        resetSingleButtonStyles(currentButton); // Turn off current button
+        await new Promise(resolve => setTimeout(resolve, 200)); // 0.5s off
+    }
+    await logTest('OK', true);
+
+    // Test 3: Parallel RGB Sequence (5 times)
+    await logTest('Testing RGB LED (Parallel Sequence)...');
+    for (let i = 0; i < 5; i++) {
+        // Red
+        themeButtons.forEach(btn => setButtonColor(btn, 'sbemail-led-red'));
+        await new Promise(resolve => setTimeout(resolve, 200));
+        resetButtonStyles();
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Amber
+        themeButtons.forEach(btn => setButtonColor(btn, 'sbemail-led-amber'));
+        await new Promise(resolve => setTimeout(resolve, 200));
+        resetButtonStyles();
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Green
+        themeButtons.forEach(btn => setButtonColor(btn, 'sbemail-led-green'));
+        await new Promise(resolve => setTimeout(resolve, 200));
+        resetButtonStyles();
+        await new Promise(resolve => setTimeout(resolve, 200));
+    }
+    await logTest('OK', true);
+
+    callback();
+}
+
+// Show Compy 386 boot sequence
+function showCompyBootSequence() {
+    if (!shouldContinue()) return;
+    
+    const terminalContent = document.getElementById('sbemailTerminalContent');
+    if (!terminalContent) {
+        return;
+    }
+    
+    // Clear terminal content
+    terminalContent.innerHTML = '';
+    
+    const preTestMessages = [
+        'Compy 386 Starting...',
+        'Copyright (c) 1982, 2003 The Cheat Systems',
+        ''
+    ];
+
+    const postTestMessages = [
+        'Testing RAM...OK',
+        'Detecting Hard Drive...OK',
+        'Loading STRONGDOS v2.0...',
+        '',
+        'System Ready.',
+        'Welcome to StrongBadOS!'
+    ];
+    
+    const typeMessages = (messages, callback) => {
+        let chain = Promise.resolve();
+        messages.forEach((message) => {
+            chain = chain.then(() => new Promise(resolve => {
+                sbemailSetTimeout(() => {
+                    if (!shouldContinue()) return;
+                    
+                    const line = document.createElement('div');
+                    line.className = 'sbemail-startup-line';
+                    line.style.opacity = '1';
+                    line.style.color = '#00ff00';
+                    line.style.fontSize = '16px';
+                    line.style.lineHeight = '1.4';
+                    line.style.marginBottom = '6px';
+                    line.textContent = '';
+                    
+                    terminalContent.appendChild(line);
+                    
+                    if (message === 'System Ready.') {
+                        const sbemailButton = document.querySelector('.sbemail-control-button.theme-btn[data-theme="sbemail"]');
+                        if (sbemailButton) {
+                            sbemailButton.classList.add('active');
+                        }
+                    }
+                    if (message === '') {
+                        resolve();
+                    } else {
+                        typeCompyResponse(line, message, resolve);
+                    }
+                }, message === '' ? 200 : 800);
+            }));
+        });
+        chain.then(callback);
+    };
+
+    typeMessages(preTestMessages, () => {
+        runLEDLampTest(terminalContent, () => {
+            typeMessages(postTestMessages, () => {
+                sbemailSetTimeout(() => {
+                    startTerminalSequence();
+                }, 2000);
+            });
+        });
+    });
+}
+
 // Simulate DOS startup sequence with typing
 function showDOSStartup() {
     const terminalContent = document.getElementById('sbemailTerminalContent');
     const initialPrompt = document.getElementById('initialPrompt');
-    
+
     if (!terminalContent || !initialPrompt) {
         return;
     }
-    
-    // Step 1: Strong Bad types "cd sbemail_clock" command with boxing gloves
-    typeStrongBadCommand(initialPrompt, 'cd sbemail_clock', () => {
-        // Step 2: Add new line and show new prompt A:\SBEMAIL_CLOCK>
+
+    const onFirstCommandSuccess = () => {
+        const newPrompt = document.createElement('div');
+        newPrompt.className = 'sbemail-startup-line';
+        newPrompt.id = 'newPrompt';
+        newPrompt.style.opacity = '1';
+        newPrompt.style.color = '#00ff00';
+        newPrompt.textContent = 'A:\SBEMAIL_CLOCK> '; 
+        newPrompt.classList.add('ready-for-input');
+        terminalContent.appendChild(newPrompt);
+
         setTimeout(() => {
-            const newPrompt = document.createElement('div');
-            newPrompt.className = 'sbemail-startup-line';
-            newPrompt.id = 'newPrompt';
-            newPrompt.style.opacity = '1';
-            newPrompt.style.color = '#00ff00';
-            newPrompt.textContent = 'A:\\SBEMAIL_CLOCK> ';
-            newPrompt.classList.add('ready-for-input');
-            terminalContent.appendChild(newPrompt);
-            
-            // Step 3: After brief pause, type exe command on new prompt
-            setTimeout(() => {
-                newPrompt.classList.remove('ready-for-input');
-                
-                typeStrongBadCommand(newPrompt, 'sbemail_clock.exe', () => {
-                    // Step 4: Start program output (clock will start after screen clear)
-                    showProgramOutput();
-                });
-                
-            }, 1000); // 1 second pause at new prompt
-        }, 300); // Brief pause after cd command
-    }); // Strong Bad typing with boxing gloves
+            tryCommand(newPrompt, 'sbemail_clock.exe', () => {
+                showProgramOutput();
+            });
+        }, 1000);
+    };
+
+    tryCommand(initialPrompt, 'cd sbemail_clock', onFirstCommandSuccess);
 }
+
 
 // Show prsbemailram output lines one at a time
 function showProgramOutput() {
@@ -1546,40 +1812,7 @@ function startOgWeatherTickerScrolling() {
     // No longer needed - weather ticker now uses simple text updates
 }
 
-// Strong Bad's sbemail-specific keyboard handlers
-function addSbemailKeyboardHandlers() {
-    document.addEventListener('keydown', handleSbemailKeydown);
-}
 
-function removeSbemailKeyboardHandlers() {
-    document.removeEventListener('keydown', handleSbemailKeydown);
-}
-
-function handleSbemailKeydown(event) {
-    // Ctrl+C behavior for Strong Bad's Compy 386
-    if (event.ctrlKey && event.key === 'c') {
-        event.preventDefault();
-        
-        // Show Strong Bad-style exit message
-        const exitTime = new Date().toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit', 
-            second: '2-digit',
-            hour12: true,
-            timeZoneName: 'short'
-        });
-        
-        const exitDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-        const exitDate = formatDateWithOrdinal(new Date());
-        
-        alert(`Strong Bad's Compy 386 - SYSTEM SHUTDOWN\n\n"Oh, The Cheat! You deleted my emails again!"\n\nLsbemailged off at ${exitTime} on ${exitDay}, ${exitDate}.\n\nSwitching to next theme... Email me at strongbad@homestarrunner.com`);
-        
-        // Switch to random theme
-        if (typeof switchToRandomTheme === 'function') {
-            switchToRandomTheme('sbemail');
-        }
-    }
-}
 
 // Format date with ordinal suffix (helper function)
 function formatDateWithOrdinal(date) {

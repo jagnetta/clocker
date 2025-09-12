@@ -395,24 +395,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 85px;
-    padding: 8px;
+    width: 90px;
+    padding: 10px;
     border: 1px solid transparent;
-    border-radius: 2px;
+    border-radius: 8px;
     cursor: pointer;
     user-select: none;
-    background: rgba(192, 192, 192, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
 }
 
 .xterm-desktop-icon:hover {
-    background: rgba(0, 0, 255, 0.2);
-    border: 1px solid #0000ff;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .xterm-desktop-icon.selected {
-    background: rgba(0, 0, 255, 0.4);
-    border: 1px dotted #000000;
+    background: rgba(0, 122, 255, 0.3);
+    border: 1px solid rgba(0, 122, 255, 0.5);
 }
 
 .xterm-desktop-icon.double-clicked {
@@ -421,54 +421,58 @@
 }
 
 .xterm-icon-image {
-    width: 52px;
-    height: 52px;
-    background: linear-gradient(45deg, #c0c0c0, #808080);
-    border: 2px outset #c0c0c0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    margin-bottom: 4px;
+    font-size: 32px;
+    margin-bottom: 8px;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .xterm-icon-image::after {
     content: '';
     position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
     background: linear-gradient(135deg, 
-        rgba(255,255,255,0.3) 0%, 
+        rgba(255, 255, 255, 0.6) 0%, 
         transparent 50%, 
-        rgba(0,0,0,0.1) 100%);
+        rgba(0, 0, 0, 0.05) 100%);
     pointer-events: none;
 }
 
 .xterm-icon-weather {
-    color: #0080ff;
+    color: #007aff;
 }
 
 .xterm-icon-script {
-    color: #008000;
+    color: #34c759;
     font-family: 'Courier New', monospace;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: bold;
 }
 
 .xterm-icon-label {
-    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
-    font-size: 11px;
+    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 14px;
     color: #000000;
     text-align: center;
-    line-height: 1.1;
-    max-width: 85px;
+    line-height: 1.2;
+    max-width: 90px;
     word-wrap: break-word;
-    background: rgba(192, 192, 192, 0.8);
-    padding: 2px 4px;
-    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: 500;
 }
 
 /* Desktop icon animations */
