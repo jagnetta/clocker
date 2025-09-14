@@ -25,7 +25,7 @@
         inset -4px -4px 8px rgba(0, 0, 0, 0.3),
         inset 4px 4px 8px rgba(255, 255, 255, 0.2),
         0 8px 24px rgba(0, 0, 0, 0.6);
-    font-family: 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
+    font-family: 'Hack', 'Westminster', 'Press Start 2P', 'Orbitron', 'VT323', 'Courier New', monospace;
     overflow: hidden;
     z-index: 1000;
 }
