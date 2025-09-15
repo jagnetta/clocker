@@ -90,12 +90,7 @@ function createDesktopIcons() {
     const iconsContainer = document.createElement('div');
     iconsContainer.className = 'linux-desktop-icons';
     iconsContainer.innerHTML = `
-        <div class="xterm-desktop-icon" data-app="weather" title="Weather Application">
-            <div class="xterm-icon-image">
-                <span class="xterm-icon-weather" style="font-size: 30px;">🌦️</span>
-            </div>
-            <div class="xterm-icon-label">Weather</div>
-        </div>
+        
         <div class="xterm-desktop-icon" data-app="clocker" title="Clock Application">
             <div class="xterm-icon-image">
                 <span class="xterm-icon-script" style="font-size: 34px;">🕐</span>
@@ -217,9 +212,7 @@ function launchApplication(appType) {
         y = startY + ((openWindows.size % 8) * 35);
     }
     
-    if (appType === 'weather') {
-        launchWeatherApplication(terminalId, x, y);
-    } else if (appType === 'clocker') {
+     if (appType === 'clocker') {
         launchClockerApplication(terminalId, x, y);
     } else if (appType === 'xterm') {
         launchXTermApplication(terminalId, x, y);
@@ -230,59 +223,7 @@ function launchApplication(appType) {
     }
 }
 
-/**
- * Launch the Weather application
- */
-function launchWeatherApplication(terminalId, x, y) {
-    const terminal = createDraggableTerminal(terminalId, 'weather', x, y, 700, 500);
-    document.body.appendChild(terminal);
-    linuxTerminals.push(terminal);
-    openWindows.set('weather', terminal); // Track this window
-    
-    // Focus the new terminal
-    setTimeout(() => {
-        bringToFront(terminal);
-        
-        // Simulate typing the weather command
-        const content = terminal.querySelector('.xterm-content');
-        const initialPrompt = content.querySelector('.xterm-line');
-        
-        // Show the command being typed
-        setTimeout(() => {
-            initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ ./weather`;
-            
-            // Add new line and show the weather prompt
-            setTimeout(() => {
-                const promptLine = document.createElement('div');
-                promptLine.className = 'xterm-line';
-                promptLine.innerHTML = `Enter Location for Weather Forecast (Enter to Continue): `;
-                content.appendChild(promptLine);
-                
-                // Create input for weather location
-                const inputLine = document.createElement('div');
-                inputLine.className = 'xterm-line';
-                inputLine.innerHTML = `<input type="text" id="weatherInput${terminalId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
-                content.appendChild(inputLine);
-                
-                // Set up weather input handling
-                setupWeatherInput(terminal, terminalId);
-                
-                // Show cursor after input
-                showCursorInTerminal(terminal);
-                
-                // Focus the input
-                setTimeout(() => {
-                    const weatherInput = document.getElementById(`weatherInput${terminalId}`);
-                    if (weatherInput) {
-                        weatherInput.focus();
-                    }
-                }, 100);
-                
-            }, 1000);
-        }, 500);
-        
-    }, 100);
-}
+
 
 /**
  * Launch the Clocker application (original clocker script)
@@ -314,7 +255,7 @@ function launchClockerApplication(terminalId, x, y) {
                 const clockerDiv = document.createElement('div');
                 clockerDiv.id = `xtermClocker${terminalId}`;
                 clockerDiv.className = 'xterm-clocker';
-                clockerDiv.style.cssText = `
+                clockerDiv.style.cssText = '
                     position: absolute;
                     top: 0;
                     left: 0;
@@ -325,16 +266,16 @@ function launchClockerApplication(terminalId, x, y) {
                     align-items: center;
                     justify-content: center;
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     pointer-events: none;
-                `;
+                ';
                 content.appendChild(clockerDiv);
                 
                 // Create timezone controls area at the bottom
                 const timezoneDiv = document.createElement('div');
                 timezoneDiv.id = `xtermTimezone${terminalId}`;
                 timezoneDiv.className = 'xterm-clocker-timezone';
-                timezoneDiv.style.cssText = `
+                timezoneDiv.style.cssText = '
                     position: absolute;
                     bottom: 25px;
                     left: 0;
@@ -345,18 +286,18 @@ function launchClockerApplication(terminalId, x, y) {
                     align-items: center;
                     justify-content: center;
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     background: rgba(0, 0, 0, 0.1);
                     border-top: 1px solid #00ff00;
                     pointer-events: none;
-                `;
+                ';
                 content.appendChild(timezoneDiv);
                 
                 // Create status bar at the very bottom
                 const statusDiv = document.createElement('div');
                 statusDiv.id = `xtermStatus${terminalId}`;
                 statusDiv.className = 'xterm-clocker-status';
-                statusDiv.style.cssText = `
+                statusDiv.style.cssText = '
                     position: absolute;
                     bottom: 0;
                     left: 0;
@@ -368,12 +309,12 @@ function launchClockerApplication(terminalId, x, y) {
                     align-items: center;
                     justify-content: center;
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     font-size: 12px;
                     font-weight: bold;
                     border-top: 1px solid #008800;
                     pointer-events: none;
-                `;
+                ';
                 statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Ctrl+Q to Quit';
                 content.appendChild(statusDiv);
                 
@@ -396,12 +337,12 @@ function launchClockerApplication(terminalId, x, y) {
                         case 'ArrowLeft':
                             e.preventDefault();
                             // Change timezone (existing functionality)
-                            terminal.timezoneIndex = (terminal.timezoneIndex - 1 + worldTimezones.length) % worldTimezones.length;
+                            terminal.timezoneIndex = (terminal.timezoneIndex - 1 + timezones.length) % timezones.length;
                             break;
                         case 'ArrowRight':
                             e.preventDefault();
                             // Change timezone (existing functionality)
-                            terminal.timezoneIndex = (terminal.timezoneIndex + 1) % worldTimezones.length;
+                            terminal.timezoneIndex = (terminal.timezoneIndex + 1) % timezones.length;
                             break;
                         case 'ArrowUp':
                             e.preventDefault();
@@ -616,8 +557,8 @@ check_requirements() {
         fi
     done
     
-    if [[ \${#missing_commands[@]} -gt 0 ]]; then
-        printf "Error: Missing required commands: %s\\n" "\${missing_commands[*]}" >&2
+    if [[ \\[\${#missing_commands[@]} -gt 0 ]]]; then
+        printf "Error: Missing required commands: %s\\n" "\\[\${missing_commands[*]}\"" >&2
         exit 1
     fi
     
@@ -630,7 +571,7 @@ check_requirements() {
     # Check minimum terminal size
     update_terminal_size
     if [[ $TERMINAL_WIDTH -lt $MIN_WIDTH || $TERMINAL_HEIGHT -lt $MIN_HEIGHT ]]; then
-        echo "Error: Terminal too small (minimum \${MIN_WIDTH}x\${MIN_HEIGHT}, current \${TERMINAL_WIDTH}x\${TERMINAL_HEIGHT})" >&2
+        echo "Error: Terminal too small (minimum \\\\\${MIN_WIDTH}x\\\${MIN_HEIGHT}, current \\\\[$TERMINAL_WIDTH]x\\\${TERMINAL_HEIGHT})" >&2
         exit 1
     fi
 }
@@ -655,10 +596,10 @@ get_ordinal_suffix() {
     
     # Regular cases based on last digit
     case $last_digit in
-        1) echo "st" ;;
-        2) echo "nd" ;;
-        3) echo "rd" ;;
-        *) echo "th" ;;
+        1) echo "st" ;; 
+        2) echo "nd" ;; 
+        3) echo "rd" ;; 
+        *) echo "th" ;; 
     esac
 }
 
@@ -722,8 +663,8 @@ calculate_positions() {
 # Display the formatted time
 display_time() {
     # Only clear and reposition if content actually changed
-    local new_content="\$DISPLAY_DAY\$DISPLAY_DATE\$DISPLAY_TIME"
-    if [[ "\$new_content" != "\$last_content" ]]; then
+    local new_content="$DISPLAY_DAY$DISPLAY_DATE$DISPLAY_TIME"
+    if [[ "$new_content" != "$last_content" ]]; then
         tput clear
         
         # Position and display day
@@ -738,7 +679,7 @@ display_time() {
         tput cup "$((TIME_ROW - 1))" "$((TIME_COL - 1))" 2>/dev/null || true
         echo -n "$DISPLAY_TIME"
         
-        last_content="\$new_content"
+        last_content="$new_content"
     fi
 }
 
@@ -791,7 +732,7 @@ main() {
         
         # Build display strings
         DISPLAY_DAY="$day_name"
-        DISPLAY_DATE="$month_name $day_num$ordinal_suffix, $year"  
+        DISPLAY_DATE="$month_name $day_num$ordinal_suffix, $year"
         DISPLAY_TIME="$hour:$minute:$second $ampm $timezone"
         
         # Update terminal size and calculate positions
@@ -807,7 +748,8 @@ main() {
 }
 
 # Execute main function
-main "$@"`;
+main "$@"
+`;
 }
 
 /**
@@ -1021,11 +963,11 @@ function createLessViewer(terminal, content, filename = 'file') {
     
     // Create less viewer container
     const lessContainer = document.createElement('div');
-    lessContainer.style.cssText = `
+    lessContainer.style.cssText = '
         position: relative;
         height: calc(100% - 20px);
         margin-top: 2px;
-    `;
+    ';
     
     // Create the scrollable text area
     const lessViewer = document.createElement('div');
@@ -1192,6 +1134,8 @@ function setupResizeHandler(terminal, lessViewer) {
     if (window.ResizeObserver) {
         const resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(terminal);
+        // Store observer for cleanup
+        terminal.clockerResizeObserver = resizeObserver;
     } else {
         registerEventListener(window, 'resize', handleResize);
     }
@@ -1238,59 +1182,7 @@ function getAppTypeFromTerminal(terminal) {
     return null;
 }
 
-/**
- * Setup weather input handling for a terminal
- */
-function setupWeatherInput(terminal, terminalId) {
-    const weatherInput = document.getElementById(`weatherInput${terminalId}`);
-    const content = terminal.querySelector('.xterm-content');
-    
-    if (weatherInput) {
-        // Handle 'q' key for quit only when it's the only character and at the start
-        registerEventListener(weatherInput, 'keydown', (event) => {
-            if ((event.key === 'q' || event.key === 'Q') && event.ctrlKey) {
-                event.preventDefault();
-                closeTerminal(terminal);
-                return;
-            }
-        });
-        
-        registerEventListener(weatherInput, 'keypress', async (event) => {
-            if (event.key === 'Enter') {
-                const location = weatherInput.value.trim();
-                
-                if (location) {
-                    // Hide the input and show what was typed
-                    const inputLine = weatherInput.parentElement;
-                    inputLine.innerHTML = `${location}`;
-                    
-                    // Show loading
-                    const loadingLine = document.createElement('div');
-                    loadingLine.className = 'xterm-line';
-                    loadingLine.innerHTML = 'Connecting to weather service...';
-                    content.appendChild(loadingLine);
-                    
-                    try {
-                        // Use the existing weather API function
-                        const weatherData = await fetchWeatherData(location);
-                        
-                        if (weatherData) {
-                            // Remove loading line
-                            loadingLine.remove();
-                            
-                            // Create weather ticker display
-                            createWeatherNcursesDisplay(terminal, weatherData);
-                        } else {
-                            loadingLine.innerHTML = 'ERROR: Location not found';
-                        }
-                    } catch (error) {
-                        loadingLine.innerHTML = `ERROR: ${error.message}`;
-                    }
-                }
-            }
-        });
-    }
-}
+
 
 /**
  * Create weather ncurses display in terminal
@@ -1305,12 +1197,12 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     // Create weather display container
     const weatherDisplay = document.createElement('div');
     weatherDisplay.className = 'xterm-weather-ncurses';
-    weatherDisplay.style.cssText = `
+    weatherDisplay.style.cssText = '
         border: 1px solid #00ff00;
         padding: 8px;
         margin: 8px 0;
         background: rgba(0, 0, 0, 0.8);
-    `;
+    ';
     
     // Current weather
     const currentTemp = Math.round((weatherData.current.temp * 9/5) + 32);
@@ -1397,7 +1289,7 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     setTimeout(() => {
         const restartPromptLine = document.createElement('div');
         restartPromptLine.className = 'xterm-line';
-        restartPromptLine.innerHTML = 'Enter Location for Weather Forecast (Enter to Continue or Q to Quit): ';
+        restartPromptLine.innerHTML = 'Enter Location for Weather Forecast (Enter to Continue or Q to Quit): '; // Corrected: Removed extra newline
         content.appendChild(restartPromptLine);
         
         // Create new input for restart
@@ -1408,7 +1300,7 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
         content.appendChild(restartInputLine);
         
         // Set up new weather input handling
-        setupWeatherRestartInput(terminal, newInputId);
+        
         
         // Focus the new input
         setTimeout(() => {
@@ -1423,138 +1315,9 @@ function createWeatherNcursesDisplay(terminal, weatherData) {
     }, 1000);
 }
 
-/**
- * Setup weather restart input handling
- */
-function setupWeatherRestartInput(terminal, inputId) {
-    const weatherInput = document.getElementById(inputId);
-    const content = terminal.querySelector('.xterm-content');
-    
-    if (weatherInput) {
-        // Handle 'q' key for quit only when it's the only character and at the start
-        registerEventListener(weatherInput, 'keydown', (event) => {
-            if ((event.key === 'q' || event.key === 'Q') && event.ctrlKey) {
-                event.preventDefault();
-                closeTerminal(terminal);
-                return;
-            }
-        });
-        
-        registerEventListener(weatherInput, 'keypress', async (event) => {
-            if (event.key === 'Enter') {
-                const location = weatherInput.value.trim();
-                
-                if (location === '') {
-                    // Empty enter - restart weather app
-                    const inputLine = weatherInput.parentElement;
-                    inputLine.innerHTML = '';
-                    
-                    // Start weather app again from this point
-                    setTimeout(() => {
-                        const promptLine = document.createElement('div');
-                        promptLine.className = 'xterm-line';
-                        promptLine.innerHTML = 'Enter Location for Weather Forecast (Enter to Continue): ';
-                        content.appendChild(promptLine);
-                        
-                        // Create input for weather location
-                        const restartInputLine = document.createElement('div');
-                        restartInputLine.className = 'xterm-line';
-                        const newInputId = `weatherInput${terminal.dataset.terminalId}_${Date.now()}`;
-                        restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
-                        content.appendChild(restartInputLine);
-                        
-                        // Set up weather input handling with the new input id
-                        setupWeatherRestartInput(terminal, newInputId);
-                        
-                        // Show cursor after input
-                        showCursorInTerminal(terminal);
-                        
-                        // Focus the input
-                        setTimeout(() => {
-                            const weatherInput = document.getElementById(newInputId);
-                            if (weatherInput) {
-                                weatherInput.focus();
-                            }
-                        }, 100);
-                        
-                        // Scroll to bottom
-                        content.scrollTop = content.scrollHeight;
-                        
-                    }, 500);
-                    
-                } else if (location) {
-                    // New weather search
-                    const inputLine = weatherInput.parentElement;
-                    inputLine.innerHTML = location;
-                    
-                    // Show loading
-                    const loadingLine = document.createElement('div');
-                    loadingLine.className = 'xterm-line';
-                    loadingLine.innerHTML = 'Connecting to weather service...';
-                    content.appendChild(loadingLine);
-                    
-                    try {
-                        // Use the existing weather API function
-                        const weatherData = await fetchWeatherData(location);
-                        
-                        if (weatherData) {
-                            // Remove loading line
-                            loadingLine.remove();
-                            
-                            // Create weather ticker display
-                            createWeatherNcursesDisplay(terminal, weatherData);
-                        } else {
-                            loadingLine.innerHTML = 'ERROR: Location not found';
-                            
-                            // Add restart prompt after error
-                            setTimeout(() => {
-                                setupWeatherRestartPrompt(terminal, content);
-                            }, 2000);
-                        }
-                    } catch (error) {
-                        loadingLine.innerHTML = `ERROR: ${error.message}`;
-                        
-                        // Add restart prompt after error
-                        setTimeout(() => {
-                            setupWeatherRestartPrompt(terminal, content);
-                        }, 2000);
-                    }
-                }
-            }
-        });
-    }
-}
 
-/**
- * Setup weather restart prompt (helper function)
- */
-function setupWeatherRestartPrompt(terminal, content) {
-    const restartPromptLine = document.createElement('div');
-    restartPromptLine.className = 'xterm-line';
-    restartPromptLine.innerHTML = 'Enter Location for Weather Forecast (Enter to Continue or Q to Quit): ';
-    content.appendChild(restartPromptLine);
-    
-    // Create new input for restart
-    const restartInputLine = document.createElement('div');
-    restartInputLine.className = 'xterm-line';
-    const newInputId = `weatherRestartInput${terminal.dataset.terminalId}_${Date.now()}`;
-    restartInputLine.innerHTML = `<input type="text" id="${newInputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
-    content.appendChild(restartInputLine);
-    
-    // Set up new weather input handling
-    setupWeatherRestartInput(terminal, newInputId);
-    
-    // Focus the new input
-    setTimeout(() => {
-        const newWeatherInput = document.getElementById(newInputId);
-        if (newWeatherInput) {
-            newWeatherInput.focus();
-        }
-    }, 100);
-    
-    // Scroll to bottom
-    content.scrollTop = content.scrollHeight;
-}
+
+
 
 /**
  * Start original clocker updates for a terminal with centering and timezone controls
@@ -1731,10 +1494,10 @@ function handleClockerQuit(terminal) {
     // Show the exit message exactly like the original clocker script
     const exitLine = document.createElement('div');
     exitLine.className = 'xterm-line';
-    exitLine.style.cssText = `
+    exitLine.style.cssText = '
         color: #00ff00;
         margin-top: 5px;
-    `;
+    ';
     exitLine.innerHTML = `<br>Quit at ${timeStr} on ${dayStr}, ${dateStr}.`;
     content.appendChild(exitLine);
     
@@ -1765,7 +1528,7 @@ function setupTerminalCommandInput(terminal, promptLine, appType = 'clocker') {
     }
     
     // Determine the last command based on app type
-    const lastCommand = appType === 'weather' ? './weather' : './clocker';
+        const lastCommand = './clocker';
     
     const handleCommandInput = (event) => {
         // Only handle keys when this terminal is focused
@@ -1797,19 +1560,7 @@ function setupTerminalCommandInput(terminal, promptLine, appType = 'clocker') {
                         recreateClockerInterface(terminal);
                     }, 100);
                     return;
-                } else if (command === './weather' || (command === '' && appType === 'weather')) {
-                    // Add command to history
-                    if (command && !terminal.commandHistory.includes(command)) {
-                        terminal.commandHistory.push(command);
-                    }
-                    // Restart weather application
-                    setTimeout(() => {
-                        const content = terminal.querySelector('.xterm-content');
-                        content.innerHTML = '';
-                        recreateWeatherInterface(terminal);
-                    }, 100);
-                    return;
-                } else if (command === '!!') {
+                }  else if (command === '!!') {
                     // Repeat last command (!! behavior)
                     if (terminal.commandHistory.length > 0) {
                         const lastCmd = terminal.commandHistory[terminal.commandHistory.length - 1];
@@ -1824,14 +1575,7 @@ function setupTerminalCommandInput(terminal, promptLine, appType = 'clocker') {
                                 recreateClockerInterface(terminal);
                             }, 100);
                             return;
-                        } else if (lastCmd === './weather') {
-                            setTimeout(() => {
-                                const content = terminal.querySelector('.xterm-content');
-                                content.innerHTML = '';
-                                recreateWeatherInterface(terminal);
-                            }, 100);
-                            return;
-                        }
+                        } 
                     } else {
                         // No command history
                         const errorLine = document.createElement('div');
@@ -1948,59 +1692,7 @@ function setupTerminalCommandInput(terminal, promptLine, appType = 'clocker') {
 /**
  * Recreate the weather interface after restart
  */
-function recreateWeatherInterface(terminal) {
-    const terminalId = terminal.dataset.terminalId;
-    const content = terminal.querySelector('.xterm-content');
-    
-    // Create initial weather prompt
-    const initialPrompt = document.createElement('div');
-    initialPrompt.className = 'xterm-line';
-    initialPrompt.innerHTML = `<span class="xterm-prompt">${linuxUsername}@${linuxHostname}</span>:<span class="xterm-path">~</span>$ ./weather`;
-    content.appendChild(initialPrompt);
-    
-    // Start the weather application simulation
-    setTimeout(() => {
-        // Create weather interface
-        const weatherInterface = document.createElement('div');
-        weatherInterface.className = 'xterm-line';
-        weatherInterface.style.cssText = `
-            border: 1px solid #00ff00;
-            padding: 4px;
-            margin: 4px 0;
-        `;
-        
-        const weatherTitle = document.createElement('div');
-        weatherTitle.style.cssText = `
-            background: #00ff00;
-            color: #000000;
-            padding: 2px;
-            text-align: center;
-            font-weight: bold;
-        `;
-        weatherTitle.textContent = 'Weather Data Interface';
-        weatherInterface.appendChild(weatherTitle);
-        
-        // Create weather input
-        const inputLine = document.createElement('div');
-        inputLine.className = 'xterm-line';
-        const inputId = `weatherInput${terminalId}_${Date.now()}`;
-        inputLine.innerHTML = `<input type="text" id="${inputId}" class="xterm-weather-input" style="background: transparent; border: none; color: #00ff00; outline: none; font-family: 'Courier New', monospace; font-size: 14px; width: 300px;" placeholder="Enter city name or '(Ctrl+q)' to quit..." maxlength="50">`;
-        weatherInterface.appendChild(inputLine);
-        
-        content.appendChild(weatherInterface);
-        
-        // Set up weather input handling
-        setupWeatherInput(terminal, inputId);
-        
-        // Focus the input
-        setTimeout(() => {
-            const weatherInput = document.getElementById(inputId);
-            if (weatherInput) {
-                weatherInput.focus();
-            }
-        }, 100);
-    }, 500);
-}
+
 
 /**
  * Recreate the clocker interface after restart
@@ -2025,22 +1717,22 @@ function recreateClockerInterface(terminal) {
     const clockerDiv = document.createElement('div');
     clockerDiv.id = `xtermClocker${terminalId}`;
     clockerDiv.className = 'xterm-clocker';
-    clockerDiv.style.cssText = `
+    clockerDiv.style.cssText = '
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+        font-family: "Courier New", "DejaVu Sans Mono", monospace;
         pointer-events: none;
-    `;
+    ';
     content.appendChild(clockerDiv);
     
     // Recreate timezone controls
     const timezoneDiv = document.createElement('div');
     timezoneDiv.id = `xtermTimezone${terminalId}`;
     timezoneDiv.className = 'xterm-clocker-timezone';
-    timezoneDiv.style.cssText = `
+    timezoneDiv.style.cssText = '
         position: absolute;
         bottom: 25px;
         left: 0;
@@ -2051,18 +1743,18 @@ function recreateClockerInterface(terminal) {
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+        font-family: "Courier New", "DejaVu Sans Mono", monospace;
         background: rgba(0, 0, 0, 0.1);
         border-top: 1px solid #00ff00;
         pointer-events: none;
-    `;
+    ';
     content.appendChild(timezoneDiv);
     
     // Recreate status bar
     const statusDiv = document.createElement('div');
     statusDiv.id = `xtermStatus${terminalId}`;
     statusDiv.className = 'xterm-clocker-status';
-    statusDiv.style.cssText = `
+    statusDiv.style.cssText = '
         position: absolute;
         bottom: 0;
         left: 0;
@@ -2074,12 +1766,12 @@ function recreateClockerInterface(terminal) {
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+        font-family: "Courier New", "DejaVu Sans Mono", monospace;
         font-size: 12px;
         font-weight: bold;
         border-top: 1px solid #008800;
         pointer-events: none;
-    `;
+    ';
     statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Q to Quit';
     content.appendChild(statusDiv);
     
@@ -2110,22 +1802,22 @@ function setupClockerRestartInput(terminal, inputId) {
                 const clockerDiv = document.createElement('div');
                 clockerDiv.id = `xtermClocker${terminalId}`;
                 clockerDiv.className = 'xterm-clocker';
-                clockerDiv.style.cssText = `
+                clockerDiv.style.cssText = '
                     position: absolute;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     pointer-events: none;
-                `;
+                ';
                 content.appendChild(clockerDiv);
                 
                 // Recreate timezone controls
                 const timezoneDiv = document.createElement('div');
                 timezoneDiv.id = `xtermTimezone${terminalId}`;
                 timezoneDiv.className = 'xterm-clocker-timezone';
-                timezoneDiv.style.cssText = `
+                timezoneDiv.style.cssText = '
                     position: absolute;
                     bottom: 25px;
                     left: 0;
@@ -2136,18 +1828,18 @@ function setupClockerRestartInput(terminal, inputId) {
                     align-items: center;
                     justify-content: center;
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     background: rgba(0, 0, 0, 0.1);
                     border-top: 1px solid #00ff00;
                     pointer-events: none;
-                `;
+                ';
                 content.appendChild(timezoneDiv);
                 
                 // Recreate status bar
                 const statusDiv = document.createElement('div');
                 statusDiv.id = `xtermStatus${terminalId}`;
                 statusDiv.className = 'xterm-clocker-status';
-                statusDiv.style.cssText = `
+                statusDiv.style.cssText = '
                     position: absolute;
                     bottom: 0;
                     left: 0;
@@ -2159,12 +1851,12 @@ function setupClockerRestartInput(terminal, inputId) {
                     align-items: center;
                     justify-content: center;
                     text-align: center;
-                    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+                    font-family: "Courier New", "DejaVu Sans Mono", monospace;
                     font-size: 12px;
                     font-weight: bold;
                     border-top: 1px solid #008800;
                     pointer-events: none;
-                `;
+                ';
                 statusDiv.innerHTML = 'Left/Right Arrow Key to change timezone, Up/Down Arrow Key to change size, Ctrl+Q to Quit';
                 content.appendChild(statusDiv);
                 
@@ -2771,7 +2463,100 @@ function showCursorInTerminal(terminal) {
     const allLines = content.querySelectorAll('.xterm-line');
     for (let i = allLines.length - 1; i >= 0; i--) {
         const line = allLines[i];
-        if (line.textContent.includes('$') && !line.textContent.includes('weather')) {
+        if (line.textContent.includes('
+            // This is a command prompt line, add cursor at the end
+            const cursor = createGreenCursor();
+            line.appendChild(cursor);
+            break;
+        }
+    }
+}
+
+/**
+ * Add a new prompt line to a terminal with cursor
+ */
+function addPromptLine(terminal, command = null) {
+    const content = terminal.querySelector('.xterm-content');
+    const terminalId = terminal.dataset.terminalId;
+    
+    // If a command was executed, add it to history first
+    if (command) {
+        const commandLine = document.createElement('div');
+        commandLine.className = 'xterm-line';
+        commandLine.innerHTML = `<span class="xterm-prompt">${xtermUsername}@${xtermHostname}</span>:<span class="xterm-path">~</span>$ ${command}`;
+        content.appendChild(commandLine);
+    }
+    
+    // Add new prompt line
+    const newPromptLine = document.createElement('div');
+    newPromptLine.className = 'xterm-line';
+    newPromptLine.innerHTML = `<span class="xterm-prompt">${xtermUsername}@${xtermHostname}</span>:<span class="xterm-path">~</span>$ `;
+    content.appendChild(newPromptLine);
+    
+    // Show cursor in the focused terminal
+    if (terminal.classList.contains('focused')) {
+        showCursorInTerminal(terminal);
+    }
+    
+    // Scroll to bottom
+    content.scrollTop = content.scrollHeight;
+}
+
+
+/**
+ * Handle Linux theme clicks
+ */
+function handleLinuxClick(x, y) {
+    // Check if click is on a terminal - if not, create a subtle desktop effect
+    const clickedElement = document.elementFromPoint(x, y);
+    const clickedTerminal = clickedElement?.closest('.linux-terminal');
+    
+    if (!clickedTerminal) {
+        // Click on desktop - brief flash effect on all terminals
+        const terminals = document.querySelectorAll('.linux-terminal');
+        terminals.forEach(terminal => {
+            const originalShadow = terminal.style.boxShadow;
+            terminal.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.3)';
+            setTimeout(() => {
+                terminal.style.boxShadow = originalShadow;
+            }, 150);
+        });
+    }
+    // If clicked on terminal, the focus management is handled by setupWindowFocus
+}
+
+/**
+ * Cleanup xTerm theme
+ */
+function cleanupLinuxTheme() {
+    console.log('Cleaning up Linux Theme...');
+    // Clear all intervals
+    linuxIntervals.forEach(intervalId => {
+        clearInterval(intervalId);
+    });
+    linuxIntervals = [];
+    
+    // Remove desktop icons
+    const iconsContainer = document.querySelector('.linux-desktop-icons');
+    if (iconsContainer && iconsContainer.parentNode) {
+        iconsContainer.parentNode.removeChild(iconsContainer);
+    }
+    
+    // Remove all terminal windows
+    const terminals = document.querySelectorAll('.linux-terminal');
+    terminals.forEach(terminal => {
+        if (terminal.parentNode) {
+            terminal.parentNode.removeChild(terminal);
+        }
+    });
+    
+    // Clear references
+    linuxTerminals = [];
+    openWindows.clear();
+    nextTerminalId = 1;
+    
+}
+)) {
             // This is a command prompt line, add cursor at the end
             const cursor = createGreenCursor();
             line.appendChild(cursor);

@@ -321,12 +321,9 @@ async function validateThemeDOM(themeName) {
     
     switch (themeName) {
         case 'matrix':
-            // Matrix needs clock container and weather container (using correct selectors)
+            // Matrix needs clock container
             if (!document.querySelector('.clock-container')) {
                 errors.push('Matrix theme requires .clock-container element');
-            }
-            if (!document.querySelector('.weather-container')) {
-                errors.push('Matrix theme requires .weather-container element');
             }
             break;
             
@@ -560,6 +557,21 @@ async function switchToTheme(themeName) {
     
     // Step 3.5: Force DOM reflow to ensure styles are applied
     document.body.offsetHeight;
+
+    // Hide weather panel for specific themes
+    const weatherPanel = document.getElementById('weatherPanel');
+    if (weatherPanel) {
+        console.log(`[DEBUG] switchToTheme: Weather panel found. Current display style: ${weatherPanel.style.display}`);
+        if (['matrix', 'lcars', 'thor'].includes(themeName)) {
+            weatherPanel.style.display = 'none';
+            console.log(`[DEBUG] switchToTheme: Hiding weather panel for theme: ${themeName}. New display style: ${weatherPanel.style.display}`);
+        } else {
+            weatherPanel.style.display = ''; // Reset to default display
+            console.log(`[DEBUG] switchToTheme: Showing weather panel for theme: ${themeName}. New display style: ${weatherPanel.style.display}`);
+        }
+    } else {
+        console.log(`[DEBUG] switchToTheme: Weather panel not found when switching to theme: ${themeName}`);
+    }
     
     // Step 4: Load new theme resources
     const loaded = await loadTheme(themeName);
@@ -614,6 +626,8 @@ async function switchToTheme(themeName) {
     }
     
     
+    
+
     // Quick health check after theme has had time to initialize
     setTimeout(async () => {
         const clockElement = document.getElementById('clock');
@@ -1421,51 +1435,7 @@ function getLastSunday(year, month) {
     return date.getDate() - dayOfWeek;
 }
 
-function showCustomConfirm(title, message) {
-    return new Promise((resolve) => {
-        const modalOverlay = document.createElement('div');
-        modalOverlay.className = 'custom-modal-overlay';
 
-        const modal = document.createElement('div');
-        modal.className = 'custom-modal';
-
-        const modalTitle = document.createElement('div');
-        modalTitle.className = 'custom-modal-title';
-        modalTitle.textContent = title;
-
-        const modalMessage = document.createElement('pre');
-        modalMessage.className = 'custom-modal-message';
-        modalMessage.textContent = message;
-
-        const modalTimer = document.createElement('div');
-        modalTimer.className = 'custom-modal-timer';
-        
-        let countdown = 10;
-        modalTimer.textContent = `Switching in ${countdown}...`;
-
-        modal.appendChild(modalTitle);
-        modal.appendChild(modalMessage);
-        modal.appendChild(modalTimer);
-        modalOverlay.appendChild(modal);
-        document.body.appendChild(modalOverlay);
-
-        const interval = setInterval(() => {
-            countdown--;
-            modalTimer.textContent = `Switching in ${countdown}...`;
-            if (countdown <= 0) {
-                clearInterval(interval);
-                document.body.removeChild(modalOverlay);
-                resolve(true);
-            }
-        }, 1000);
-
-        modalTimer.addEventListener('click', () => {
-            countdown -= 3;
-            if (countdown < 0) countdown = 0;
-            modalTimer.textContent = `Switching in ${countdown}...`;
-        });
-    });
-}
 
 // Keyboard shortcuts
 function initKeyboardShortcuts() {
@@ -1500,16 +1470,12 @@ function initKeyboardShortcuts() {
             };
             
             const currentMessage = exitMessages[currentTheme] || exitMessages['matrix'];
-            
-            const userConfirmed = await showCustomConfirm(currentMessage.title, currentMessage.message + '\n\nClick the timer to switch themes....');
 
-            if (userConfirmed) {
-                // Switch to a different random theme (mobile-filtered)
-                const appropriateThemes = getMobileAppropriateThemes();
-                const otherThemes = appropriateThemes.filter(theme => theme !== currentTheme);
-                const nextTheme = otherThemes[Math.floor(Math.random() * otherThemes.length)];
-                switchToTheme(nextTheme);
-            }
+            // Switch to a different random theme (mobile-filtered)
+            const appropriateThemes = getMobileAppropriateThemes();
+            const otherThemes = appropriateThemes.filter(theme => theme !== currentTheme);
+            const nextTheme = otherThemes[Math.floor(Math.random() * otherThemes.length)];
+            switchToTheme(nextTheme);
         }
         
         // Easter eggs for extra sass (disabled for Linux theme)
@@ -1550,475 +1516,7 @@ function detectMobileDevice() {
     return isMobileDevice;
 }
 
-// Weather functionality
-let weatherApiKey = '1e9db439b2d25a3ec0549dd6dd6d5854'; // OpenWeatherMap API key
 
-// Weather icon mapping
-const weatherIcons = {
-    'clear': '☀️',
-    'sunny': '☀️',
-    'partly-cloudy': '⛅',
-    'cloudy': '☁️',
-    'overcast': '☁️',
-    'rain': '🌧️',
-    'drizzle': '🌦️',
-    'showers': '🌦️',
-    'snow': '🌨️',
-    'sleet': '🌨️',
-    'thunderstorm': '⛈️',
-    'fsbemail': '🌫️',
-    'mist': '🌫️',
-    'haze': '🌫️',
-    'wind': '💨',
-    'hot': '🔥',
-    'cold': '🥶',
-    'default': '🌤️'
-};
-
-// Get weather icon based on description
-function getWeatherIcon(description) {
-    const desc = description.toLowerCase();
-    
-    if (desc.includes('clear') || desc.includes('sunny')) return weatherIcons.clear;
-    if (desc.includes('partly') || desc.includes('few')) return weatherIcons['partly-cloudy'];
-    if (desc.includes('cloud') || desc.includes('overcast')) return weatherIcons.cloudy;
-    if (desc.includes('rain') || desc.includes('shower')) return weatherIcons.rain;
-    if (desc.includes('drizzle')) return weatherIcons.drizzle;
-    if (desc.includes('snow') || desc.includes('blizzard')) return weatherIcons.snow;
-    if (desc.includes('sleet')) return weatherIcons.sleet;
-    if (desc.includes('thunder') || desc.includes('storm')) return weatherIcons.thunderstorm;
-    if (desc.includes('fsbemail') || desc.includes('mist')) return weatherIcons.fsbemail;
-    if (desc.includes('wind')) return weatherIcons.wind;
-    
-    return weatherIcons.default;
-}
-
-// Convert Kelvin to Fahrenheit
-function kelvinToFahrenheit(kelvin) {
-    return Math.round((kelvin - 273.15) * 9/5 + 32);
-}
-
-// Generate location data for demo weather
-function generateLocationData(cityName) {
-    // Hash function to generate consistent but pseudo-random data
-    let hash = 0;
-    for (let i = 0; i < cityName.length; i++) {
-        const char = cityName.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32-bit integer
-    }
-    
-    // Use hash to generate consistent coordinates
-    const lat = (Math.abs(hash) % 17000) / 100 - 85; // -85 to 85
-    const lon = ((Math.abs(hash * 3) % 36000) / 100) - 180; // -180 to 180
-    
-    return {
-        latitude: Math.round(lat * 100) / 100,
-        longitude: Math.round(lon * 100) / 100
-    };
-}
-
-// Convert Celsius to Fahrenheit  
-function celsiusToFahrenheit(celsius) {
-    return Math.round((celsius * 9/5) + 32);
-}
-
-// Convert m/s to mph
-function msToMph(ms) {
-    return Math.round(ms * 2.237);
-}
-
-// Create weather ticker display
-function createWeatherTicker(weatherData, locationName) {
-    const weatherScroll = document.getElementById('weatherScroll');
-    
-    
-    // Check if weatherScroll element exists
-    if (!weatherScroll) {
-        return;
-    }
-    
-    // Clear existing content
-    weatherScroll.innerHTML = '';
-    
-    // Extract location details
-    const coords = `${weatherData.coord.latitude}°, ${weatherData.coord.longitude}°`;
-    // Use the already formatted location name from coordinates, don't add country again
-    const formattedLocation = weatherData.name;
-    
-    // Helper function to create 5-day forecast content block
-    function createWeatherContent() {
-        const contentBlock = document.createElement('div');
-        contentBlock.style.display = 'inline-flex';
-        contentBlock.style.alignItems = 'center';
-        contentBlock.style.marginRight = '20px';
-        contentBlock.style.whiteSpace = 'nowrap';
-        
-        // Current weather
-        const currentIcon = getWeatherIcon(weatherData.current.description);
-        const currentTempF = celsiusToFahrenheit(weatherData.current.temp);
-        const currentWindSpeed = weatherData.wind?.speed ? `${msToMph(weatherData.wind.speed)} mph` : 'N/A';
-        
-        // Add location separator at the start
-        const startSeparator = document.createElement('div');
-        startSeparator.className = 'weather-separator';
-        startSeparator.innerHTML = `<span class="city-separator">🌐 ${formattedLocation} 🌐</span>`;
-        contentBlock.appendChild(startSeparator);
-        
-        // Current weather item
-        const currentWeatherItem = document.createElement('div');
-        currentWeatherItem.className = 'weather-item';
-        currentWeatherItem.innerHTML = `
-            <span class="weather-day">NOW:</span>
-            <span class="weather-icon">${currentIcon}</span>
-            <span class="weather-temp">${currentTempF}°F</span>
-            <span class="weather-desc">${weatherData.current.description}</span>
-            <span class="weather-humidity">💧${weatherData.current.humidity}%</span>
-            <span class="weather-wind">💨${currentWindSpeed}</span>
-        `;
-        contentBlock.appendChild(currentWeatherItem);
-        
-        // Add forecast separator with Matrix theme styling
-        const midSeparator = document.createElement('div');
-        midSeparator.className = 'weather-separator';
-        midSeparator.innerHTML = ' ⚡ FORECAST ⚡ ';
-        contentBlock.appendChild(midSeparator);
-        
-        // 5-day forecast (take every 8th item to get daily forecasts)
-        const dailyForecasts = [];
-        for (let i = 8; i < weatherData.forecast.length && dailyForecasts.length < 5; i += 8) {
-            dailyForecasts.push(weatherData.forecast[i]);
-        }
-        
-        dailyForecasts.forEach((forecast, index) => {
-            const forecastIcon = getWeatherIcon(forecast.description);
-            const forecastTempF = celsiusToFahrenheit(forecast.temp);
-            const forecastDate = new Date(forecast.dt * 1000);
-            const dayName = forecastDate.toLocaleDateString('en-US', { weekday: 'short' });
-            
-            const forecastItem = document.createElement('div');
-            forecastItem.className = 'weather-item forecast-weather';
-            forecastItem.innerHTML = `
-                <span class="weather-day">${dayName}:</span>
-                <span class="weather-icon">${forecastIcon}</span>
-                <span class="weather-temp">${forecastTempF}°F</span>
-                <span class="weather-desc">${forecast.description}</span>
-            `;
-            contentBlock.appendChild(forecastItem);
-            
-            // Add separator between days
-            if (index < dailyForecasts.length - 1) {
-                const daySeparator = document.createElement('div');
-                daySeparator.className = 'weather-separator';
-                daySeparator.textContent = ' • ';
-                contentBlock.appendChild(daySeparator);
-            }
-        });
-        
-        // Add coordinates at the end
-        const coordsItem = document.createElement('div');
-        coordsItem.className = 'weather-coords';
-        coordsItem.innerHTML = ` 📍${coords}`;
-        contentBlock.appendChild(coordsItem);
-        
-        return contentBlock;
-    }
-    
-    // Create chain of weather content blocks for continuous scroll
-    for (let i = 0; i < 4; i++) {
-        const contentBlock = createWeatherContent();
-        weatherScroll.appendChild(contentBlock);
-    }
-    
-    
-    // Debug: Check if elements were actually created
-    
-    // Check first few weather elements for visibility
-    const firstWeatherDay = weatherScroll.querySelector('.weather-day');
-    const firstWeatherTemp = weatherScroll.querySelector('.weather-temp');
-    
-    if (firstWeatherDay) {
-        const dayStyles = window.getComputedStyle(firstWeatherDay);
-    } else {
-    }
-    
-    if (firstWeatherTemp) {
-        const tempStyles = window.getComputedStyle(firstWeatherTemp);
-    } else {
-    }
-}
-
-// Initialize weather functionality
-function initWeather() {
-    const cityInput = document.getElementById('cityInput');
-    const weatherButton = document.getElementById('weatherButton');
-    
-    // Handle button click
-    weatherButton.addEventListener('click', handleWeatherRequest);
-    
-    // Handle Enter key
-    cityInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            handleWeatherRequest();
-        }
-    });
-    
-    // Add fancy input effects
-    cityInput.addEventListener('input', function() {
-        // Allow letters, digits, spaces, commas, periods, hyphens for global locations, coordinates, and ZIP codes
-        this.value = this.value.replace(/[^a-zA-Z0-9\s,.\-]/g, '');
-    });
-    
-    // Handle reset button
-    const resetButton = document.getElementById('resetWeather');
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            resetWeatherPanel();
-        });
-    }
-}
-
-// Fetch real weather data from OpenWeatherMap API
-// Check if input is coordinates (lat,lon format)
-function isCoordinates(input) {
-    const coordPattern = /^-?\d+\.?\d*,-?\d+\.?\d*$/;
-    return coordPattern.test(input.trim());
-}
-
-// Parse coordinates from string
-function parseCoordinates(input) {
-    const [lat, lon] = input.trim().split(',').map(parseFloat);
-    return { lat, lon, name: `${lat}, ${lon}` };
-}
-
-// Get coordinates from location name using OpenWeather Geocoding API
-async function getCoordinatesFromLocation(locationInput, apiKey) {
-    try {
-        // Use geocoding API to get coordinates
-        const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(locationInput)}&limit=5&appid=${apiKey}`;
-        
-        const geoResponse = await fetch(geoUrl);
-        if (!geoResponse.ok) {
-            throw new Error(`Geocoding API error: ${geoResponse.status}`);
-        }
-        
-        const geoData = await geoResponse.json();
-        
-        if (geoData.length === 0) {
-            // Try ZIP code geocoding if regular search fails
-            const zipUrl = `https://api.openweathermap.org/geo/1.0/zip?zip=${encodeURIComponent(locationInput)}&appid=${apiKey}`;
-            const zipResponse = await fetch(zipUrl);
-            
-            if (zipResponse.ok) {
-                const zipData = await zipResponse.json();
-                return {
-                    lat: zipData.lat,
-                    lon: zipData.lon,
-                    name: `${zipData.name}, ${zipData.country}`
-                };
-            }
-            
-            throw new Error(`Location "${locationInput}" not found`);
-        }
-        
-        // Use the first result
-        const location = geoData[0];
-        return {
-            lat: location.lat,
-            lon: location.lon,
-            name: `${location.name}${location.state ? ', ' + location.state : ''}, ${location.country}`
-        };
-        
-    } catch (error) {
-        throw error;
-    }
-}
-
-// Enhanced weather data fetch with location search support
-async function fetchWeatherData(locationInput) {
-    const BASE_URL = 'https://api.openweathermap.org/data/2.5';
-    const API_KEY = weatherApiKey;
-    
-    try {
-        
-        // First, get coordinates for the location using Geocoding API
-        let coordinates;
-        
-        // Check if input is coordinates, ZIP code, or city name
-        if (isCoordinates(locationInput)) {
-            coordinates = parseCoordinates(locationInput);
-        } else {
-            // Update loading message
-            const weatherScroll = document.getElementById('weatherScroll');
-            if (weatherScroll) {
-                weatherScroll.innerHTML = '<div class="weather-loading">📍 Finding location...</div>';
-            }
-            coordinates = await getCoordinatesFromLocation(locationInput, API_KEY);
-        }
-        
-        // Get 5-day forecast using coordinates
-        // Update loading message
-        const weatherScroll = document.getElementById('weatherScroll');
-        if (weatherScroll) {
-            weatherScroll.innerHTML = '<div class="weather-loading">⛅ Fetching weather forecast...</div>';
-        }
-        const forecastResponse = await fetch(
-            `${BASE_URL}/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${API_KEY}&units=metric`
-        );
-        
-        if (!forecastResponse.ok) {
-            throw new Error(`OpenWeather API error: ${forecastResponse.status}`);
-        }
-        
-        const forecastData = await forecastResponse.json();
-        
-        // Transform to consistent format with 5-day forecast
-        const transformedData = {
-            name: coordinates.name || forecastData.city.name,
-            country: forecastData.city.country,
-            coord: {
-                latitude: coordinates.lat.toFixed(2),
-                longitude: coordinates.lon.toFixed(2)
-            },
-            current: {
-                temp: forecastData.list[0].main.temp, // Current temperature
-                humidity: forecastData.list[0].main.humidity,
-                pressure: forecastData.list[0].main.pressure,
-                description: forecastData.list[0].weather[0].description,
-                icon: forecastData.list[0].weather[0].icon
-            },
-            forecast: forecastData.list.slice(0, 40).map(item => ({ // 5 days * 8 per day = 40 entries
-                dt: item.dt,
-                temp: item.main.temp,
-                description: item.weather[0].description,
-                humidity: item.main.humidity,
-                wind_speed: item.wind?.speed || 0,
-                icon: item.weather[0].icon,
-                date: new Date(item.dt * 1000).toLocaleDateString()
-            })),
-            wind: {
-                speed: forecastData.list[0].wind?.speed || 0,
-                deg: forecastData.list[0].wind?.deg || 0
-            }
-        };
-        
-        return transformedData;
-        
-    } catch (error) {
-        throw new Error(`Weather data access denied: ${error.message}`);
-    }
-}
-
-// Helper functions for weather panel state management
-function showWeatherResult() {
-    const weatherControls = document.getElementById('weatherControls');
-    const weatherTicker = document.getElementById('weatherTicker');
-    const weatherScroll = document.getElementById('weatherScroll');
-    const resetButton = document.getElementById('resetWeather');
-    
-    // Instant replacement: hide controls, show ticker and reset button
-    if (weatherControls) weatherControls.classList.add('hidden');
-    if (weatherTicker) weatherTicker.classList.remove('hidden');
-    if (resetButton) resetButton.classList.remove('hidden');
-}
-
-function resetWeatherPanel() {
-    const weatherControls = document.getElementById('weatherControls');
-    const weatherTicker = document.getElementById('weatherTicker');
-    const resetButton = document.getElementById('resetWeather');
-    const cityInput = document.getElementById('cityInput');
-    
-    // Instant replacement: hide ticker and reset button, show controls
-    if (weatherTicker) {
-        weatherTicker.classList.add('hidden');
-        // Only clear the weatherScroll content, don't destroy the element
-        const weatherScroll = document.getElementById('weatherScroll');
-        if (weatherScroll) {
-            weatherScroll.innerHTML = '';
-        }
-    }
-    if (resetButton) resetButton.classList.add('hidden');
-    if (weatherControls) weatherControls.classList.remove('hidden');
-    if (cityInput) cityInput.value = '';
-    
-}
-
-// Handle weather request with real API integration
-async function handleWeatherRequest() {
-    const cityInput = document.getElementById('cityInput');
-    const cityName = cityInput.value.trim();
-    
-    if (!cityName) {
-        alert('Please enter a city name');
-        return;
-    }
-    
-    // Synchronize search term with SBEMAIL input if SBEMAIL theme is active
-    if (currentTheme === 'sbemail') {
-        const sbemailSearchInput = document.getElementById('sbemailSearchInput');
-        if (sbemailSearchInput) {
-            sbemailSearchInput.value = cityName;
-        }
-    }
-    
-    // Show loading indicator
-    const weatherTicker = document.getElementById('weatherTicker');
-    const weatherScroll = document.getElementById('weatherScroll');
-    if (weatherScroll) {
-        weatherScroll.innerHTML = '<div class="weather-loading">🌐 Fetching weather data...</div>';
-    }
-    // Show the ticker with loading message first
-    showWeatherResult();
-    
-    try {
-        // Fetch real weather data from OpenWeatherMap
-        const weatherData = await fetchWeatherData(cityName);
-        
-        if (weatherData) {
-            
-            // Create ticker immediately - no delay
-            createWeatherTicker(weatherData, cityName);
-            
-            // Weather ticker is already visible, just populated with data
-            
-            // Synchronize with SBEMAIL theme if it's active
-            if (currentTheme === 'sbemail') {
-                setTimeout(() => {
-                    const sbemailWeatherTicker = document.getElementById('sbemailWeatherTicker');
-                    if (sbemailWeatherTicker && typeof updateOgWeatherTicker === 'function') {
-                        sbemailWeatherTicker.style.display = 'block';
-                        updateOgWeatherTicker(); // Update SBEMAIL ticker with new data
-                        
-                        // Auto-scroll to show the weather widget
-                        setTimeout(() => {
-                            if (typeof scrollToWeatherWidget === 'function') {
-                                scrollToWeatherWidget();
-                            }
-                        }, 500); // Small delay to let ticker render
-                    }
-                }, 1000);
-            }
-            
-            cityInput.value = ''; // Clear main input only on success
-            
-            // Clear SBEMAIL input if it exists for consistency
-            const sbemailSearchInput = document.getElementById('sbemailSearchInput');
-            if (sbemailSearchInput) {
-                sbemailSearchInput.value = '';
-            }
-        } else {
-            if (weatherScroll) {
-                weatherScroll.innerHTML = '<div class="weather-error">❌ City not found. Please try again.</div>';
-                // Error message shown in already visible ticker
-            }
-        }
-    } catch (error) {
-        if (weatherScroll) {
-            weatherScroll.innerHTML = '<div class="weather-error">❌ Weather service unavailable. Please try again later.</div>';
-            // Error message shown in already visible ticker
-        }
-    }
-}
 
 
 // Global click handler for theme-specific effects
@@ -2034,10 +1532,7 @@ function handleGlobalClick(event) {
         return;
     }
     
-    // Don't trigger on weather interface clicks
-    if (event.target.closest('.weather-container')) {
-        return;
-    }
+    
     
     // Don't trigger on weather search panel clicks
     if (event.target.closest('.city-input-container')) {
@@ -2072,7 +1567,7 @@ function init() {
     initKeyboardShortcuts();
     addScreenShake();
     initRandomTheme();
-    initWeather();
+    
     
     updateClock();
     adjustFontSizes();
