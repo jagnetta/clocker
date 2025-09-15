@@ -3,6 +3,36 @@ let currentTimezoneOffset = 0;
 let currentTheme = null; // Will be set randomly on load
 let isMobileDevice = false;
 
+// Weather API configuration
+const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your actual API key
+const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const WEATHER_FORECAST_API_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+
+// Weather variables
+let weatherInterval;
+let weatherTickerInterval;
+let currentWeatherData = null;
+let weatherPanelElement = null;
+let weatherInput = null;
+let weatherButton = null;
+let weatherDisplay = null;
+let weatherTicker = null;
+
+// Weather API configuration
+const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your actual API key
+const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const WEATHER_FORECAST_API_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+
+// Weather variables
+let weatherInterval;
+let weatherTickerInterval;
+let currentWeatherData = null;
+let weatherPanelElement = null;
+let weatherInput = null;
+let weatherButton = null;
+let weatherDisplay = null;
+let weatherTicker = null;
+
 // Modular theme system
 let loadedThemes = new Set();
 let currentlyLoadedCss = null;
@@ -461,6 +491,9 @@ function cleanupCurrentTheme() {
     // Clear all theme-specific DOM modifications
     clearThemeDOM();
     
+    // Cleanup weather panel
+    cleanupWeather();
+
     // Theme-specific cleanup functions with validation
     const cleanupFunctions = {
         'matrix': 'cleanupMatrixTheme',
@@ -558,20 +591,7 @@ async function switchToTheme(themeName) {
     // Step 3.5: Force DOM reflow to ensure styles are applied
     document.body.offsetHeight;
 
-    // Hide weather panel for specific themes
-    const weatherPanel = document.getElementById('weatherPanel');
-    if (weatherPanel) {
-        console.log(`[DEBUG] switchToTheme: Weather panel found. Current display style: ${weatherPanel.style.display}`);
-        if (['matrix', 'lcars', 'thor'].includes(themeName)) {
-            weatherPanel.style.display = 'none';
-            console.log(`[DEBUG] switchToTheme: Hiding weather panel for theme: ${themeName}. New display style: ${weatherPanel.style.display}`);
-        } else {
-            weatherPanel.style.display = ''; // Reset to default display
-            console.log(`[DEBUG] switchToTheme: Showing weather panel for theme: ${themeName}. New display style: ${weatherPanel.style.display}`);
-        }
-    } else {
-        console.log(`[DEBUG] switchToTheme: Weather panel not found when switching to theme: ${themeName}`);
-    }
+    
     
     // Step 4: Load new theme resources
     const loaded = await loadTheme(themeName);
@@ -1568,6 +1588,193 @@ function init() {
     addScreenShake();
     initRandomTheme();
     
+    
+    updateClock();
+    adjustFontSizes();
+    
+    // Update every second (this interval should persist across themes, so no registration)
+    setInterval(updateClock, 1000);
+    
+    // Adjust font sizes on window resize (global, not theme-specific)
+    window.addEventListener('resize', adjustFontSizes);
+    
+    // Add global click handler (global, not theme-specific)
+    document.addEventListener('click', handleGlobalClick);
+    
+}
+
+// Add Matrix shake animation to CSS dynamically
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes matrixShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-3px) rotate(-0.5deg); }
+        50% { transform: translateX(3px) rotate(0.5deg); }
+        75% { transform: translateX(-2px) rotate(-0.3deg); }
+    }
+    
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: scale(0.5); }
+        50% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.5) translateY(-50px); }
+    }
+`;
+document.head.appendChild(style);
+
+// Start the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', init);ntry } = geoData[0];
+        const displayLocation = state ? `${name}, ${state}, ${country}` : `${name}, ${country}`;
+
+        const weatherResponse = await fetch(`${WEATHER_API_URL}?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=imperial`);
+        const weatherData = await weatherResponse.json();
+
+        if (!weatherResponse.ok) {
+            throw new Error(weatherData.message || 'Failed to fetch weather data.');
+        }
+
+        currentWeatherData = weatherData;
+        displayWeather(displayLocation);
+        startWeatherTicker();
+        localStorage.setItem('lastWeatherLocation', location);
+
+    } catch (error) {
+        console.error('Error fetching weather:', error);
+        weatherDisplay.innerHTML = `<div class="weather-error">Error: ${error.message}</div>`;
+        weatherTicker.textContent = '';
+        stopWeatherTicker();
+    }
+}
+
+// Display weather data
+function displayWeather(locationName) {
+    if (!currentWeatherData || !weatherDisplay) return;
+
+    const { main, weather, wind } = currentWeatherData;
+    const temp = Math.round(main.temp);
+    const description = weather[0].description;
+    const humidity = main.humidity;
+    const windSpeed = Math.round(wind.speed);
+
+    weatherDisplay.innerHTML = `
+        <div class="weather-city">${locationName}</div>
+        <div class="weather-temp">${temp}°F</div>
+        <div class="weather-desc">${description}</div>
+        <div class="weather-humidity">Humidity: ${humidity}%</div>
+        <div class="weather-wind">Wind: ${windSpeed} mph</div>
+    `;
+}
+
+// Start weather ticker animation
+function startWeatherTicker() {
+    stopWeatherTicker(); // Ensure any existing ticker is stopped
+
+    if (!currentWeatherData || !weatherTicker) return;
+
+    const { main, weather, wind } = currentWeatherData;
+    const temp = Math.round(main.temp);
+    const description = weather[0].description;
+    const humidity = main.humidity;
+    const windSpeed = Math.round(wind.speed);
+    const city = currentWeatherData.name;
+
+    const tickerContent = `
+        ${city}: ${temp}°F, ${description} | Humidity: ${humidity}% | Wind: ${windSpeed} mph
+    `;
+
+    weatherTicker.textContent = tickerContent;
+    weatherTicker.style.whiteSpace = 'nowrap';
+    weatherTicker.style.overflow = 'hidden';
+    weatherTicker.style.position = 'relative';
+    weatherTicker.style.width = '100%';
+
+    // Create a span inside the ticker to animate
+    const tickerSpan = document.createElement('span');
+    tickerSpan.textContent = tickerContent + '   ---   ' + tickerContent; // Duplicate for seamless loop
+    tickerSpan.style.position = 'absolute';
+    tickerSpan.style.left = '0';
+    tickerSpan.style.whiteSpace = 'nowrap';
+    weatherTicker.appendChild(tickerSpan);
+
+    const animateTicker = () => {
+        const tickerWidth = tickerSpan.offsetWidth;
+        const containerWidth = weatherTicker.offsetWidth;
+        let currentPosition = 0;
+
+        const frame = () => {
+            currentPosition -= 1; // Scroll speed
+            if (currentPosition < -tickerWidth / 2) { // Reset when first copy scrolls off
+                currentPosition = 0;
+            }
+            tickerSpan.style.transform = `translateX(${currentPosition}px)`;
+            weatherTickerInterval = requestAnimationFrame(frame);
+        };
+        weatherTickerInterval = requestAnimationFrame(frame);
+    };
+
+    // Wait for layout to render before starting animation
+    setTimeout(animateTicker, 100);
+}
+
+// Stop weather ticker animation
+function stopWeatherTicker() {
+    if (weatherTickerInterval) {
+        cancelAnimationFrame(weatherTickerInterval);
+        weatherTickerInterval = null;
+    }
+    if (weatherTicker) {
+        weatherTicker.innerHTML = '';
+        weatherTicker.removeAttribute('style');
+    }
+}
+
+// Global click handler for theme-specific effects
+function handleGlobalClick(event) {
+    
+    // Don't trigger on theme selector clicks
+    if (event.target.closest('.theme-selector')) {
+        return;
+    }
+    
+    // Don't trigger on timezone container clicks
+    if (event.target.closest('.timezone-container')) {
+        return;
+    }
+    
+    // Don't trigger on weather search panel clicks
+    if (event.target.closest('.weather-panel')) { // Changed from .city-input-container to .weather-panel
+        return;
+    }
+    
+    // Don't trigger on interactive elements (inputs, buttons, sliders)
+    if (event.target.matches('input, button, select, textarea, [contenteditable]') || 
+        event.target.closest('input, button, select, textarea, [contenteditable]')) {
+        return;
+    }
+    
+    // Delegate to theme-specific click handlers
+    const clickHandlers = {
+        'matrix': () => typeof handleMatrixClick === 'function' && handleMatrixClick(event.clientX, event.clientY),
+        'lcars': () => typeof handleLcarsClick === 'function' && handleLcarsClick(event.clientX, event.clientY),
+        'thor': () => typeof handleThorClick === 'function' && handleThorClick(event.clientX, event.clientY),
+        'linux': () => typeof handleLinuxClick === 'function' && handleLinuxClick(event.clientX, event.clientY)
+    };
+    
+    if (currentTheme && clickHandlers[currentTheme]) {
+        clickHandlers[currentTheme]();
+    }
+}
+
+// Initialize everything
+function init() {
+    // Detect mobile device first
+    detectMobileDevice();
+    
+    initTimezoneSlider();
+    initKeyboardShortcuts();
+    addScreenShake();
+    initRandomTheme();
+    
+    // setupWeather(document.body); // This will be handled by theme init functions
     
     updateClock();
     adjustFontSizes();

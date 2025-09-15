@@ -17,6 +17,12 @@ function initMatrixTheme() {
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'matrix';
     
+    // Setup weather panel
+    const matrixBg = document.getElementById('matrixBg');
+    if (matrixBg && typeof setupWeather === 'function') {
+        setupWeather(matrixBg);
+    }
+    
     // Start Matrix-specific effects
     if (!isMobileDevice) {
         initMatrixParticles();
@@ -88,10 +94,10 @@ function switchToMatrixTheme() {
  */
 function updateMatrixLabels() {
     const timezoneLabel = document.querySelector('.timezone-label');
-    const cityLabel = document.querySelector('.city-label');
+    const weatherPanelCityLabel = document.querySelector('#weatherPanel .city-label');
     
     if (timezoneLabel) timezoneLabel.textContent = '⚡ TEMPORAL ZONE CONTROL ⚡';
-    if (cityLabel) cityLabel.textContent = '🌐 WEATHER DATA INTERFACE';
+    if (weatherPanelCityLabel) weatherPanelCityLabel.textContent = '🌐 WEATHER DATA INTERFACE';
 }
 
 /**

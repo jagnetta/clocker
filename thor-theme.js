@@ -16,6 +16,12 @@ function initThorTheme() {
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'thor';
     
+    // Setup weather panel
+    const thorBg = document.getElementById('thorBg');
+    if (thorBg && typeof setupWeather === 'function') {
+        setupWeather(thorBg);
+    }
+    
     // Start Thor-specific effects
     if (!isMobileDevice) {
         initThorEffects();
@@ -602,10 +608,10 @@ function cleanupThorEffects() {
  */
 function updateThorLabels() {
     const timezoneLabel = document.querySelector('.timezone-label');
-    const cityLabel = document.querySelector('.city-label');
+    const weatherPanelCityLabel = document.querySelector('#weatherPanel .city-label');
     
     if (timezoneLabel) timezoneLabel.textContent = '🔨 ASGARDIAN TIME CONTROL 🔨';
-    if (cityLabel) cityLabel.textContent = '⚡ MIDGARD WEATHER READINGS ⚡';
+    if (weatherPanelCityLabel) weatherPanelCityLabel.textContent = '⚡ MIDGARD WEATHER READINGS ⚡';
 }
 
 // Export functions for module usage (if using ES6 modules)

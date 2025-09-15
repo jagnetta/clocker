@@ -16,6 +16,12 @@ function initLcarsTheme() {
     // Ensure theme is properly set (should already be done by switchToTheme)
     currentTheme = 'lcars';
     
+    // Setup weather panel
+    const lcarsBg = document.getElementById('lcarsBg');
+    if (lcarsBg && typeof setupWeather === 'function') {
+        setupWeather(lcarsBg);
+    }
+    
     // FORCE ensure LCARS theme class is applied and others are removed
     document.body.classList.remove('matrix-theme', 'thor-theme', 'og-theme');
     document.body.classList.add('lcars-theme');
@@ -337,10 +343,10 @@ function switchToLcarsTheme() {
  */
 function updateLcarsLabels() {
     const timezoneLabel = document.querySelector('.timezone-label');
-    const cityLabel = document.querySelector('.city-label');
+    const weatherPanelCityLabel = document.querySelector('#weatherPanel .city-label');
     
     if (timezoneLabel) timezoneLabel.textContent = '🖖 TEMPORAL COORDINATES 🖖';
-    if (cityLabel) cityLabel.textContent = '🌌 ATMOSPHERIC CONDITIONS';
+    if (weatherPanelCityLabel) weatherPanelCityLabel.textContent = '🌌 ATMOSPHERIC CONDITIONS';
 }
 
 /**
