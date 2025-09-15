@@ -991,9 +991,9 @@ async function runLEDLampTest(terminalContent, callback) {
     }
     await logTest('OK', true);
 
-    // Test 3: Parallel RGB Sequence (5 times)
+    // Test 3: Parallel RGB Sequence (2 times)
     await logTest('Testing RGB LED (Parallel Sequence)...');
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 2; i++) {
         // Red
         themeButtons.forEach(btn => setButtonColor(btn, 'sbemail-led-red'));
         await new Promise(resolve => setTimeout(resolve, 200));

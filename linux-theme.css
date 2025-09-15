@@ -5,8 +5,8 @@
 
 /* Linux Theme Body */
 .linux-theme body {
-    background: #d3d3d3; /* Classic X11 gray background */
-    color: #000000;
+    background: #8A9A5B; /* Solid Sage Green */
+    color: #e0e0e0; /* Lighter text for dark background */
     font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
     margin: 0;
     padding: 20px;
@@ -464,12 +464,12 @@
 .xterm-icon-label {
     font-family: 'Helvetica Neue', 'Arial', sans-serif;
     font-size: 14px;
-    color: #000000;
+    color: #e0e0e0;
     text-align: center;
     line-height: 1.2;
     max-width: 90px;
     word-wrap: break-word;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     padding: 3px 6px;
     border-radius: 4px;
     font-weight: 500;

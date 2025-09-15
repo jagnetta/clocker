@@ -1,249 +1,48 @@
-# Clocker - Multi-Theme Temporal Interface
+# GEMINI.md
 
-A sophisticated clock display project featuring both terminal and web implementations with advanced theming, weather integration, and modular architecture.
+## Project Overview
 
-## 🌟 Features
+This project, "Clocker", is a sophisticated clock display application with both a web-based and a terminal-based implementation. The application is designed with a modular architecture, allowing for easy theming and extension.
 
-### 🕒 **Core Clock Functionality**
-- **Dual Implementation**: Terminal bash script and modern web application
-- **Real-time Updates**: Updates every second with precise timing
-- **Smart Formatting**: Day, date with ordinal suffixes, time with AM/PM and timezone
-- **Auto-centering**: Dynamically centers content in terminal/browser window
-- **Responsive Design**: Adapts to window resizing with dynamic font scaling
+The web application features a dynamic theme system, with five initial themes: Matrix, LCARS, Thor, SBEmail, and Linux. It also integrates with the OpenWeatherMap API to provide real-time weather information. The application is built with vanilla JavaScript, HTML, and CSS, and it dynamically loads theme-specific modules (JS and CSS) as needed.
 
-### 🎨 **Advanced Theme System**
-- **Five Epic Themes**:
-  - **⚡ Matrix**: Green terminal aesthetic with Matrix rain effects and rotating kanji in upper right corner
-  - **🖖 LCARS**: Star Trek orange interface with warp speed animations and Vulcan salute decoration
-  - **🔨 Thor**: Norse gold theme with lightning effects and runes
-  - **📧 SBEMAIL**: Strong Bad's Compy 386 with authentic DOS interface and weather integration
-  - **🐧 Linux**: X-Windows desktop simulation with draggable terminal applications
-- **Modular Architecture**: Dynamic theme loading with proper resource management
-- **Random Initialization**: Randomly selects theme on startup
-- **Smooth Transitions**: Professional theme switching with comprehensive cleanup
+The terminal application is a bash script that displays the current time and date in the center of the terminal. An "improved" version of the script is also provided, which addresses several bugs and performance issues in the original.
 
-### 🌦️ **Advanced Weather System**
-- **OpenWeatherMap Integration**: Live weather data using API key
-- **Multi-format Location Search**:
-  - Cities: `Boston`, `London`, `Tokyo`
-  - ZIP codes: `02780`, `90210`, `10001`
-  - Coordinates: `42.123,-71.456`
-  - International: `Paris, FR`, `Sydney, AU`
-- **Geocoding Support**: Converts locations to precise coordinates
-- **Scrolling Weather Ticker**: Continuous display with rich weather information
-- **Theme Integration**: Weather UI adapts to current theme styling
+## Building and Running
 
-### 🔧 **Technical Excellence**
-- **Enhanced Cleanup System**: Prevents theme conflicts and memory leaks
-- **Error Handling**: Comprehensive API failure management and user feedback
-- **Mobile Optimization**: Touch-friendly interface with performance optimization
-- **Keyboard Shortcuts**: Ctrl+C for theme switching with themed exit messages
-- **Resource Management**: Automatic cleanup of intervals, event listeners, and DOM elements
+### Web Application
 
-## 🏗️ Architecture
+1.  Open `index.html` in a modern web browser.
+2.  The application will start with a random theme.
+3.  Use the theme selector buttons at the top of the page to switch between themes.
+4.  To use the weather functionality, enter a location (city, ZIP code, or coordinates) in the weather input box and click "ACCESS DATA".
 
-### **File Structure**
-```
-clocker/
-├── index.html              # Main HTML structure
-├── base-style.css          # Core styling and layout
-├── core-script.js          # Main application logic and theme management
-├── timezones.js            # Timezone data and DST calculations
-├── matrix-theme.js         # Matrix theme module
-├── matrix-theme.css        # Matrix theme styling
-├── lcars-theme.js          # LCARS theme module  
-├── lcars-theme.css         # LCARS theme styling
-├── thor-theme.js           # Thor theme module
-├── thor-theme.css          # Thor theme styling
-├── sbemail-theme.js        # SBEMAIL theme module
-├── sbemail-theme.css       # SBEMAIL theme styling
-├── linux-theme.js          # Linux theme module
-├── linux-theme.css         # Linux theme styling
-└── clocker                 # Terminal bash script
-```
+**Note:** The OpenWeatherMap API key is hardcoded in `core-script.js`. For production use, you should replace it with your own API key.
 
-### **Modular Theme System**
-- **Dynamic Loading**: Themes loaded on-demand to reduce initial bundle size
-- **Complete Isolation**: Each theme has separate CSS and JavaScript modules
-- **Resource Tracking**: Advanced cleanup system prevents conflicts
-- **Background Management**: Proper handling of theme-specific backgrounds and effects
+### Terminal Application
 
-## 🚀 Usage
+There are two versions of the terminal application:
 
-### **Web Application**
-1. Open `index.html` in any modern web browser
-2. Use theme selector buttons to switch between Matrix, LCARS, Thor, SBEMAIL, and Linux themes
-3. Enter city, ZIP code, or coordinates in weather search
-4. Press **Ctrl+C** for themed exit messages and random theme switching
-5. **SBEMAIL Theme**: Use built-in weather search within the Compy 386 terminal interface
+*   `clocker`: The original, basic version.
+*   `clocker-improved`: An enhanced version with bug fixes and performance improvements.
 
-### **Terminal Version**
+To run either version, execute the script from your terminal:
+
 ```bash
-./clocker           # Original version (48 lines, basic functionality)
-./clocker-improved  # Enhanced version (180+ lines, production-ready)
+./clocker
 ```
 
-#### **Terminal Script Analysis**
-The original `clocker` bash script is a compact 48-line terminal clock display with creative ordinal suffix logic but contains several critical bugs:
+or
 
-**Issues Found:**
-- **Variable Declaration Mismatch**: Declares `heightPlusTwo` but uses `heightPlusFour` 
-- **Mathematical Errors**: Incorrect positioning calculations
-- **Performance Issues**: 3 separate `date` calls per second (67% more than needed)
-- **Missing Error Handling**: No dependency checking or terminal validation
-- **Cleanup Bugs**: Exit message variables undefined in cleanup scope
-
-**Enhanced Version Benefits:**
-- **67% Performance Improvement**: Single date call instead of three
-- **Zero Critical Bugs**: Fixed all variable and mathematical errors
-- **Comprehensive Error Handling**: Dependency validation and graceful degradation
-- **Smooth Updates**: No screen flickering like original
-- **Professional Structure**: Modular functions with proper error handling
-
-### **Weather Search Examples**
-- `Taunton` → Taunton, Massachusetts, US
-- `02780` → Taunton, Massachusetts, US
-- `42.2057,-71.1030` → Taunton, Massachusetts, US
-- `London, UK` → London, England, GB
-- `Tokyo` → Tokyo, Japan
-
-## 🛠️ Technical Implementation
-
-### **Theme Switching Process**
-1. **Complete Cleanup**: Remove all theme resources and intervals
-2. **Class Management**: Clean removal and application of theme classes
-3. **Background Control**: Proper hiding/showing of theme backgrounds
-4. **Resource Initialization**: Clean initialization of new theme effects
-5. **Error Prevention**: Comprehensive null checks and fallback handling
-
-### **Weather Integration**
-- **Geocoding API**: Converts locations to coordinates for precise weather data
-- **Current Weather API**: Real-time weather conditions
-- **Data Transformation**: Consistent format regardless of input method
-- **Error Resilience**: Graceful handling of API failures and invalid locations
-
-### **Performance Optimization**
-- **Lazy Loading**: Themes loaded only when needed
-- **Resource Cleanup**: Automatic cleanup prevents memory leaks
-- **Event Management**: Proper registration and removal of event listeners
-- **DOM Efficiency**: Minimal DOM manipulation with batched updates
-
-## 🎮 User Experience
-
-### **Theme Experience**
-- **Matrix Theme**: Terminal-style interface with falling characters and kanji rotation
-- **LCARS Theme**: Star Trek interface with warp stars and Starfleet styling  
-- **Thor Theme**: Norse mythology with lightning bolts, sparks, and Asgardian runes
-- **SBEMAIL Theme**: Strong Bad's Compy 386 with authentic DOS startup, boxing glove typing, and integrated weather system
-- **Linux Theme**: X-Windows desktop environment with draggable terminal applications
-
-### **Interactive Features**
-- **Theme Selector**: Click buttons to instantly switch themes
-- **Ctrl+C Shortcut**: Shows themed exit message and switches to random theme
-- **Weather Search**: Real-time weather data with theme-appropriate styling
-- **Responsive Input**: Theme-consistent styling maintained during user interaction
-
-### **Mobile Support**
-- **Touch Optimization**: Mobile-friendly interface with appropriate sizing
-- **Performance Mode**: Reduced effects on mobile devices for smooth performance
-- **Responsive Layout**: Adapts to various screen sizes and orientations
-
-## 🔐 Configuration
-
-### **OpenWeatherMap Setup**
-The application includes OpenWeatherMap API integration with a working API key. For production use:
-1. Get your API key from [OpenWeatherMap](https://openweathermap.org/api)
-2. Replace the API key in `core-script.js`:
-```javascript
-let weatherApiKey = 'YOUR_API_KEY_HERE';
-```
-
-### **Timezone Configuration**
-- **Auto-detection**: Automatically detects user's timezone
-- **DST Support**: Proper daylight saving time calculations
-- **Manual Override**: Timezone slider for manual adjustment
-- **35+ Regions**: Support for global timezones
-
-## 🧪 Development
-
-### **Adding New Themes**
-1. Create `new-theme.js` and `new-theme.css`
-2. Add initialization function: `initNewTheme()`
-3. Add cleanup function: `cleanupNewTheme()`
-4. Register in `availableThemes` array in `core-script.js`
-5. Add theme option button in `index.html`
-
-### **Testing**
-- **Theme Transitions**: All theme combinations tested for visual consistency
-- **Weather Integration**: Tested with cities, ZIP codes, and coordinates globally
-- **Error Handling**: Comprehensive testing of API failures and edge cases
-- **Cross-browser**: Tested on modern browsers with responsive design validation
-
-### **Terminal Script Improvements**
-The enhanced `clocker-improved` script addresses all identified issues:
-
-#### **Performance Optimization**
 ```bash
-# Original: 3 separate date calls per second
-daystr=$(date +'%A')
-datestr=$(date +'%b. %eXX, %Y' | sed ...)
-timestr=$(date +'%l:%M:%S %p %Z')
-
-# Improved: Single date call with parsing
-datetime_raw=$(date +'%A|%b. %e, %Y|%l:%M:%S %p %Z')
-IFS='|' read -r day_name date_raw time_str <<< "$datetime_raw"
+./clocker-improved
 ```
 
-#### **Fixed Visual Experience**
-- **Smooth Updates**: Eliminated screen flickering by removing unnecessary `clear` calls
-- **Proper Positioning**: Fixed mathematical errors in cursor positioning
-- **Clean Padding**: Added padding to prevent text artifacts during updates
+## Development Conventions
 
-#### **Robust Error Handling**
-- **Dependency Validation**: Checks for required commands (tput, date, sleep)
-- **Terminal Capability Testing**: Validates cursor positioning support
-- **Minimum Size Checking**: Ensures terminal meets minimum requirements
-- **Graceful Degradation**: Handles errors without crashing
-
-## 🎯 Key Achievements
-
-### **Theme System Excellence**
-- **Zero Conflicts**: Complete theme isolation with no visual artifacts
-- **Professional Transitions**: Smooth, enterprise-grade theme switching
-- **Resource Management**: Advanced cleanup prevents memory leaks
-- **User Experience**: Intuitive, responsive interface across all themes
-
-### **Weather Integration**
-- **Global Support**: Works with international locations, ZIP codes, and coordinates
-- **Error Resilience**: Graceful handling of API failures and invalid input
-- **Real-time Data**: Live weather information with rich display formatting
-- **Theme Integration**: Weather UI seamlessly adapts to current theme
-
-### **Technical Robustness**
-- **Modular Architecture**: Clean separation of concerns with dynamic loading
-- **Error Prevention**: Comprehensive null checks and defensive programming
-- **Performance Optimization**: Efficient resource usage with proper cleanup
-- **Cross-platform**: Works seamlessly in terminal and modern web browsers
-
-## 🔧 Recent Updates
-
-### SBEMAIL Theme Complete Implementation
-- **Weather Integration**: Full weather search and scrolling ticker implementation within Compy 386 terminal
-- **Multiple Search Support**: Users can perform unlimited weather searches with real-time ticker updates
-- **Consistent Typography**: All terminal elements now use uniform 25px font sizing
-- **Scrolling Animation**: Fixed CSS-based weather ticker scrolling with proper HTML structure
-- **Code Optimization**: Removed all excessive debug logging for production-ready performance
-
-### Matrix Theme Kanji Fix
-- **Issue**: CSS override conflict between `base-style.css` and `matrix-theme.css` was preventing the rotating kanji from displaying
-- **Solution**: Removed conflicting CSS rule from `matrix-theme.css` to allow proper kanji rotation
-- **Result**: Matrix theme now properly displays rotating kanji (時, 空, 夢, etc.) in the upper right corner of the time/date panel with full 360° rotation animation
-
-### Performance and Code Quality
-- **Debug Logging Cleanup**: Removed all excessive console logging statements across all themes
-- **Optimized Performance**: Cleaner code execution with minimal logging overhead
-- **Production Ready**: All themes now optimized for production deployment
-
----
-
-**Clocker** represents a sophisticated temporal interface that combines elegant design, robust functionality, and advanced technical implementation to deliver an exceptional user experience across multiple themes and platforms.
+*   **Modular Themes:** The web application uses a modular theme system. Each theme consists of a `.js` file and a `.css` file.
+    *   The JavaScript file for a theme should export an `init<ThemeName>Theme` function and a `cleanup<ThemeName>Theme` function.
+    *   The `init` function is called when the theme is activated, and the `cleanup` function is called when the theme is deactivated.
+*   **Dynamic Loading:** Themes are loaded dynamically by `core-script.js` as needed.
+*   **Centralized Logic:** The core application logic (clock updates, theme switching, weather API integration) is handled in `core-script.js`.
+*   **Bash Best Practices:** The `clocker-improved` script follows best practices for shell scripting, including `set -euo pipefail`, dependency checking, and robust error handling.
