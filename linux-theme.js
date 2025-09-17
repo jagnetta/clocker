@@ -24,12 +24,6 @@ function initLinuxTheme() {
     // Force background color using JavaScript
     document.body.style.backgroundColor = '#8A9A5B'; // Solid Sage Green
 
-    // Add Linux penguin (Tux) image
-    const tuxImage = document.createElement('img');
-    tuxImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMDAwMDAwIiBkPSJNMjU2IDBDMTE0LjYgMCAwIDExNC42IDAgMjU2czExNC42IDI1NiAyNTYgMjU2IDI1Ni0xMTQuNiAyNTYtMjU2UzM5Ny40IDAgMjU2IDB6bTAgNDY0Yy0xMTQuNiAwLTIwOC05My40LTIwOC0yMDhTMTQxLjQgNDggMjU2IDQ4czIwOC05My40IDIwOC0yMDhTNDcwLjYgNDY0IDI1NiA0NjR6TTI1NiAxNDQuNmMtMzUuMyAwLTY0IDI4LjctNjQgNjRzMjguNyA2NCA2NCA2NCA2NC0yOC43IDY0LTY0LTI4LjctNjQtNjQtNjR6bS0xMjggMTI4Yy0zNS4zIDAtNjQgMjguNy02NCA2NHMyOC43IDY0IDY0IDY0IDY0LTI4LjcgNjQtNjQtMjguNy02NC02NC02NHptMjU2IDBjLTM1LjMgMC02NCAyOC43LTY0IDY0czI4LjcgNjQgNjQgNjQgNjQtMjguNyA2NC02NC0yOC43LTY0LTY0LTY0eiIvPjwvc3ZnPg=='; // Simple Tux SVG
-    tuxImage.style.cssText = 'position: absolute; bottom: 20px; right: 20px; width: 100px; height: 100px; opacity: 0.7; z-index: 9999;';
-    document.body.appendChild(tuxImage);
-
     // Try to detect username and hostname from browser
     detectUserInfo();
     

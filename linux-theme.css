@@ -316,63 +316,80 @@
 
 /* Theme selector styling for linux */
 .linux-theme .theme-selector {
-    background: rgba(192, 192, 192, 0.9);
-    border: 2px outset #c0c0c0;
+    background: transparent; /* Keep background transparent for desktop integration */
+    border: none; /* No border for the overall selector */
+    top: 20px; /* Position at the top */
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto; /* Adjust width based on content */
+    padding: 0; /* Remove padding from selector itself */
+    box-shadow: none; /* No shadow on the selector */
+    border-radius: 0; /* No border radius on the selector */
+}
+
+.linux-theme .theme-switch {
+    display: flex;
+    flex-direction: row; /* Horizontal alignment */
+    gap: 15px; /* Space between buttons */
+    background: rgba(255, 255, 255, 0.1); /* Light translucent background */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Lighter border */
+    border-radius: 10px;
+    padding: 8px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow */
 }
 
 .linux-theme .theme-option {
-    background: #c0c0c0;
-    border: 1px outset #c0c0c0;
-    color: #000000;
-    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
-    font-size: 14px;
-    font-weight: bold;
+    display: flex;
+    flex-direction: column; /* Icon above label */
+    align-items: center;
+    justify-content: center;
+    width: 80px; /* Slightly smaller button width */
+    padding: 8px;
+    border: 1px solid transparent; /* Transparent border by default */
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    background: transparent; /* Transparent background for individual buttons */
+    transition: all 0.2s ease;
+    color: #e0e0e0; /* Light text color */
+    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 12px; /* Smaller font size for label */
+    font-weight: 500;
+    text-align: center;
 }
 
 .linux-theme .theme-option:hover {
-    background: #d0d0d0;
+    background: rgba(255, 255, 255, 0.1); /* Subtle hover background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle hover border */
 }
 
 .linux-theme .theme-option.active {
-    background: #a0a0a0;
-    border: 1px inset #c0c0c0;
+    background: rgba(0, 122, 255, 0.2); /* Active background */
+    border: 1px solid rgba(0, 122, 255, 0.4); /* Active border */
+    box-shadow: 0 0 8px rgba(0, 122, 255, 0.3); /* Active glow */
 }
 
-/* Weather ticker styling removed - no weather data interface in Linux theme */
+.linux-theme .theme-option .theme-icon {
+    display: flex; /* Override display: none from base-style.css */
+    width: 50px; /* Smaller icon size */
+    height: 50px;
+    background: linear-gradient(145deg, #e6e6e6, #ffffff); /* Light background for icon image */
+    border-radius: 10px; /* Slightly smaller border radius for icon image */
+    align-items: center;
+    justify-content: center;
+    font-size: 28px; /* Smaller icon font size */
+    margin-bottom: 5px; /* Space between icon and label */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for icon image */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #000; /* Icon color */
+}
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    /* Hide desktop icons on mobile */
-    .linux-desktop-icons {
-        display: none;
-    }
-    
-    /* Hide all terminals except clocker (terminal-2) on mobile */
-    .xterm-terminal-1 {
-        display: none !important;
-    }
-    
-    /* Show only clocker terminal, centered and full width */
-    .xterm-terminal-2 {
-        width: 95%;
-        left: 2.5%;
-        right: auto;
-        top: 80px;
-        height: calc(100vh - 120px);
-        max-height: none;
-    }
-    
-    .linux-theme body {
-        padding: 10px;
-    }
-    
-    /* Ensure theme selector remains visible */
-    .linux-theme .theme-selector {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1001;
-    }
+.linux-theme .theme-option .theme-label {
+    display: block; /* Make label a block element to be below icon */
+    background: rgba(0, 0, 0, 0.4); /* Darker background for label */
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: #e0e0e0; /* Light text color for label */
 }
 
 /* Hide main clock display in linux theme (terminals will show their own) */

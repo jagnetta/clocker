@@ -45,6 +45,22 @@
     transform: translateY(-1px);
 }
 
+.theme-option .theme-icon {
+    display: none;
+}
+
+.theme-option .theme-label {
+    display: inline;
+}
+
+.theme-option .theme-icon {
+    display: none;
+}
+
+.theme-option .theme-label {
+    display: inline;
+}
+
 /* Matrix Theme Switcher Styling */
 .matrix-theme .theme-switch {
     background: 
