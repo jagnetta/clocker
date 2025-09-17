@@ -295,15 +295,10 @@
 }
 
 .matrix-theme .weather-ticker {
-    background: 
-        linear-gradient(145deg, rgba(0, 0, 0, 0.98), rgba(0, 40, 0, 0.9)),
-        radial-gradient(circle at center, rgba(0, 255, 0, 0.1), transparent);
-    border: 2px solid #00ff00;
-    border-radius: 20px;
-    box-shadow: 
-        inset 0 0 25px rgba(0, 255, 0, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.8),
-        0 0 20px rgba(0, 255, 0, 0.3);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding-top: 10px;
 }
 
 .matrix-theme .weather-city {

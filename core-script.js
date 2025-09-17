@@ -198,14 +198,12 @@ function getLastSundayOfMonth(year, month) {
 // Optimized modular theme loading system with proper CSS loading
 async function loadTheme(themeName) {
     if (!availableThemes.includes(themeName)) {
-        console.error('🎨 Theme not available:', themeName);
         return false;
     }
     
     // Check if theme is appropriate for mobile device
     const appropriateThemes = getMobileAppropriateThemes();
     if (!appropriateThemes.includes(themeName)) {
-        console.error('🎨 Theme not supported on this device:', themeName);
         return false;
     }
     
@@ -246,14 +244,12 @@ async function loadTheme(themeName) {
         // Validate that theme resources are properly loaded
         const validation = await validateThemeLoad(themeName);
         if (!validation.success) {
-            console.error('🎨 Theme validation failed:', validation.errors);
             return false;
         }
         
         return true;
         
     } catch (error) {
-        console.error('🎨 Critical error loading theme', themeName, error);
         return false;
     }
 }
@@ -299,11 +295,9 @@ async function validateThemeLoad(themeName) {
     const success = errors.length === 0;
     
     if (!success) {
-        console.error(`🎨 ${themeName} validation failed:`, errors);
     }
     
     if (warnings.length > 0) {
-        console.warn(`🎨 ${themeName} validation warnings:`, warnings);
     }
     
     return {
@@ -478,7 +472,6 @@ function cleanupCurrentTheme() {
         try {
             window[cleanupFunctionName]();
         } catch (error) {
-            console.error(`🎨 ${currentTheme} cleanup failed:`, error);
         }
     }
 }
@@ -494,7 +487,6 @@ async function switchToTheme(themeName) {
     
     // Check if this theme recently failed
     if (lastFailedTheme === themeName && themeFailureCount >= 2) {
-        console.warn(`🎨 Theme ${themeName} recently failed ${themeFailureCount} times, blocking attempt`);
         return;
     }
     
@@ -564,7 +556,6 @@ async function switchToTheme(themeName) {
     // Step 4: Load new theme resources
     const loaded = await loadTheme(themeName);
     if (!loaded) {
-        console.error(`🎨 Failed to load ${themeName} theme`);
         await handleThemeLoadFailure(themeName);
         return;
     }
@@ -605,7 +596,6 @@ async function switchToTheme(themeName) {
     const initResult = await initializeThemeWithValidation(themeName);
     
     if (!initResult.success) {
-        console.error(`🎨 ${themeName} initialization failed:`, initResult.errors);
         // Try to fall back to matrix theme
         if (themeName !== 'matrix') {
             await switchToTheme('matrix');
@@ -623,7 +613,6 @@ async function switchToTheme(themeName) {
             await new Promise(resolve => setTimeout(resolve, 1500));
             const updatedTime = clockElement.textContent;
             if (initialTime === updatedTime) {
-                console.warn('🎨 Clock not updating after theme switch');
             }
         }
     }, 3000); // Wait 3 seconds for theme to fully stabilize
@@ -658,7 +647,6 @@ async function initializeThemeWithValidation(themeName) {
             await initResult;
         }
     } catch (error) {
-        console.error(`🎨 ${themeName} initialization error:`, error);
         errors.push(`Theme init error: ${error.message}`);
         return { success: false, errors, warnings };
     }
@@ -671,7 +659,6 @@ async function initializeThemeWithValidation(themeName) {
     const success = errors.length === 0;
     
     if (!success) {
-        console.error(`🎨 ${themeName} init validation failed:`, errors);
     }
     
     return { success, errors, warnings };
@@ -725,7 +712,6 @@ let lastFailedTheme = null;
 const MAX_THEME_FAILURES = 3;
 
 async function handleThemeLoadFailure(failedTheme) {
-    console.error('🎨 Theme load failed:', failedTheme);
     
     // Circuit breaker: prevent infinite loops
     if (failedTheme === lastFailedTheme) {
@@ -736,8 +722,6 @@ async function handleThemeLoadFailure(failedTheme) {
     }
     
     if (themeFailureCount >= MAX_THEME_FAILURES) {
-        console.error('🎨 CRITICAL: Too many theme failures, stopping fallback attempts');
-        console.error('🎨 CRITICAL: Missing required HTML containers - check index.html');
         // Disable the failed theme button to prevent further attempts
         const failedButton = document.querySelector(`[data-theme="${failedTheme}"]`);
         if (failedButton) {
@@ -762,7 +746,6 @@ async function handleThemeLoadFailure(failedTheme) {
                     lastFailedTheme = null; // Clear failure tracking
                     return;
                 } catch (error) {
-                    console.error(`🎨 ${fallbackTheme} fallback failed:`, error);
                 }
             }
         }
@@ -776,11 +759,9 @@ async function handleThemeLoadFailure(failedTheme) {
             lastFailedTheme = null; // Clear failure tracking
             return;
         } catch (error) {
-            console.error('🎨 Sbemail fallback failed:', error);
         }
     }
     
-    console.error('🎨 All fallback attempts failed - check HTML structure');
 }
 
 // Comprehensive theme health check
@@ -825,7 +806,6 @@ async function performThemeHealthCheck() {
                      healthReport.errors.length === 0;
     
     if (!isHealthy) {
-        console.warn('🎨 Theme system issues detected:', healthReport.errors);
     }
     
     return healthReport;
@@ -1768,14 +1748,6 @@ function initWeather() {
         // Allow letters, digits, spaces, commas, periods, hyphens for global locations, coordinates, and ZIP codes
         this.value = this.value.replace(/[^a-zA-Z0-9\s,.\-]/g, '');
     });
-    
-    // Handle reset button
-    const resetButton = document.getElementById('resetWeather');
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            resetWeatherPanel();
-        });
-    }
 }
 
 // Fetch real weather data from OpenWeatherMap API
@@ -1911,36 +1883,6 @@ async function fetchWeatherData(locationInput) {
 
 // Helper functions for weather panel state management
 function showWeatherResult() {
-    const weatherControls = document.getElementById('weatherControls');
-    const weatherTicker = document.getElementById('weatherTicker');
-    const weatherScroll = document.getElementById('weatherScroll');
-    const resetButton = document.getElementById('resetWeather');
-    
-    // Instant replacement: hide controls, show ticker and reset button
-    if (weatherControls) weatherControls.classList.add('hidden');
-    if (weatherTicker) weatherTicker.classList.remove('hidden');
-    if (resetButton) resetButton.classList.remove('hidden');
-}
-
-function resetWeatherPanel() {
-    const weatherControls = document.getElementById('weatherControls');
-    const weatherTicker = document.getElementById('weatherTicker');
-    const resetButton = document.getElementById('resetWeather');
-    const cityInput = document.getElementById('cityInput');
-    
-    // Instant replacement: hide ticker and reset button, show controls
-    if (weatherTicker) {
-        weatherTicker.classList.add('hidden');
-        // Only clear the weatherScroll content, don't destroy the element
-        const weatherScroll = document.getElementById('weatherScroll');
-        if (weatherScroll) {
-            weatherScroll.innerHTML = '';
-        }
-    }
-    if (resetButton) resetButton.classList.add('hidden');
-    if (weatherControls) weatherControls.classList.remove('hidden');
-    if (cityInput) cityInput.value = '';
-    
 }
 
 // Handle weather request with real API integration

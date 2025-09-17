@@ -264,7 +264,6 @@ async function initiateSystemSwitch(targetTheme, clickedButton, allButtons) {
     const terminalContent = document.getElementById('sbemailTerminalContent');
     
     if (!terminalContent) {
-        console.error('🔥 SBEMAIL: Terminal not found!');
         
         // Try to continue with normal theme switch since CRT effect can't work
         if (typeof switchToTheme === 'function') {
@@ -348,7 +347,6 @@ function createCRTShutdownEffect(targetTheme, clickedButton, allButtons) {
     const terminalBody = document.querySelector('.sbemail-terminal-body');
     
     if (!terminalBody) {
-        console.error('🔥 Terminal body not found for CRT effect');
         
         // Fallback to direct theme switch
         if (typeof switchToTheme === 'function') {
@@ -398,7 +396,6 @@ function createCRTShutdownEffect(targetTheme, clickedButton, allButtons) {
             } else if (window.switchToTheme) {
                 window.switchToTheme(targetTheme);
             } else {
-                console.error('🔥 No switchToTheme function found!');
             }
             
             // Clear flag after switch
@@ -540,7 +537,6 @@ function initiateCompyReboot() {
 function startRebootCRTEffect() {
     const terminalBody = document.querySelector('.sbemail-terminal-body');
     if (!terminalBody) {
-        console.error('🔥 Terminal body not found for CRT effect');
         // Fallback to just restarting the boot sequence
         showCompyBootSequence();
         return;
