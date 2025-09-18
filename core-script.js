@@ -1521,7 +1521,7 @@ function detectMobileDevice() {
     const isMobileUserAgent = mobileKeywords.some(keyword => userAgent.includes(keyword));
     
     // Combined mobile detection
-    isMobileDevice = isMobileUserAgent || (isTouchDevice && hasSmallScreen);
+    isMobileDevice = isMobileUserAgent;
     
     if (isMobileDevice) {
         document.body.classList.add('mobile-device');
