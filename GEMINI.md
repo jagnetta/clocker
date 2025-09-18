@@ -15,7 +15,7 @@ The terminal application is a bash script that displays the current time and dat
 1.  Open `index.html` in a modern web browser.
 2.  The application will start with a random theme.
 3.  Use the theme selector buttons at the top of the page to switch between themes.
-4.  To use the weather functionality, enter a location (city, ZIP code, or coordinates) in the weather input box and click "ACCESS DATA".
+4.  To use the weather functionality, enter a location (city, ZIP code, or coordinates) in the weather input box and click "OK".
 
 **Note:** The OpenWeatherMap API key is hardcoded in `core-script.js`. For production use, you should replace it with your own API key.
 
